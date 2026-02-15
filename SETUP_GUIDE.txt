@@ -1,0 +1,105 @@
+🚀 TRIBES INDIA MARKETPLACE - SETUP GUIDE
+==========================================
+
+FRONTEND SETUP (Complete UI - Ready to View!)
+----------------------------------------------
+
+1. Navigate to frontend directory:
+   cd frontend
+
+2. Install dependencies:
+   npm install
+
+3. Create .env file:
+   cp .env.example .env
+
+4. Start development server:
+   npm run dev
+
+5. Open browser:
+   http://localhost:3000
+
+WHAT'S INCLUDED:
+----------------
+✅ Complete UI with 6 themes
+✅ English/Telugu language support
+✅ All public pages (Home, Products, Product Detail, About, Terms, Privacy, Disclaimer)
+✅ Admin dashboard and pages
+✅ Super Admin dashboard and pages
+✅ Mock data for testing
+✅ Responsive design (mobile/tablet/desktop)
+✅ Premium tribal aesthetics
+✅ Smooth animations
+
+TEST CREDENTIALS (Mock Login):
+------------------------------
+Admin:
+- Email: any email
+- Password: any password
+- Will redirect to /admin
+
+Super Admin:
+- Email: any email
+- Password: any password
+- Will redirect to /super-admin
+
+PAGES TO EXPLORE:
+-----------------
+Public:
+- / (Home - stunning hero, categories, featured products)
+- /products (Products listing with filters)
+- /products/PRD001 (Product detail with gallery)
+- /about (About page with mission)
+- /terms, /privacy, /disclaimer
+
+Admin (after login at /admin/login):
+- /admin (Dashboard with stats)
+- /admin/super-admins (Manage super admins)
+- /admin/config (System configuration)
+- /admin/audit-logs (Audit logs)
+- /admin/reports (Reports)
+
+Super Admin (after login at /super-admin/login):
+- /super-admin (Dashboard)
+- /super-admin/tribes (Manage tribes)
+- /super-admin/vendors (Manage vendors)
+- /super-admin/products (Manage products)
+- /super-admin/categories (Manage categories)
+- /super-admin/reports (Reports)
+
+FEATURES TO TEST:
+-----------------
+1. Theme Switching (6 themes available in header)
+2. Language Switching (English/Telugu in header)
+3. Product Search and Filters
+4. Contact Vendor Modal
+5. Responsive Design (resize browser)
+6. Admin/Super Admin Dashboards
+7. Navigation and Routing
+
+NEXT STEPS:
+-----------
+Once you approve the UI, we'll:
+1. Connect to backend APIs
+2. Implement real authentication
+3. Add form validations
+4. Integrate CAPTCHA
+5. Connect to database
+6. Deploy to production
+
+NOTES:
+------
+- All data is currently mock data
+- Login accepts any credentials (for UI testing)
+- Backend integration will come after UI approval
+- All components are fully styled and responsive
+- Premium design with tribal aesthetics implemented
+
+TROUBLESHOOTING:
+----------------
+If you encounter issues:
+1. Delete node_modules and package-lock.json
+2. Run: npm install
+3. Run: npm run dev
+
+For any questions, the UI is complete and ready for your review!

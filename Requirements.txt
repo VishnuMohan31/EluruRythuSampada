@@ -1,0 +1,343 @@
+🏛 TRIBES INDIA MARKETPLACE PORTAL
+Consolidated Requirement Document (Phase-1)
+
+1️⃣ PROJECT OVERVIEW
+Project Title
+Tribes India Marketplace Portal
+Objective
+Develop a government-supported web application to promote and showcase tribal products under the TRIFED “Tribes India” initiative.
+The platform:
+	• Connects buyers and tribal vendors
+	• Does NOT process payments
+	• Enables communication only
+	• Provides analytics for government decision-making
+	• Supports configurable branding
+Web application only. No mobile app.
+
+2️⃣ CORE PRINCIPLES
+	• Keep architecture simple
+	• No microservices
+	• No payment gateway
+	• Clean UI
+	• Secure and compliant
+	• Government configurable
+	• Scalable but minimal
+
+3️⃣ TECHNOLOGY STACK (MANDATORY)
+Frontend
+	• React
+	• i18next (English + Telugu)
+	• Responsive design
+	• JWT handling
+Backend
+	• Python (FastAPI preferred)
+	• SQLAlchemy ORM
+	• JWT authentication
+	• Role-based access control
+	• Centralized exception handling
+Database
+	• PostgreSQL
+Storage
+	• AWS S3 (private bucket)
+Hosting
+	• HOSTINGER
+Authentication
+	• JWT (short-lived tokens)
+	• Role-based access (RBAC)
+DevOps
+	• Docker (all services)
+	• Docker Compose
+	• Ansible deployment automation
+	• NGINX reverse proxy
+	• HTTPS enforced
+
+4️⃣ USER ROLES
+1. Admin
+Full system control.
+Can:
+	• Create/modify/delete Super Admin
+	• Configure branding
+	• Configure categories
+	• Configure header/footer
+	• Access audit logs
+	• View analytics
+	• Manage system settings
+
+2. Super Admin
+Content management.
+Can:
+	• Register tribes
+	• Register vendors
+	• Register products
+	• Approve/reject products
+	• Upload images
+	• Manage categories
+	• Edit header/footer
+	• View analytics
+
+3. Buyer
+Light registration (no password).
+	• Name
+	• Email (verification not required)
+your location
+	• Phone (optional)
+Stored for analytics and autofill.
+Can:
+	• Contact vendor
+	• Browse products
+
+4. Guest
+	• Browse products only
+	• Cannot contact vendor
+
+5️⃣ CONFIGURABLE GOVERNMENT SETTINGS
+All configurable via Admin/Super Admin dashboard.
+Editable:
+	1. Application name
+	2. Logo (stored in S3)
+	3. Categories
+	4. Subcategories
+	5. Header content
+	6. Footer content
+	7. Terms page
+	8. Privacy policy
+	9. Disclaimer
+Stored in system_config table.
+
+Mandatory Fixed Footer (Non-editable)
+At bottom of every page:
+	Powered by DataLegos Tech Solutions Pvt. Ltd.
+Small font. Cannot be removed.
+
+6️⃣ LANGUAGE SYSTEM
+Supports:
+	• English
+	• Telugu
+Rules:
+	• All UI labels bilingual
+	• Content (product descriptions etc.) shown exactly as entered
+	• No auto translation
+	• Language preference stored in browser
+
+7️⃣ COLOR THEMES
+5 switchable themes:
+This is for the government of Andhra Pradesh in India. 
+	1. Government Heritage
+	2. Tribal Earth
+	3. Modern Marketplace
+	4. Vibrant Festival
+	5. Eco Sustainable
+	6. Dark Theam (Dracula)
+Theme selection stored in browser.
+Admin can define default theme.
+
+8️⃣ CORE FUNCTIONAL MODULES
+
+A. Tribe Management
+Fields:
+	• Name
+	• State
+	• Description
+	• Image
+	
+Soft delete enabled.
+
+B. Vendor Management
+Fields:
+	• Name
+	• Tribe reference
+	• Contact info (phone mandatory, email opional)
+	• Approval status
+	• is_active
+
+C. Product Management
+Fields:
+	• Name
+	• Category
+	• Subcategory
+	• Tribe
+	• Vendor
+	• Description
+	• Images (S3)
+	• YouTube link
+	• Instagram link
+	• Status (Draft/Pending/Approved/Rejected)
+	• View count
+Soft delete enabled.
+
+D. Product Display & Search
+Guests can:
+	• Browse
+	• Filter
+	• Search
+Search:
+	• PostgreSQL ILIKE
+	• Indexed fields
+	• Basic optimized search
+
+E. Contact Vendor
+Visible only to registered buyers.
+Tracks:
+	• Buyer ID
+	• Product ID
+	• Timestamp
+Rate limited:
+	• 10 per hour per IP
+
+I visualize the procedure as below:
+Buyer will browse thru the items as a Guest. 
+If he wants to contact the seller for any of the product, he will click on contact seller.
+that place buyer has to give his information and contact email. 
+once he press ok, vendor/seller contact info will be sent to buyer.
+there should be captcha to stop the bots here.
+
+
+Information messages for admin, super admin, buyer and guest:
+tooltips should be clear
+Guidence on the screen and Guidence for the navigation should be clear.
+
+9️⃣ SOFT DELETE POLICY
+No hard deletes.
+Tables must include:
+	• is_active BOOLEAN
+	• deleted_at TIMESTAMP
+	• deleted_by UUID (don’t use UUID. But use unique sequential increased integer id as string)
+All queries must filter is_active = TRUE.
+
+🔟 ERROR HANDLING STANDARD
+All APIs return structured response:
+
+{
+  "success": false,
+  "error": {
+    "code": "PRD_404_001",
+    "message": "Product not found",
+    "details": null
+  }
+}
+Error code format:
+
+<MODULE>_<HTTPSTATUS>_<SEQUENCE>
+Centralized exception handling required.
+No stack traces in production.
+All errors logged.
+
+1️⃣1️⃣ HEALTH CHECK
+Endpoint:
+
+GET /health
+Checks:
+	• Database connection
+	• Application status
+Used for monitoring.
+
+1️⃣2️⃣ SECURITY REQUIREMENTS
+	• HTTPS enforced
+	• JWT authentication
+	• Role-based authorization
+	• Bcrypt password hashing
+	• IAM role-based S3 access
+	• No hardcoded credentials
+	• Rate limiting
+	• Input validation
+	• HTML sanitization for header/footer content
+	• Audit logs for admin actions
+
+1️⃣3️⃣ DATABASE BACKUP & RESTORE
+Backup
+	• Weekly automated backup
+	• pg_dump
+	• Compressed (.sql.gz)
+	• Stored in dedicated S3 bucket
+	• Retain last 5 versions
+	• Auto prune old backups
+Restore
+Manual restore script supported.
+
+S3 SECURITY ISOLATION
+	• Dedicated bucket
+	• Private
+	• EC2 IAM role restricted ONLY to this bucket
+	• Application cannot access other S3 buckets
+	• Bucket policy restricts to specific IAM role
+	• Server-side encryption enabled
+
+1️⃣4️⃣ ANALYTICS & REPORTS
+Admin dashboard must show:
+	• Total products
+	• Total tribes
+	• Total vendors
+	• Product views
+	• Contact counts
+	• Top viewed products
+	• Category traction
+	• Time-based engagement
+Simple charts only.
+
+Very raw report of all inquries. 
+
+1️⃣5️⃣ DATABASE REQUIREMENTS
+	• Sequential increassed integer stored as string primary keys (
+	• Indexed searchable fields
+	• Audit_logs table
+	• Soft delete support
+	• Contact_logs table
+	• Product_views table
+
+1️⃣6️⃣ DEVOPS & DEPLOYMENT
+Dockerized services:
+	• frontend
+	• backend
+	• postgres
+	• nginx
+	• backup-service
+Ansible automation:
+	• Install Docker
+	• Configure NGINX
+	• Setup SSL
+	• Setup IAM role
+	• Setup S3 bucket
+	• Setup backup cron and python . Backup must store in S3. what exactly to take backup.
+	• Deploy containers
+	• Health verification
+
+1️⃣7️⃣ NON-FUNCTIONAL REQUIREMENTS
+	• Responsive UI
+	• Scalable to high traffic
+	• Secure
+	• Maintainable
+	• Clean folder structure
+	• Minimal architecture
+	• Government compliant
+
+1️⃣8️⃣ OUT OF SCOPE
+	• Payment gateway
+	• Real-time chat
+	• AI recommendations
+	• Mobile app
+	• Microservices
+	• Kubernetes
+	• Complex multi-tenant architecture
+
+1️⃣9️⃣ DELIVERABLES
+	1. Functional web application
+	2. Admin dashboard
+	3. Super Admin dashboard
+	4. Buyer browsing & contact flow
+	5. S3 integration
+	6. Backup & restore mechanism
+	7. Docker setup
+	8. Ansible deployment
+	9. Documentation
+	10. Security guidelines
+
+✅ FINAL STATUS
+Scope is:
+	• Complete
+	• Controlled
+	• Minimal
+	• Government-ready
+	• Production-safe
+	• Not over-engineered
+This document is ready to be given to KIRO to start development planning.
+

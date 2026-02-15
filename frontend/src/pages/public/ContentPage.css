@@ -1,0 +1,107 @@
+.content-page {
+  padding: var(--spacing-2xl) 0;
+  min-height: 100vh;
+}
+
+.content-header {
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+  padding: var(--spacing-2xl) 0;
+  background: linear-gradient(135deg, var(--color-overlay) 0%, transparent 100%);
+  border-radius: var(--radius-lg);
+}
+
+.content-header h1 {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+}
+
+.last-updated {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.content-body {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--color-surface);
+  padding: var(--spacing-2xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.content-body section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.content-body section:last-child {
+  margin-bottom: 0;
+}
+
+.content-body h2 {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.content-body h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+}
+
+.content-body p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-md);
+}
+
+.content-body ul {
+  margin: var(--spacing-md) 0;
+  padding-left: var(--spacing-xl);
+}
+
+.content-body li {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-sm);
+}
+
+.content-body a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.content-body a:hover {
+  color: var(--color-secondary);
+}
+
+@media (max-width: 768px) {
+  .content-header h1 {
+    font-size: 2rem;
+  }
+
+  .content-body {
+    padding: var(--spacing-lg);
+  }
+
+  .content-body h2 {
+    font-size: 1.5rem;
+  }
+
+  .content-body h3 {
+    font-size: 1.125rem;
+  }
+}
