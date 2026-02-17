@@ -1,30 +1,40 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
-import { mockProducts, mockCategories, mockTribes } from '@/data/mockData'
+import { mockProducts, mockCategories, mockSHGs } from '@/data/mockData'
 import productsHeaderBg from '@/Images/Products.png'
 import './ProductsPage.css'
 
 const ProductsPage = () => {
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
-  const [selectedTribe, setSelectedTribe] = useState('')
+  const [selectedSHG, setSelectedSHG] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
+
+  // Read category from URL on component mount
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category')
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl)
+    }
+  }, [searchParams])
 
   const filteredProducts = mockProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = !selectedCategory || product.category.id === selectedCategory
-    const matchesTribe = !selectedTribe || product.tribe.id === selectedTribe
+    const matchesSHG = !selectedSHG || product.shg.id === selectedSHG
     
-    return matchesSearch && matchesCategory && matchesTribe
+    return matchesSearch && matchesCategory && matchesSHG
   })
 
   const clearFilters = () => {
     setSearchQuery('')
     setSelectedCategory('')
-    setSelectedTribe('')
+    setSelectedSHG('')
   }
 
   return (
@@ -37,7 +47,7 @@ const ProductsPage = () => {
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${productsHeaderBg})`
           }}
         >
-          <h1 className="page-title">Discover Tribal Products</h1>
+          <h1 className="page-title">Discover SHG Products</h1>
           <p className="page-description">
             Browse our collection of {mockProducts.length} authentic handcrafted products
           </p>
@@ -70,9 +80,9 @@ const ProductsPage = () => {
             onClick={() => setFiltersOpen(!filtersOpen)}
           >
             🎛️ Filters
-            {(selectedCategory || selectedTribe) && (
+            {(selectedCategory || selectedSHG) && (
               <span className="filter-badge">
-                {[selectedCategory, selectedTribe].filter(Boolean).length}
+                {[selectedCategory, selectedSHG].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -83,7 +93,7 @@ const ProductsPage = () => {
           <aside className={`filters-sidebar ${filtersOpen ? 'open' : ''}`}>
             <div className="filters-header">
               <h3>Filters</h3>
-              {(selectedCategory || selectedTribe) && (
+              {(selectedCategory || selectedSHG) && (
                 <button className="clear-filters-btn" onClick={clearFilters}>
                   Clear All
                 </button>
@@ -120,31 +130,31 @@ const ProductsPage = () => {
               </div>
             </div>
 
-            {/* Tribe Filter */}
+            {/* SHG Filter */}
             <div className="filter-group">
-              <h4 className="filter-title">Tribe</h4>
+              <h4 className="filter-title">SHG</h4>
               <div className="filter-options">
                 <label className="filter-option">
                   <input
                     type="radio"
-                    name="tribe"
+                    name="shg"
                     value=""
-                    checked={selectedTribe === ''}
-                    onChange={(e) => setSelectedTribe(e.target.value)}
+                    checked={selectedSHG === ''}
+                    onChange={(e) => setSelectedSHG(e.target.value)}
                   />
-                  <span>All Tribes</span>
+                  <span>All SHGs</span>
                 </label>
-                {mockTribes.map(tribe => (
-                  <label key={tribe.id} className="filter-option">
+                {mockSHGs.map(shg => (
+                  <label key={shg.id} className="filter-option">
                     <input
                       type="radio"
-                      name="tribe"
-                      value={tribe.id}
-                      checked={selectedTribe === tribe.id}
-                      onChange={(e) => setSelectedTribe(e.target.value)}
+                      name="shg"
+                      value={shg.id}
+                      checked={selectedSHG === shg.id}
+                      onChange={(e) => setSelectedSHG(e.target.value)}
                     />
-                    <span>{tribe.name}</span>
-                    <span className="filter-state">({tribe.state})</span>
+                    <span>{shg.name}</span>
+                    <span className="filter-state">({shg.state})</span>
                   </label>
                 ))}
               </div>

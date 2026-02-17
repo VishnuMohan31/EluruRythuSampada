@@ -144,7 +144,7 @@ const Header = () => {
                 </button>
               </div>
             ) : (
-              <Link to="/admin/login" className="btn btn-outline btn-medium">
+              <Link to="/super-admin/login" className="btn btn-outline btn-medium">
                 {t('login')}
               </Link>
             )}

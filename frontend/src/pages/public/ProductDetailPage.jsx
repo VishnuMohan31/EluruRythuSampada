@@ -52,9 +52,9 @@ const ProductDetailPage = () => {
 
           {/* Product Info */}
           <div className="product-info-section">
-            <div className="product-tribe-badge">
-              <span className="tribe-icon">🏛</span>
-              <span>{product.tribe.name} • {product.tribe.state}</span>
+            <div className="product-shg-badge">
+              <span className="shg-icon">🏛</span>
+              <span>{product.shg.name} • {product.shg.state}</span>
             </div>
 
             <h1 className="product-title">{product.name}</h1>
@@ -123,7 +123,7 @@ const ProductDetailPage = () => {
                 >
                   <img src={relatedProduct.images[0]} alt={relatedProduct.name} />
                   <h4>{relatedProduct.name}</h4>
-                  <p>{relatedProduct.tribe.name}</p>
+                  <p>{relatedProduct.shg.name}</p>
                 </Link>
               ))}
             </div>

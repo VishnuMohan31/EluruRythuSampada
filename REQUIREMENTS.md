@@ -1,4 +1,4 @@
-# 🏛 TRIBES INDIA MARKETPLACE PORTAL
+# 🏛 SHG INDIA MARKETPLACE PORTAL
 ## Requirements Specification Document
 
 ---
@@ -6,14 +6,14 @@
 ## 1. PROJECT OVERVIEW
 
 ### 1.1 Project Information
-- **Project Name**: Tribes India Marketplace Portal
-- **Initiative**: TRIFED "Tribes Andhra Pradesh" Government Program by Eluru Collector
+- **Project Name**: SHG India Marketplace Portal
+- **Initiative**: TRIFED "SHGs Andhra Pradesh" Government Program by Eluru Collector
 - **Target Region**: Andhra Pradesh, India
 - **Platform Type**: Web Application Only (No Mobile App)
 
 ### 1.2 Project Objective
-Develop a government-supported web application to promote and showcase tribal products with the following goals:
-- Connect buyers with tribal vendors
+Develop a government-supported web application to promote and showcase SHG (Self Help Group) products with the following goals:
+- Connect buyers with SHG vendors
 - Enable communication between buyers and vendors
 - Provide analytics for government decision-making
 - Support configurable branding for government use
@@ -46,7 +46,7 @@ Develop a government-supported web application to promote and showcase tribal pr
 
 #### 2.1.2 Super Admin (Content Management)
 **Capabilities:**
-- Register and manage tribes
+- Register and manage SHGs (Self Help Groups)
 - Register and manage vendors
 - Register and manage products
 - Approve or reject product submissions
@@ -85,27 +85,34 @@ Develop a government-supported web application to promote and showcase tribal pr
 
 ### 2.2 Core Functional Modules
 
-#### 2.2.1 Tribe Management
+#### 2.2.1 SHG Management
 **Fields:**
-- Tribe Name (required)
+- SHG Name (required)
 - State (required)
+- District (required)
+- Mandal (required)
+- Village (required)
 - Description (optional)
-- Tribe Image (uploaded to S3)
+- SHG Image (uploaded to S3)
 - is_active (soft delete flag)
 - deleted_at (timestamp)
 - deleted_by (admin ID)
 
 **Operations:**
-- Create new tribe (Super Admin/Admin)
-- Edit tribe details (Super Admin/Admin)
-- Soft delete tribe (Super Admin/Admin)
-- View tribe list with filters
-- Associate vendors with tribes
+- Create new SHG (Super Admin/Admin)
+- Edit SHG details (Super Admin/Admin)
+- Soft delete SHG (Super Admin/Admin)
+- View SHG list with filters
+- Associate vendors with SHGs
 
 #### 2.2.2 Vendor Management
 **Fields:**
 - Vendor Name (required)
-- Tribe Reference (foreign key)
+- SHG Reference (foreign key)
+- State (from super admin, required)
+- District (from super admin, required)
+- Mandal (required)
+- Village (required)
 - Phone Number (required)
 - Email (optional)
 - Approval Status (Pending/Approved/Rejected)
@@ -126,7 +133,7 @@ Develop a government-supported web application to promote and showcase tribal pr
 - Product Name (required)
 - Category (required, foreign key)
 - Subcategory (required, foreign key)
-- Tribe (required, foreign key)
+- SHG (required, foreign key)
 - Vendor (required, foreign key)
 - Description (required)
 - Product Images (multiple, stored in S3)
@@ -153,7 +160,7 @@ Develop a government-supported web application to promote and showcase tribal pr
 - Filter by:
   - Category
   - Subcategory
-  - Tribe
+  - SHG
   - State
 - Search functionality:
   - PostgreSQL ILIKE search
@@ -165,7 +172,7 @@ Develop a government-supported web application to promote and showcase tribal pr
 - Product image (primary)
 - Product name
 - Category/Subcategory
-- Tribe name
+- SHG name
 - View count
 - "Contact Vendor" button (Buyers only)
 
@@ -253,7 +260,7 @@ Powered by DataLegos Tech Solutions Pvt. Ltd.
 
 #### 2.5.1 Available Themes (6 Total)
 1. **Government Heritage** - Traditional government colors
-2. **Tribal Earth** - Earthy, natural tones
+2. **SHG Earth** - Earthy, natural tones
 3. **Modern Marketplace** - Clean, contemporary design
 4. **Vibrant Festival** - Bright, celebratory colors
 5. **Eco Sustainable** - Green, environmental theme
@@ -510,7 +517,7 @@ Examples:
 
 #### 5.1.1 Overview Statistics
 - Total Products (Approved/Pending/Rejected/Draft)
-- Total Tribes (Active)
+- Total SHGs (Active)
 - Total Vendors (Active/Pending)
 - Total Buyers Registered
 - Total Vendor Contacts (Today/Week/Month)
@@ -519,7 +526,7 @@ Examples:
 - Top 10 Most Viewed Products
 - Product Views Over Time (line chart)
 - Products by Category (pie chart)
-- Products by Tribe (bar chart)
+- Products by SHG (bar chart)
 - Products by State (map visualization)
 
 #### 5.1.3 Engagement Analytics
@@ -556,7 +563,7 @@ Examples:
 - Home Page
 - Products Listing Page
 - Product Detail Page
-- About Tribes India
+- About SHGs India
 - Terms & Conditions
 - Privacy Policy
 - Disclaimer
@@ -574,7 +581,7 @@ Examples:
 
 #### 6.1.3 Super Admin Dashboard Pages
 - Dashboard (Analytics)
-- Manage Tribes
+- Manage SHGs
 - Manage Vendors
 - Manage Products
 - Manage Categories
@@ -635,7 +642,7 @@ Examples:
 #### 7.1.5 Text Fields
 - Product Name: 3-200 characters
 - Description: 10-5000 characters
-- Tribe Name: 3-100 characters
+- SHG Name: 3-100 characters
 - Vendor Name: 3-100 characters
 
 ### 7.2 Sanitization

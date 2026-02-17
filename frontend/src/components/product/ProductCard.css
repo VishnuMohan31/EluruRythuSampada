@@ -80,7 +80,7 @@
   flex: 1;
 }
 
-.product-tribe-badge {
+.product-shg-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -93,8 +93,12 @@
   color: var(--color-primary);
 }
 
-.tribe-icon {
+.shg-icon {
   font-size: 0.875rem;
+}
+
+.shg-name {
+  /* Inherits styles from parent badge */
 }
 
 .product-name {

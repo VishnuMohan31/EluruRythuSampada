@@ -1,5 +1,5 @@
 """
-Vendor model for tribal artisans/vendors
+Vendor model for SHG artisans/vendors
 """
 from sqlalchemy import Column, String, Text, Boolean, DateTime, ForeignKey
 from sqlalchemy.sql import func
@@ -14,7 +14,7 @@ class Vendor(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True)
     phone = Column(String)
-    tribe_id = Column(String, ForeignKey("tribes.id"))
+    shg_id = Column(String, ForeignKey("shgs.id"))
     location = Column(String)
     description = Column(Text)
     specialization = Column(String)
@@ -24,5 +24,5 @@ class Vendor(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    tribe = relationship("Tribe", back_populates="vendors")
+    shg = relationship("SHG", back_populates="vendors")
     products = relationship("Product", back_populates="vendor")

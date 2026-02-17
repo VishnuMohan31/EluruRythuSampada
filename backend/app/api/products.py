@@ -9,7 +9,7 @@ import uuid
 from ..core.deps import get_db, get_current_admin
 from ..models.product import Product
 from ..models.category import Category
-from ..models.tribe import Tribe
+from ..models.shg import SHG
 from ..schemas.product import ProductCreate, ProductUpdate, ProductResponse
 
 router = APIRouter()
@@ -20,7 +20,7 @@ async def get_products(
     skip: int = 0,
     limit: int = 100,
     category_id: Optional[str] = None,
-    tribe_id: Optional[str] = None,
+    shg_id: Optional[str] = None,
     search: Optional[str] = None,
     is_featured: Optional[bool] = None,
     db: Session = Depends(get_db)
@@ -30,8 +30,8 @@ async def get_products(
     
     if category_id:
         query = query.filter(Product.category_id == category_id)
-    if tribe_id:
-        query = query.filter(Product.tribe_id == tribe_id)
+    if shg_id:
+        query = query.filter(Product.shg_id == shg_id)
     if search:
         query = query.filter(Product.name.ilike(f"%{search}%"))
     if is_featured is not None:
@@ -76,10 +76,10 @@ async def create_product(
     if category:
         category.product_count += 1
     
-    # Update tribe count
-    tribe = db.query(Tribe).filter(Tribe.id == product.tribe_id).first()
-    if tribe:
-        tribe.product_count += 1
+    # Update SHG count
+    shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
+    if shg:
+        shg.product_count += 1
     
     db.commit()
     db.refresh(db_product)

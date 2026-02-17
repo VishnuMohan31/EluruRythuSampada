@@ -24,12 +24,11 @@ import SuperAdminLogin from '@pages/super-admin/SuperAdminLogin'
 import AdminDashboard from '@pages/admin/AdminDashboard'
 import ManageSuperAdmins from '@pages/admin/ManageSuperAdmins'
 import SystemConfig from '@pages/admin/SystemConfig'
-import AuditLogs from '@pages/admin/AuditLogs'
 import AdminReports from '@pages/admin/Reports'
 
 // Super Admin Pages
 import SuperAdminDashboard from '@pages/super-admin/SuperAdminDashboard'
-import ManageTribes from '@pages/super-admin/ManageTribes'
+import ManageSHGs from '@pages/super-admin/ManageSHGs'
 import ManageVendors from '@pages/super-admin/ManageVendors'
 import ManageProducts from '@pages/super-admin/ManageProducts'
 import ManageCategories from '@pages/super-admin/ManageCategories'
@@ -79,7 +78,6 @@ const AppRoutes = () => {
         <Route index element={<AdminDashboard />} />
         <Route path="super-admins" element={<ManageSuperAdmins />} />
         <Route path="config" element={<SystemConfig />} />
-        <Route path="audit-logs" element={<AuditLogs />} />
         <Route path="reports" element={<AdminReports />} />
       </Route>
 
@@ -96,7 +94,7 @@ const AppRoutes = () => {
         }
       >
         <Route index element={<SuperAdminDashboard />} />
-        <Route path="tribes" element={<ManageTribes />} />
+        <Route path="shgs" element={<ManageSHGs />} />
         <Route path="vendors" element={<ManageVendors />} />
         <Route path="products" element={<ManageProducts />} />
         <Route path="categories" element={<ManageCategories />} />

@@ -29,7 +29,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="footer-description">
-              Empowering tribal communities through authentic handcrafted products.
+              Empowering SHG communities through authentic handcrafted products.
               Preserving heritage, supporting artisans.
             </p>
           </div>

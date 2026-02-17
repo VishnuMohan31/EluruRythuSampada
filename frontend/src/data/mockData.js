@@ -6,9 +6,9 @@ export const mockProducts = [
     name: 'Bamboo Tokri (Storage Basket)',
     category: { id: 'CAT001', name: 'Handicrafts' },
     subcategory: { id: 'SUB001', name: 'Baskets' },
-    tribe: { id: 'TRB001', name: 'Gond', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG001', name: 'Gond', state: 'Andhra Pradesh' },
     vendor: { id: 'VND001', name: 'Ramesh Kumar' },
-    description: 'Traditional bamboo tokri handwoven by Gond tribal artisans. Used for storing grains, vegetables, and household items. Made from locally sourced bamboo using age-old weaving techniques.',
+    description: 'Traditional bamboo tokri handwoven by Gond SHG artisans. Used for storing grains, vegetables, and household items. Made from locally sourced bamboo using age-old weaving techniques.',
     images: [
       '/src/Images/BambooTokri.png',
       '/src/Images/Handicrafts.png'
@@ -23,7 +23,7 @@ export const mockProducts = [
     name: 'Toda Poothkuli (Embroidered Shawl)',
     category: { id: 'CAT002', name: 'Textiles' },
     subcategory: { id: 'SUB002', name: 'Shawls' },
-    tribe: { id: 'TRB002', name: 'Toda', state: 'Tamil Nadu' },
+    shg: { id: 'SHG002', name: 'Toda', state: 'Tamil Nadu' },
     vendor: { id: 'VND002', name: 'Lakshmi Devi' },
     description: 'Authentic Toda poothkuli with traditional red and black embroidery on unbleached cotton. Each geometric pattern represents elements from nature - flowers, streams, and mountains.',
     images: [
@@ -40,9 +40,9 @@ export const mockProducts = [
     name: 'Mitti Ka Matka (Clay Water Pot)',
     category: { id: 'CAT003', name: 'Pottery' },
     subcategory: { id: 'SUB003', name: 'Decorative' },
-    tribe: { id: 'TRB003', name: 'Kota', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG003', name: 'Kota', state: 'Andhra Pradesh' },
     vendor: { id: 'VND003', name: 'Suresh Babu' },
-    description: 'Traditional terracotta matka handcrafted by Kota tribal potters. Made from natural clay and fired in wood kilns. Keeps water naturally cool and adds earthy minerals.',
+    description: 'Traditional terracotta matka handcrafted by Kota SHG potters. Made from natural clay and fired in wood kilns. Keeps water naturally cool and adds earthy minerals.',
     images: [
       '/src/Images/MittiKaMatka.png',
       '/src/Images/Pottery.png'
@@ -57,9 +57,9 @@ export const mockProducts = [
     name: 'Lambadi Haar (Beaded Necklace)',
     category: { id: 'CAT004', name: 'Jewelry' },
     subcategory: { id: 'SUB004', name: 'Necklaces' },
-    tribe: { id: 'TRB004', name: 'Lambadi', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG004', name: 'Lambadi', state: 'Andhra Pradesh' },
     vendor: { id: 'VND004', name: 'Anjali Reddy' },
-    description: 'Traditional Lambadi haar with colorful glass beads, cowrie shells, and brass coins. Worn during festivals and celebrations. Each piece reflects Lambadi tribal heritage.',
+    description: 'Traditional Lambadi haar with colorful glass beads, cowrie shells, and brass coins. Worn during festivals and celebrations. Each piece reflects Lambadi SHG heritage.',
     images: [
       '/src/Images/LambadiHaar.png',
       '/src/Images/Jewellery.png'
@@ -71,10 +71,10 @@ export const mockProducts = [
   },
   {
     id: 'PRD005',
-    name: 'Warli Chitra (Tribal Wall Art)',
+    name: 'Warli Chitra (SHG Wall Art)',
     category: { id: 'CAT005', name: 'Paintings' },
     subcategory: { id: 'SUB005', name: 'Wall Art' },
-    tribe: { id: 'TRB005', name: 'Warli', state: 'Maharashtra' },
+    shg: { id: 'SHG005', name: 'Warli', state: 'Maharashtra' },
     vendor: { id: 'VND005', name: 'Priya Sharma' },
     description: 'Authentic Warli chitra depicting village life, harvest, and celebrations. Painted with rice paste on mud base, showing traditional stick figures and geometric patterns.',
     images: [
@@ -91,9 +91,9 @@ export const mockProducts = [
     name: 'Handloom Khadi Saree',
     category: { id: 'CAT002', name: 'Textiles' },
     subcategory: { id: 'SUB006', name: 'Sarees' },
-    tribe: { id: 'TRB001', name: 'Gond', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG001', name: 'Gond', state: 'Andhra Pradesh' },
     vendor: { id: 'VND006', name: 'Meena Kumari' },
-    description: 'Pure handloom khadi saree woven on traditional pit looms. Features tribal motifs and natural dyes. Soft, breathable cotton perfect for daily wear.',
+    description: 'Pure handloom khadi saree woven on traditional pit looms. Features SHG motifs and natural dyes. Soft, breathable cotton perfect for daily wear.',
     images: [
       '/src/Images/HandloomKhadiSaree.png',
       '/src/Images/Textiles.png'
@@ -108,9 +108,9 @@ export const mockProducts = [
     name: 'Dhokra Ghoda (Brass Horse)',
     category: { id: 'CAT007', name: 'Metalwork' },
     subcategory: { id: 'SUB007', name: 'Figurines' },
-    tribe: { id: 'TRB006', name: 'Bastar', state: 'Chhattisgarh' },
+    shg: { id: 'SHG006', name: 'Bastar', state: 'Chhattisgarh' },
     vendor: { id: 'VND007', name: 'Ravi Shankar' },
-    description: 'Traditional Dhokra ghoda crafted using 4000-year-old lost-wax technique. Each brass figurine is unique, representing tribal folklore and craftsmanship.',
+    description: 'Traditional Dhokra ghoda crafted using 4000-year-old lost-wax technique. Each brass figurine is unique, representing SHG folklore and craftsmanship.',
     images: [
       '/src/Images/DhokraBrass.png',
       '/src/Images/MetalWorks.png'
@@ -125,9 +125,9 @@ export const mockProducts = [
     name: 'Jungle Madhu (Wild Forest Honey)',
     category: { id: 'CAT008', name: 'Natural Products' },
     subcategory: { id: 'SUB008', name: 'Honey' },
-    tribe: { id: 'TRB007', name: 'Chenchu', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG007', name: 'Chenchu', state: 'Andhra Pradesh' },
     vendor: { id: 'VND008', name: 'Narasimha Rao' },
-    description: 'Pure jungle madhu collected by Chenchu tribals from wild forest hives. Raw, unprocessed honey with medicinal properties. Collected sustainably from Nallamala forests.',
+    description: 'Pure jungle madhu collected by Chenchu SHG from wild forest hives. Raw, unprocessed honey with medicinal properties. Collected sustainably from Nallamala forests.',
     images: [
       '/src/Images/JungleMadhu.png',
       '/src/Images/NaturalProducts.png'
@@ -142,9 +142,9 @@ export const mockProducts = [
     name: 'Bamboo Diya Stand (Lamp Holder)',
     category: { id: 'CAT006', name: 'Home Decor' },
     subcategory: { id: 'SUB009', name: 'Lighting' },
-    tribe: { id: 'TRB001', name: 'Gond', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG001', name: 'Gond', state: 'Andhra Pradesh' },
     vendor: { id: 'VND009', name: 'Sita Devi' },
-    description: 'Handwoven bamboo diya stand with intricate tribal patterns. Used during festivals and ceremonies. Creates beautiful shadows when lit with traditional oil lamps.',
+    description: 'Handwoven bamboo diya stand with intricate SHG patterns. Used during festivals and ceremonies. Creates beautiful shadows when lit with traditional oil lamps.',
     images: [
       '/src/Images/BambooDiyaStand.png',
       '/src/Images/HomeDecors.png'
@@ -159,7 +159,7 @@ export const mockProducts = [
     name: 'Lambadi Toran (Door Hanging)',
     category: { id: 'CAT005', name: 'Paintings' },
     subcategory: { id: 'SUB010', name: 'Wall Decor' },
-    tribe: { id: 'TRB004', name: 'Lambadi', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG004', name: 'Lambadi', state: 'Andhra Pradesh' },
     vendor: { id: 'VND010', name: 'Kavita Bai' },
     description: 'Colorful Lambadi toran with mirror work, embroidery, and pom-poms. Traditionally hung on doorways during festivals. Each piece tells stories through vibrant patterns.',
     images: [
@@ -176,7 +176,7 @@ export const mockProducts = [
     name: 'Neem Kachi Kanghi (Wooden Comb)',
     category: { id: 'CAT001', name: 'Handicrafts' },
     subcategory: { id: 'SUB011', name: 'Personal Care' },
-    tribe: { id: 'TRB007', name: 'Chenchu', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG007', name: 'Chenchu', state: 'Andhra Pradesh' },
     vendor: { id: 'VND011', name: 'Krishna Murthy' },
     description: 'Hand-carved neem wood kanghi with natural antibacterial properties. Traditional tool used for hair care. Eco-friendly and gentle on scalp.',
     images: [
@@ -190,12 +190,12 @@ export const mockProducts = [
   },
   {
     id: 'PRD012',
-    name: 'Banjara Mala (Tribal Necklace)',
+    name: 'Banjara Mala (SHG Necklace)',
     category: { id: 'CAT004', name: 'Jewelry' },
     subcategory: { id: 'SUB012', name: 'Necklaces' },
-    tribe: { id: 'TRB004', name: 'Lambadi', state: 'Andhra Pradesh' },
+    shg: { id: 'SHG004', name: 'Lambadi', state: 'Andhra Pradesh' },
     vendor: { id: 'VND012', name: 'Radha Bai' },
-    description: 'Traditional Banjara mala with colorful beads, shells, and metal coins. Handmade by Lambadi women using techniques passed through generations. Worn during tribal dances and ceremonies.',
+    description: 'Traditional Banjara mala with colorful beads, shells, and metal coins. Handmade by Lambadi women using techniques passed through generations. Worn during SHG dances and ceremonies.',
     images: [
       '/src/Images/BanjaraMala.png',
       '/src/Images/Jewellery.png'
@@ -239,7 +239,7 @@ export const mockCategories = [
   {
     id: 'CAT005',
     name: 'Paintings',
-    description: 'Tribal art and paintings',
+    description: 'SHG art and paintings',
     image: '/src/Images/Paintings.png',
     productCount: 67
   },
@@ -266,30 +266,30 @@ export const mockCategories = [
   }
 ]
 
-export const mockTribes = [
+export const mockSHGs = [
   {
-    id: 'TRB001',
+    id: 'SHG001',
     name: 'Gond',
     state: 'Andhra Pradesh',
-    description: 'The Gond tribe is known for their vibrant art and traditional crafts.',
+    description: 'The Gond SHG is known for their vibrant art and traditional crafts.',
     imageUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800'
   },
   {
-    id: 'TRB002',
+    id: 'SHG002',
     name: 'Toda',
     state: 'Tamil Nadu',
-    description: 'Toda people are famous for their intricate embroidery work.',
+    description: 'Toda SHG is famous for their intricate embroidery work.',
     imageUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800'
   },
   {
-    id: 'TRB003',
+    id: 'SHG003',
     name: 'Kota',
     state: 'Andhra Pradesh',
-    description: 'Kota tribe specializes in pottery and terracotta crafts.',
+    description: 'Kota SHG specializes in pottery and terracotta crafts.',
     imageUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800'
   },
   {
-    id: 'TRB004',
+    id: 'SHG004',
     name: 'Lambadi',
     state: 'Andhra Pradesh',
     description: 'Lambadi artisans create beautiful jewelry and textiles.',
@@ -299,7 +299,7 @@ export const mockTribes = [
 
 export const mockStats = {
   totalProducts: 892,
-  totalTribes: 45,
+  totalSHGs: 45,
   totalVendors: 234,
   totalBuyers: 1567,
   totalContacts: 3456,

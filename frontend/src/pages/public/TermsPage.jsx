@@ -22,7 +22,7 @@ const TermsPage = () => {
           <section>
             <h2>2. Platform Purpose</h2>
             <p>
-              Swayam Eluru Market Place is a government-supported platform designed to connect buyers with tribal
+              Swayam Eluru Market Place is a government-supported platform designed to connect buyers with SHG
               artisans and vendors. This platform facilitates communication only and does not process payments or
               handle transactions directly.
             </p>
@@ -42,7 +42,7 @@ const TermsPage = () => {
             <ul>
               <li>Provide accurate product information and images</li>
               <li>Respond to buyer inquiries in a timely manner</li>
-              <li>Maintain authenticity of tribal products</li>
+              <li>Maintain authenticity of SHG products</li>
               <li>Comply with all applicable laws and regulations</li>
             </ul>
           </section>
@@ -51,7 +51,7 @@ const TermsPage = () => {
             <h2>4. Product Listings</h2>
             <p>
               All products listed on this platform are subject to approval by administrators. We reserve the right
-              to remove any listing that violates our guidelines or misrepresents tribal craftsmanship.
+              to remove any listing that violates our guidelines or misrepresents SHG craftsmanship.
             </p>
           </section>
 

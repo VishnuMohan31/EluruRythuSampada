@@ -1,0 +1,66 @@
+BUSINESS LOGIC RULES
+====================
+
+ADMIN ROLE:
+-----------
+1. Only ONE admin exists for the entire system.
+2. Only the admin can create Super Admins.
+3. Admin has full system access across all states and districts.
+
+SUPER ADMIN ROLE:
+-----------------
+1. Super Admin can ONLY access and manage data for their assigned district (decided during creation by Admin in "Manage Super Admins" screen).
+2. Super Admin CANNOT read or access other districts' data.
+   --> They should not get any choice to select other districts.
+   --> All selections for Super Admin start from their assigned district → Mandal → Village → SHG.
+3. State and District are auto-filled from Super Admin's profile (read-only in forms).
+
+PRODUCT RULES:
+--------------
+1. Product names MAY match across different vendors (same product from different suppliers).
+2. Product ID (auto-generated) will be UNIQUE across the entire application.
+3. Each product must be linked to: Category, Subcategory, SHG, and Vendor.
+
+DATABASE STRUCTURE RULES:
+-------------------------
+1. All tables must include standard audit columns:
+   - created_at (timestamp, required)
+   - created_by (user ID, required)
+   - updated_at (timestamp, auto-update)
+   - updated_by (user ID, nullable)
+
+2. Primary Keys:
+   - DO NOT use UUIDs anywhere in the database schema.
+   - Use auto-incrementing integers as primary keys.
+   - Format IDs as strings in application layer (e.g., "SHG001", "VND001", "PRD001").
+
+3. Soft Deletion:
+   - All user-generated content tables must include:
+     * is_active (boolean, default TRUE)
+     * deleted_at (timestamp, nullable)
+     * deleted_by (user ID, nullable)
+   - Never hard delete records; always use soft delete.
+
+4. Required Columns for Super Admin Management:
+   - created_date is mandatory for tracking Super Admin creation.
+   - Additional audit fields will be updated as requirements evolve.
+
+LOCATION HIERARCHY:
+-------------------
+State → District → Mandal → Village → SHG
+
+- Super Admin is assigned to: State + District (fixed, cannot change)
+- SHG is created under: State + District + Mandal + Village
+- Vendor is created under: State + District + Mandal + Village + SHG
+
+DATA ACCESS RULES:
+------------------
+1. Admin: Can access ALL data across all states and districts.
+2. Super Admin: Can ONLY access data within their assigned district.
+3. All queries must filter by Super Admin's district when logged in as Super Admin.
+4. All queries must filter by is_active = TRUE by default (exclude soft-deleted records).
+
+NOTES:
+------
+- This file will be updated with additional business logic rules as requirements evolve.
+- All changes to business logic must be documented here for reference.

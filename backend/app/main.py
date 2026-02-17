@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from .config import settings
 from .database import engine, Base
-from .api import auth, products, categories, tribes, vendors, inquiries, users
+from .api import auth, products, categories, shgs, vendors, inquiries, users
 import logging
 
 # Configure logging
@@ -99,7 +99,7 @@ async def health_check():
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(products.router, prefix="/api/products", tags=["Products"])
 app.include_router(categories.router, prefix="/api/categories", tags=["Categories"])
-app.include_router(tribes.router, prefix="/api/tribes", tags=["Tribes"])
+app.include_router(shgs.router, prefix="/api/shgs", tags=["SHGs"])
 app.include_router(vendors.router, prefix="/api/vendors", tags=["Vendors"])
 app.include_router(inquiries.router, prefix="/api/inquiries", tags=["Inquiries"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])

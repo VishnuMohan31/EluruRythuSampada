@@ -10,7 +10,7 @@ class VendorBase(BaseModel):
     name: str
     email: EmailStr
     phone: Optional[str] = None
-    tribe_id: str
+    shg_id: str
     location: Optional[str] = None
     description: Optional[str] = None
     specialization: Optional[str] = None
@@ -24,7 +24,7 @@ class VendorUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
-    tribe_id: Optional[str] = None
+    shg_id: Optional[str] = None
     location: Optional[str] = None
     description: Optional[str] = None
     specialization: Optional[str] = None

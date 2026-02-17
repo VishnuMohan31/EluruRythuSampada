@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext'
+import { LayoutDashboard, UserCog, Settings, BarChart3, Home } from 'lucide-react'
 import './AdminLayout.css'
 
 const AdminLayout = () => {
@@ -35,30 +36,26 @@ const AdminLayout = () => {
 
         <nav className="sidebar-nav">
           <Link to="/admin" className="nav-item">
-            <span className="nav-icon">📊</span>
+            <span className="nav-icon"><LayoutDashboard size={20} /></span>
             {sidebarOpen && <span className="nav-text">Dashboard</span>}
           </Link>
           <Link to="/admin/super-admins" className="nav-item">
-            <span className="nav-icon">👥</span>
+            <span className="nav-icon"><UserCog size={20} /></span>
             {sidebarOpen && <span className="nav-text">Super Admins</span>}
           </Link>
           <Link to="/admin/config" className="nav-item">
-            <span className="nav-icon">⚙️</span>
+            <span className="nav-icon"><Settings size={20} /></span>
             {sidebarOpen && <span className="nav-text">Configuration</span>}
           </Link>
-          <Link to="/admin/audit-logs" className="nav-item">
-            <span className="nav-icon">📝</span>
-            {sidebarOpen && <span className="nav-text">Audit Logs</span>}
-          </Link>
           <Link to="/admin/reports" className="nav-item">
-            <span className="nav-icon">📈</span>
+            <span className="nav-icon"><BarChart3 size={20} /></span>
             {sidebarOpen && <span className="nav-text">Reports</span>}
           </Link>
         </nav>
 
         <div className="sidebar-footer">
           <Link to="/" className="nav-item">
-            <span className="nav-icon">🏠</span>
+            <span className="nav-icon"><Home size={20} /></span>
             {sidebarOpen && <span className="nav-text">Public Site</span>}
           </Link>
         </div>

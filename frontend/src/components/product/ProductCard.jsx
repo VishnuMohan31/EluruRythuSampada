@@ -18,9 +18,9 @@ const ProductCard = ({ product }) => {
       </div>
       
       <div className="product-info">
-        <div className="product-tribe-badge">
-          <span className="tribe-icon">🏛</span>
-          <span className="tribe-name">{product.tribe.name}</span>
+        <div className="product-shg-badge">
+          <span className="shg-icon">🏛</span>
+          <span className="shg-name">{product.shg.name}</span>
         </div>
         
         <h3 className="product-name">{product.name}</h3>

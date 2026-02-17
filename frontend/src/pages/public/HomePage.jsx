@@ -20,10 +20,10 @@ const HomePage = () => {
           <div className="hero-content">
             <h1 className="hero-title">
               Discover Authentic
-              <span className="hero-highlight"> Tribal Heritage</span>
+              <span className="hero-highlight"> SHG Heritage</span>
             </h1>
             <p className="hero-description">
-              Handcrafted products from India's tribal artisans, preserving culture
+              Handcrafted products from India's SHG artisans, preserving culture
               and empowering communities. Each piece tells a story of tradition,
               skill, and heritage passed down through generations.
             </p>
@@ -46,7 +46,7 @@ const HomePage = () => {
           <div className="section-header">
             <h2 className="section-title">Browse by Category</h2>
             <p className="section-description">
-              Explore our diverse collection of authentic tribal products
+              Explore our diverse collection of authentic SHG products
             </p>
           </div>
           
@@ -151,19 +151,19 @@ const HomePage = () => {
         <div className="container">
           <div className="about-content">
             <div className="about-text">
-              <h2 className="section-title">Celebrating Andhra Pradesh's Tribal Heritage</h2>
+              <h2 className="section-title">Celebrating Andhra Pradesh's SHG Heritage</h2>
               <p className="about-description">
                 Swayam Eluru Market Place is a government-backed platform supported by TRIFED 
                 and the Government of Andhra Pradesh. We showcase the exceptional craftsmanship 
-                of tribal communities from across Andhra Pradesh—from the Nallamala forests to 
+                of SHG communities from across Andhra Pradesh—from the Nallamala forests to 
                 the Eastern Ghats.
               </p>
               <p className="about-description">
-                Our platform connects you directly with skilled tribal artisans including the 
+                Our platform connects you directly with skilled SHG artisans including the 
                 Chenchu, Lambadi, Gond, and Koya communities. Each product represents centuries 
                 of traditional knowledge, passed down through generations. From bamboo weaving 
                 to Dhokra metalwork, from natural forest honey to handloom textiles—discover 
-                authentic tribal crafts that tell stories of heritage and skill.
+                authentic SHG crafts that tell stories of heritage and skill.
               </p>
               <Link to="/about" className="btn btn-outline btn-large">
                 Discover Our Artisans
@@ -173,21 +173,21 @@ const HomePage = () => {
               <div className="about-image">
                 <img
                   src="/src/Images/TribalPic1.png"
-                  alt="Tribal bamboo weaving craftsmanship"
+                  alt="SHG bamboo weaving craftsmanship"
                   loading="lazy"
                 />
               </div>
               <div className="about-image">
                 <img
                   src="/src/Images/TibePic2.png"
-                  alt="Tribal artisan at work"
+                  alt="SHG artisan at work"
                   loading="lazy"
                 />
               </div>
               <div className="about-image">
                 <img
                   src="/src/Images/TibePic3.png"
-                  alt="Traditional tribal handicraft artisan"
+                  alt="Traditional SHG handicraft artisan"
                   loading="lazy"
                 />
               </div>

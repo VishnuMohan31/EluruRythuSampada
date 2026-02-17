@@ -10,7 +10,7 @@ class ProductBase(BaseModel):
     name: str
     description: Optional[str] = None
     category_id: str
-    tribe_id: str
+    shg_id: str
     vendor_id: str
     price: Optional[float] = None
     materials: Optional[str] = None
@@ -27,7 +27,7 @@ class ProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     category_id: Optional[str] = None
-    tribe_id: Optional[str] = None
+    shg_id: Optional[str] = None
     vendor_id: Optional[str] = None
     price: Optional[float] = None
     images: Optional[List[str]] = None

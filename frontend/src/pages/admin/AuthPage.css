@@ -27,21 +27,30 @@
 
 .auth-logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   margin-bottom: var(--spacing-lg);
 }
 
 .auth-logo .logo-icon {
-  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-logo .logo-icon svg {
+  width: 60px;
+  height: 60px;
 }
 
 .auth-logo .logo-text {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-primary);
+  text-align: center;
 }
 
 .auth-header h1 {

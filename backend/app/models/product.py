@@ -1,5 +1,5 @@
 """
-Product model for tribal products
+Product model for SHG products
 """
 from sqlalchemy import Column, String, Text, Float, Integer, Boolean, DateTime, ForeignKey, JSON
 from sqlalchemy.sql import func
@@ -14,7 +14,7 @@ class Product(Base):
     name = Column(String, nullable=False, index=True)
     description = Column(Text)
     category_id = Column(String, ForeignKey("categories.id"))
-    tribe_id = Column(String, ForeignKey("tribes.id"))
+    shg_id = Column(String, ForeignKey("shgs.id"))
     vendor_id = Column(String, ForeignKey("vendors.id"))
     price = Column(Float)
     images = Column(JSON)  # Array of image URLs
@@ -31,6 +31,6 @@ class Product(Base):
     
     # Relationships
     category = relationship("Category", back_populates="products")
-    tribe = relationship("Tribe", back_populates="products")
+    shg = relationship("SHG", back_populates="products")
     vendor = relationship("Vendor", back_populates="products")
     inquiries = relationship("Inquiry", back_populates="product")

@@ -92,10 +92,13 @@
 .nav-icon {
   font-size: 1.25rem;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-text {
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -200,11 +203,11 @@
 }
 
 .logout-btn {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 0.625rem 1.25rem;
   background-color: transparent;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   color: var(--color-text);
   cursor: pointer;
@@ -214,6 +217,7 @@
 .logout-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+  background-color: var(--color-overlay);
 }
 
 .admin-content {

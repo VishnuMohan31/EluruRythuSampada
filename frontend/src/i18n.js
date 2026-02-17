@@ -34,7 +34,7 @@ const resources = {
       contactVendor: 'Contact Vendor',
       productName: 'Product Name',
       category: 'Category',
-      tribe: 'Tribe',
+      shg: 'SHG',
       description: 'Description',
       views: 'Views',
       
@@ -72,7 +72,7 @@ const resources = {
       contactVendor: 'విక్రేతను సంప్రదించండి',
       productName: 'ఉత్పత్తి పేరు',
       category: 'వర్గం',
-      tribe: 'తెగ',
+      shg: 'స్వయం సహాయక బృందం',
       description: 'వివరణ',
       views: 'వీక్షణలు',
       
