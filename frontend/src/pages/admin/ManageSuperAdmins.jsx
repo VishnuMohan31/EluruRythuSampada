@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
 import './Dashboard.css'
 
@@ -173,19 +174,26 @@ const ManageSuperAdmins = () => {
     setShowModal(true)
   }
 
-  const handleDelete = (adminId) => {
-    if (window.confirm('Are you sure you want to delete this Super Admin?')) {
-      setSuperAdmins(prev => prev.filter(admin => admin.id !== adminId))
-      alert('Super Admin deleted successfully!')
+  const handleDeactivate = (adminId) => {
+    if (window.confirm('Are you sure you want to deactivate this Super Admin?')) {
+      setSuperAdmins(prev => prev.map(admin => 
+        admin.id === adminId 
+          ? { ...admin, status: 'Inactive' }
+          : admin
+      ))
+      alert('Super Admin deactivated successfully!')
     }
   }
 
-  const handleToggleStatus = (adminId) => {
-    setSuperAdmins(prev => prev.map(admin => 
-      admin.id === adminId 
-        ? { ...admin, status: admin.status === 'Active' ? 'Inactive' : 'Active' }
-        : admin
-    ))
+  const handleReactivate = (adminId) => {
+    if (window.confirm('Are you sure you want to reactivate this Super Admin?')) {
+      setSuperAdmins(prev => prev.map(admin => 
+        admin.id === adminId 
+          ? { ...admin, status: 'Active' }
+          : admin
+      ))
+      alert('Super Admin reactivated successfully!')
+    }
   }
 
   return (
@@ -337,26 +345,29 @@ const ManageSuperAdmins = () => {
                     <td>
                       <div className="table-actions">
                         <button 
-                          className="action-icon" 
+                          className="action-icon-btn edit" 
                           title="Edit"
                           onClick={() => handleEdit(admin)}
                         >
-                          ✏️
+                          <Edit2 size={18} />
                         </button>
-                        <button 
-                          className="action-icon" 
-                          title={admin.status === 'Active' ? 'Deactivate' : 'Activate'}
-                          onClick={() => handleToggleStatus(admin.id)}
-                        >
-                          {admin.status === 'Active' ? '🔒' : '🔓'}
-                        </button>
-                        <button 
-                          className="action-icon" 
-                          title="Delete"
-                          onClick={() => handleDelete(admin.id)}
-                        >
-                          🗑️
-                        </button>
+                        {admin.status === 'Active' ? (
+                          <button 
+                            className="action-icon-btn delete" 
+                            title="Deactivate"
+                            onClick={() => handleDeactivate(admin.id)}
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        ) : (
+                          <button 
+                            className="action-icon-btn reactivate" 
+                            title="Reactivate"
+                            onClick={() => handleReactivate(admin.id)}
+                          >
+                            <RotateCcw size={18} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

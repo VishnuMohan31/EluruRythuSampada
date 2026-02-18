@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext'
-import { LayoutDashboard, Users, Store, Package, Tag, BarChart3, Home } from 'lucide-react'
+import { LayoutDashboard, Users, Package, Tag, BarChart3, Home } from 'lucide-react'
 import './AdminLayout.css'
 
 const SuperAdminLayout = () => {
@@ -41,10 +41,6 @@ const SuperAdminLayout = () => {
           <Link to="/super-admin/shgs" className="nav-item">
             <span className="nav-icon"><Users size={20} /></span>
             {sidebarOpen && <span className="nav-text">SHGs</span>}
-          </Link>
-          <Link to="/super-admin/vendors" className="nav-item">
-            <span className="nav-icon"><Store size={20} /></span>
-            {sidebarOpen && <span className="nav-text">Vendors</span>}
           </Link>
           <Link to="/super-admin/products" className="nav-item">
             <span className="nav-icon"><Package size={20} /></span>

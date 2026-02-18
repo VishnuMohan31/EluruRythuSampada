@@ -15,6 +15,8 @@ class SHG(Base):
     id = Column(String, unique=True, index=True, nullable=False)  # Format: SHG001
     
     name = Column(String(100), nullable=False, index=True)
+    contact_person = Column(String(100), nullable=False)  # Contact person name
+    mobile_number = Column(String(20), nullable=False)  # Contact mobile number
     
     # Location hierarchy (required)
     state = Column(String(100), nullable=False, index=True)

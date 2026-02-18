@@ -2,52 +2,48 @@
 Product schemas for validation
 """
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
 
 class ProductBase(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str
     category_id: str
+    subcategory_id: Optional[str] = None
     shg_id: str
-    vendor_id: str
-    price: Optional[float] = None
-    materials: Optional[str] = None
-    dimensions: Optional[str] = None
-    weight: Optional[str] = None
-    stock_status: str = "available"
+    image_url: Optional[str] = None
+    youtube_link: Optional[str] = None
+    instagram_link: Optional[str] = None
 
 
 class ProductCreate(ProductBase):
-    images: Optional[List[str]] = []
+    pass
 
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     category_id: Optional[str] = None
+    subcategory_id: Optional[str] = None
     shg_id: Optional[str] = None
-    vendor_id: Optional[str] = None
-    price: Optional[float] = None
-    images: Optional[List[str]] = None
-    materials: Optional[str] = None
-    dimensions: Optional[str] = None
-    weight: Optional[str] = None
-    stock_status: Optional[str] = None
-    is_featured: Optional[bool] = None
+    image_url: Optional[str] = None
+    youtube_link: Optional[str] = None
+    instagram_link: Optional[str] = None
     is_active: Optional[bool] = None
 
 
 class ProductResponse(ProductBase):
     id: str
-    images: List[str]
     view_count: int
-    inquiry_count: int
-    is_featured: bool
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
+    
+    # Nested relationships
+    category: Optional[dict] = None
+    subcategory: Optional[dict] = None
+    shg: Optional[dict] = None
 
     class Config:
         from_attributes = True

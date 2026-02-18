@@ -1,18 +1,10 @@
 """
 Product model for SHG products
 """
-from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime, ForeignKey, JSON, Enum
+from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime, ForeignKey, JSON
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..database import Base
-import enum
-
-
-class ProductStatus(str, enum.Enum):
-    DRAFT = "Draft"
-    PENDING = "Pending"
-    APPROVED = "Approved"
-    REJECTED = "Rejected"
 
 
 class Product(Base):
@@ -27,23 +19,19 @@ class Product(Base):
     
     # Foreign keys (required)
     category_id = Column(String, ForeignKey("categories.id"), nullable=False, index=True)
-    subcategory_id = Column(String, ForeignKey("subcategories.id"), nullable=False, index=True)
+    subcategory_id = Column(String, ForeignKey("subcategories.id"), nullable=True, index=True)  # Optional
     shg_id = Column(String, ForeignKey("shgs.id"), nullable=False, index=True)
-    vendor_id = Column(String, ForeignKey("vendors.id"), nullable=False, index=True)
     
     # Media
-    images = Column(JSON, nullable=True)  # Array of S3 URLs
+    image_url = Column(String(500), nullable=True)  # Single product image S3 URL
     youtube_link = Column(String(500), nullable=True)
     instagram_link = Column(String(500), nullable=True)
-    
-    # Status
-    status = Column(Enum(ProductStatus), default=ProductStatus.DRAFT, nullable=False, index=True)
     
     # Analytics
     view_count = Column(Integer, default=0, nullable=False)
     
     # Status and audit fields
-    is_active = Column(Boolean, default=True, nullable=False, index=True)
+    is_active = Column(Boolean, default=True, nullable=False, index=True)  # Active/Inactive
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     created_by = Column(String, nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
@@ -57,6 +45,5 @@ class Product(Base):
     category = relationship("Category", back_populates="products")
     subcategory = relationship("Subcategory", back_populates="products")
     shg = relationship("SHG", back_populates="products")
-    vendor = relationship("Vendor", back_populates="products")
     product_views = relationship("ProductView", back_populates="product")
-    contact_logs = relationship("ContactLog", back_populates="product")
+    inquiries = relationship("Inquiry", back_populates="product")

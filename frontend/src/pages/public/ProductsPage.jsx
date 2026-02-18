@@ -11,8 +11,17 @@ const ProductsPage = () => {
   const [searchParams] = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedDistrict, setSelectedDistrict] = useState('')
+  const [selectedMandal, setSelectedMandal] = useState('')
+  const [selectedVillage, setSelectedVillage] = useState('')
   const [selectedSHG, setSelectedSHG] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
+
+  // Get unique values for filters
+  const uniqueDistricts = [...new Set(mockProducts.map(p => p.shg?.district).filter(Boolean))].sort()
+  const uniqueMandals = [...new Set(mockProducts.map(p => p.shg?.mandal).filter(Boolean))].sort()
+  const uniqueVillages = [...new Set(mockProducts.map(p => p.shg?.village).filter(Boolean))].sort()
+  const uniqueSHGs = [...new Set(mockProducts.map(p => p.shg?.name).filter(Boolean))].sort()
 
   // Read category from URL on component mount
   useEffect(() => {
@@ -26,14 +35,20 @@ const ProductsPage = () => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = !selectedCategory || product.category.id === selectedCategory
-    const matchesSHG = !selectedSHG || product.shg.id === selectedSHG
+    const matchesDistrict = !selectedDistrict || product.shg?.district === selectedDistrict
+    const matchesMandal = !selectedMandal || product.shg?.mandal === selectedMandal
+    const matchesVillage = !selectedVillage || product.shg?.village === selectedVillage
+    const matchesSHG = !selectedSHG || product.shg?.name === selectedSHG
     
-    return matchesSearch && matchesCategory && matchesSHG
+    return matchesSearch && matchesCategory && matchesDistrict && matchesMandal && matchesVillage && matchesSHG
   })
 
   const clearFilters = () => {
     setSearchQuery('')
     setSelectedCategory('')
+    setSelectedDistrict('')
+    setSelectedMandal('')
+    setSelectedVillage('')
     setSelectedSHG('')
   }
 
@@ -53,26 +68,77 @@ const ProductsPage = () => {
           </p>
         </div>
 
-        {/* Search Bar */}
+        {/* Search and Filters Bar */}
         <div className="search-section">
-          <div className="search-bar">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            {searchQuery && (
-              <button
-                className="search-clear"
-                onClick={() => setSearchQuery('')}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
+          <div className="search-filters-row">
+            {/* Search Bar */}
+            <div className="search-bar">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              {searchQuery && (
+                <button
+                  className="search-clear"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* District Filter */}
+            <select
+              value={selectedDistrict}
+              onChange={(e) => setSelectedDistrict(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">All Districts</option>
+              {uniqueDistricts.map(district => (
+                <option key={district} value={district}>{district}</option>
+              ))}
+            </select>
+
+            {/* Mandal Filter */}
+            <select
+              value={selectedMandal}
+              onChange={(e) => setSelectedMandal(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">All Mandals</option>
+              {uniqueMandals.map(mandal => (
+                <option key={mandal} value={mandal}>{mandal}</option>
+              ))}
+            </select>
+
+            {/* Village Filter */}
+            <select
+              value={selectedVillage}
+              onChange={(e) => setSelectedVillage(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">All Villages</option>
+              {uniqueVillages.map(village => (
+                <option key={village} value={village}>{village}</option>
+              ))}
+            </select>
+
+            {/* SHG Filter */}
+            <select
+              value={selectedSHG}
+              onChange={(e) => setSelectedSHG(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">All SHGs</option>
+              {uniqueSHGs.map(shg => (
+                <option key={shg} value={shg}>{shg}</option>
+              ))}
+            </select>
           </div>
           
           <button
@@ -80,10 +146,8 @@ const ProductsPage = () => {
             onClick={() => setFiltersOpen(!filtersOpen)}
           >
             🎛️ Filters
-            {(selectedCategory || selectedSHG) && (
-              <span className="filter-badge">
-                {[selectedCategory, selectedSHG].filter(Boolean).length}
-              </span>
+            {selectedCategory && (
+              <span className="filter-badge">1</span>
             )}
           </button>
         </div>
@@ -93,7 +157,7 @@ const ProductsPage = () => {
           <aside className={`filters-sidebar ${filtersOpen ? 'open' : ''}`}>
             <div className="filters-header">
               <h3>Filters</h3>
-              {(selectedCategory || selectedSHG) && (
+              {selectedCategory && (
                 <button className="clear-filters-btn" onClick={clearFilters}>
                   Clear All
                 </button>
@@ -125,36 +189,6 @@ const ProductsPage = () => {
                     />
                     <span>{category.name}</span>
                     <span className="filter-count">({category.productCount})</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* SHG Filter */}
-            <div className="filter-group">
-              <h4 className="filter-title">SHG</h4>
-              <div className="filter-options">
-                <label className="filter-option">
-                  <input
-                    type="radio"
-                    name="shg"
-                    value=""
-                    checked={selectedSHG === ''}
-                    onChange={(e) => setSelectedSHG(e.target.value)}
-                  />
-                  <span>All SHGs</span>
-                </label>
-                {mockSHGs.map(shg => (
-                  <label key={shg.id} className="filter-option">
-                    <input
-                      type="radio"
-                      name="shg"
-                      value={shg.id}
-                      checked={selectedSHG === shg.id}
-                      onChange={(e) => setSelectedSHG(e.target.value)}
-                    />
-                    <span>{shg.name}</span>
-                    <span className="filter-state">({shg.state})</span>
                   </label>
                 ))}
               </div>

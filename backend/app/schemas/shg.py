@@ -8,9 +8,14 @@ from datetime import datetime
 
 class SHGBase(BaseModel):
     name: str
-    region: Optional[str] = None
+    contact_person: str
+    mobile_number: str
+    state: str
+    district: str
+    mandal: str
+    village: str
     description: Optional[str] = None
-    specialization: Optional[str] = None
+    image_url: Optional[str] = None
 
 
 class SHGCreate(SHGBase):
@@ -19,15 +24,19 @@ class SHGCreate(SHGBase):
 
 class SHGUpdate(BaseModel):
     name: Optional[str] = None
-    region: Optional[str] = None
+    contact_person: Optional[str] = None
+    mobile_number: Optional[str] = None
+    state: Optional[str] = None
+    district: Optional[str] = None
+    mandal: Optional[str] = None
+    village: Optional[str] = None
     description: Optional[str] = None
-    specialization: Optional[str] = None
+    image_url: Optional[str] = None
     is_active: Optional[bool] = None
 
 
 class SHGResponse(SHGBase):
     id: str
-    product_count: int
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None

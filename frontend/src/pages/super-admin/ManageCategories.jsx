@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
 import { mockCategories } from '@/data/mockData'
 import '../admin/Dashboard.css'
@@ -6,10 +7,22 @@ import '../admin/Dashboard.css'
 const ManageCategories = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [categories] = useState(mockCategories.map(cat => ({
+  const [categories, setCategories] = useState(mockCategories.map(cat => ({
     ...cat,
     status: 'Active' // Add status to categories
   })))
+
+  const handleDeactivate = (categoryId) => {
+    setCategories(categories.map(cat => 
+      cat.id === categoryId ? { ...cat, status: 'Inactive' } : cat
+    ))
+  }
+
+  const handleReactivate = (categoryId) => {
+    setCategories(categories.map(cat => 
+      cat.id === categoryId ? { ...cat, status: 'Active' } : cat
+    ))
+  }
 
   // Filter logic
   const filteredCategories = categories.filter(category => {
@@ -118,8 +131,30 @@ const ManageCategories = () => {
                   </td>
                   <td>
                     <div className="table-actions">
-                      <button className="action-icon" title="Edit">✏️</button>
-                      <button className="action-icon" title="Delete">🗑️</button>
+                      <button 
+                        className="action-icon-btn" 
+                        title="Edit"
+                        onClick={() => console.log('Edit', category.id)}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      {category.status === 'Active' ? (
+                        <button 
+                          className="action-icon-btn delete" 
+                          title="Deactivate"
+                          onClick={() => handleDeactivate(category.id)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      ) : (
+                        <button 
+                          className="action-icon-btn reactivate" 
+                          title="Reactivate"
+                          onClick={() => handleReactivate(category.id)}
+                        >
+                          <RotateCcw size={16} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

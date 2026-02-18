@@ -21,6 +21,7 @@ class User(Base):
     
     email = Column(String(255), unique=True, index=True, nullable=False)
     full_name = Column(String(100), nullable=False)
+    mobile_number = Column(String(20), nullable=True)  # Mobile number for super admins
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(UserRole), nullable=False)
     

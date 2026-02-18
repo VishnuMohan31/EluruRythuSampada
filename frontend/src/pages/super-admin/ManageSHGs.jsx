@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { useAuth } from '@context/AuthContext'
+import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
 import { mockSHGs } from '@/data/mockData'
 import '../admin/Dashboard.css'
 
 const ManageSHGs = () => {
-  const { user } = useAuth()
   const [showModal, setShowModal] = useState(false)
   const [editingSHG, setEditingSHG] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -13,8 +12,8 @@ const ManageSHGs = () => {
   const [shgs, setSHGs] = useState(mockSHGs)
   const [formData, setFormData] = useState({
     name: '', // SHG Group Name (text input)
-    state: user?.state || 'Andhra Pradesh', // Default from super admin
-    district: user?.district || 'Eluru', // Default from super admin
+    contactPerson: '',
+    mobileNumber: '',
     mandal: '',
     village: '',
     status: 'Active',
@@ -29,10 +28,10 @@ const ManageSHGs = () => {
     const matchesSearch = !search ||
       (shg.name && shg.name.toLowerCase().includes(search)) ||
       (shg.id && shg.id.toLowerCase().includes(search)) ||
+      (shg.contactPerson && shg.contactPerson.toLowerCase().includes(search)) ||
+      (shg.mobileNumber && shg.mobileNumber.includes(search)) ||
       (shg.mandal && shg.mandal.toLowerCase().includes(search)) ||
-      (shg.village && shg.village.toLowerCase().includes(search)) ||
-      (shg.district && shg.district.toLowerCase().includes(search)) ||
-      (shg.state && shg.state.toLowerCase().includes(search))
+      (shg.village && shg.village.toLowerCase().includes(search))
     const effectiveStatus = shg.status || 'Active'
     const matchesStatus = !statusFilter || effectiveStatus === statusFilter
     return matchesSearch && matchesStatus
@@ -77,8 +76,8 @@ const ManageSHGs = () => {
     setEditingSHG(null)
     setFormData({
       name: '',
-      state: user?.state || 'Andhra Pradesh',
-      district: user?.district || 'Eluru',
+      contactPerson: '',
+      mobileNumber: '',
       mandal: '',
       village: '',
       status: 'Active',
@@ -90,28 +89,35 @@ const ManageSHGs = () => {
     setEditingSHG(shg)
     setFormData({
       name: shg.name || '',
-      state: shg.state || user?.state || 'Andhra Pradesh',
-      district: shg.district || user?.district || 'Eluru',
+      contactPerson: shg.contactPerson || '',
+      mobileNumber: shg.mobileNumber || '',
       mandal: shg.mandal || '',
       village: shg.village || '',
       status: shg.status || 'Active',
-      description: shg.description
+      description: shg.description || ''
     })
     setShowModal(true)
   }
 
-  const handleToggleStatus = (shgId) => {
-    setSHGs(prev => prev.map(shg => 
-      shg.id === shgId 
-        ? { ...shg, status: shg.status === 'Active' ? 'Inactive' : 'Active' }
-        : shg
-    ))
+  const handleDeactivate = (shgId) => {
+    if (window.confirm('Are you sure you want to deactivate this SHG?')) {
+      setSHGs(prev => prev.map(shg => 
+        shg.id === shgId 
+          ? { ...shg, status: 'Inactive' }
+          : shg
+      ))
+      alert('SHG deactivated successfully!')
+    }
   }
 
-  const handleDelete = (shgId) => {
-    if (window.confirm('Are you sure you want to delete this SHG?')) {
-      setSHGs(prev => prev.filter(shg => shg.id !== shgId))
-      alert('SHG deleted successfully!')
+  const handleReactivate = (shgId) => {
+    if (window.confirm('Are you sure you want to reactivate this SHG?')) {
+      setSHGs(prev => prev.map(shg => 
+        shg.id === shgId 
+          ? { ...shg, status: 'Active' }
+          : shg
+      ))
+      alert('SHG reactivated successfully!')
     }
   }
 
@@ -134,7 +140,7 @@ const ManageSHGs = () => {
             </label>
             <input
               type="text"
-              placeholder="Search by ID, SHG Name, Mandal, or Village..."
+              placeholder="Search by ID, SHG Name, Contact Person, Mobile, Mandal, or Village..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -187,13 +193,13 @@ const ManageSHGs = () => {
             <thead>
               <tr>
                 <th style={{ width: '80px' }}>ID</th>
-                <th style={{ width: '140px' }}>SHG Name</th>
-                <th style={{ width: '150px' }}>State</th>
-                <th style={{ width: '150px' }}>District</th>
-                <th style={{ width: '130px' }}>Mandal</th>
-                <th style={{ width: '130px' }}>Village</th>
+                <th style={{ width: '160px' }}>SHG Name</th>
+                <th style={{ width: '140px' }}>Contact Person</th>
+                <th style={{ width: '130px' }}>Mobile Number</th>
+                <th style={{ width: '120px' }}>Mandal</th>
+                <th style={{ width: '120px' }}>Village</th>
                 <th style={{ width: '100px' }}>Status</th>
-                <th style={{ width: '110px' }}>Actions</th>
+                <th style={{ width: '100px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -202,8 +208,8 @@ const ManageSHGs = () => {
                   <tr key={shg.id}>
                     <td>{shg.id}</td>
                     <td>{shg.name || '-'}</td>
-                    <td>{shg.state}</td>
-                    <td>{shg.district || '-'}</td>
+                    <td>{shg.contactPerson || '-'}</td>
+                    <td>{shg.mobileNumber || '-'}</td>
                     <td>{shg.mandal || '-'}</td>
                     <td>{shg.village || '-'}</td>
                     <td>
@@ -214,26 +220,29 @@ const ManageSHGs = () => {
                     <td>
                       <div className="table-actions">
                         <button 
-                          className="action-icon" 
+                          className="action-icon-btn edit" 
                           title="Edit"
                           onClick={() => handleEdit(shg)}
                         >
-                          ✏️
+                          <Edit2 size={18} />
                         </button>
-                        <button 
-                          className="action-icon" 
-                          title={shg.status === 'Active' ? 'Deactivate' : 'Activate'}
-                          onClick={() => handleToggleStatus(shg.id)}
-                        >
-                          {shg.status === 'Active' ? '🔒' : '🔓'}
-                        </button>
-                        <button 
-                          className="action-icon" 
-                          title="Delete"
-                          onClick={() => handleDelete(shg.id)}
-                        >
-                          🗑️
-                        </button>
+                        {(shg.status || 'Active') === 'Active' ? (
+                          <button 
+                            className="action-icon-btn delete" 
+                            title="Deactivate"
+                            onClick={() => handleDeactivate(shg.id)}
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        ) : (
+                          <button 
+                            className="action-icon-btn reactivate" 
+                            title="Reactivate"
+                            onClick={() => handleReactivate(shg.id)}
+                          >
+                            <RotateCcw size={18} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -263,7 +272,7 @@ const ManageSHGs = () => {
 
             <form onSubmit={handleSubmit} className="modal-body" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                {/* Group Name - Text Input for SHG Name */}
+                {/* SHG Name */}
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     SHG Name <span style={{ color: 'red' }}>*</span>
@@ -285,46 +294,47 @@ const ManageSHGs = () => {
                   />
                 </div>
 
-                {/* State - Read-only (from super admin) */}
+                {/* Contact Person */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    State <span style={{ color: 'red' }}>*</span>
+                    Contact Person <span style={{ color: 'red' }}>*</span>
                   </label>
                   <input
                     type="text"
-                    name="state"
-                    value={formData.state}
-                    readOnly
+                    name="contactPerson"
+                    value={formData.contactPerson}
+                    onChange={handleInputChange}
+                    placeholder="Enter contact person name"
+                    required
                     style={{
                       width: '100%',
                       padding: '0.625rem',
                       border: '2px solid var(--color-border)',
                       borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      backgroundColor: '#f5f5f5',
-                      cursor: 'not-allowed'
+                      fontSize: '0.875rem'
                     }}
                   />
                 </div>
 
-                {/* District - Read-only (from super admin) */}
+                {/* Mobile Number */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    District <span style={{ color: 'red' }}>*</span>
+                    Mobile Number <span style={{ color: 'red' }}>*</span>
                   </label>
                   <input
-                    type="text"
-                    name="district"
-                    value={formData.district}
-                    readOnly
+                    type="tel"
+                    name="mobileNumber"
+                    value={formData.mobileNumber}
+                    onChange={handleInputChange}
+                    placeholder="+91 9876543210"
+                    required
+                    pattern="[0-9+\s-]+"
                     style={{
                       width: '100%',
                       padding: '0.625rem',
                       border: '2px solid var(--color-border)',
                       borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      backgroundColor: '#f5f5f5',
-                      cursor: 'not-allowed'
+                      fontSize: '0.875rem'
                     }}
                   />
                 </div>

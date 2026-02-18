@@ -29,7 +29,6 @@ import AdminReports from '@pages/admin/Reports'
 // Super Admin Pages
 import SuperAdminDashboard from '@pages/super-admin/SuperAdminDashboard'
 import ManageSHGs from '@pages/super-admin/ManageSHGs'
-import ManageVendors from '@pages/super-admin/ManageVendors'
 import ManageProducts from '@pages/super-admin/ManageProducts'
 import ManageCategories from '@pages/super-admin/ManageCategories'
 import SuperAdminReports from '@pages/super-admin/Reports'
@@ -95,7 +94,6 @@ const AppRoutes = () => {
       >
         <Route index element={<SuperAdminDashboard />} />
         <Route path="shgs" element={<ManageSHGs />} />
-        <Route path="vendors" element={<ManageVendors />} />
         <Route path="products" element={<ManageProducts />} />
         <Route path="categories" element={<ManageCategories />} />
         <Route path="reports" element={<SuperAdminReports />} />

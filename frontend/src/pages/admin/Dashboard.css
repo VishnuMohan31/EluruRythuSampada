@@ -253,6 +253,57 @@
   transform: scale(1.1);
 }
 
+/* New Action Icon Button Styles */
+.action-icon-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+
+.action-icon-btn.edit {
+  color: var(--color-primary);
+}
+
+.action-icon-btn.edit:hover {
+  background-color: var(--color-overlay);
+  transform: scale(1.1);
+}
+
+.action-icon-btn.delete {
+  color: var(--color-error, #ef4444);
+}
+
+.action-icon-btn.delete:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.1);
+  transform: scale(1.1);
+}
+
+.action-icon-btn.delete:disabled {
+  color: var(--color-text-light);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.action-icon-btn.reactivate {
+  color: #10b981;
+}
+
+.action-icon-btn.reactivate:hover {
+  background-color: rgba(16, 185, 129, 0.1);
+  transform: scale(1.1);
+}
+
+.action-icon-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
 .status-badge {
   display: inline-block;
   padding: var(--spacing-xs) var(--spacing-sm);
@@ -266,6 +317,11 @@
 .status-badge.approved {
   background-color: #D1FAE5;
   color: #065F46;
+}
+
+.status-badge.inactive {
+  background-color: #F3F4F6;
+  color: #6B7280;
 }
 
 .status-badge.pending {
