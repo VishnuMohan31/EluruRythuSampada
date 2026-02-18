@@ -146,52 +146,31 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="about-section">
+      {/* About / SHG Heritage Section */}
+      <section className="featured-section alternate-bg heritage-section">
         <div className="container">
-          <div className="about-content">
-            <div className="about-text">
-              <h2 className="section-title">Celebrating Andhra Pradesh's SHG Heritage</h2>
-              <p className="about-description">
-                Swayam Eluru Market Place is a government-backed platform supported by TRIFED 
-                and the Government of Andhra Pradesh. We showcase the exceptional craftsmanship 
-                of SHG communities from across Andhra Pradesh—from the Nallamala forests to 
-                the Eastern Ghats.
-              </p>
-              <p className="about-description">
-                Our platform connects you directly with skilled SHG artisans including the 
-                Chenchu, Lambadi, Gond, and Koya communities. Each product represents centuries 
-                of traditional knowledge, passed down through generations. From bamboo weaving 
-                to Dhokra metalwork, from natural forest honey to handloom textiles—discover 
-                authentic SHG crafts that tell stories of heritage and skill.
-              </p>
-              <Link to="/about" className="btn btn-outline btn-large">
-                Discover Our Artisans
-              </Link>
-            </div>
-            <div className="about-images">
-              <div className="about-image">
-                <img
-                  src="/src/Images/TribalPic1.png"
-                  alt="SHG bamboo weaving craftsmanship"
-                  loading="lazy"
-                />
-              </div>
-              <div className="about-image">
-                <img
-                  src="/src/Images/TibePic2.png"
-                  alt="SHG artisan at work"
-                  loading="lazy"
-                />
-              </div>
-              <div className="about-image">
-                <img
-                  src="/src/Images/TibePic3.png"
-                  alt="Traditional SHG handicraft artisan"
-                  loading="lazy"
-                />
-              </div>
-            </div>
+          <div className="section-header heritage-header">
+            <h2 className="section-title">Celebrating Andhra Pradesh's SHG Heritage</h2>
+            <p className="section-description heritage-description">
+              Swayam Eluru Market Place is a government-backed platform supported by TRIFED 
+              and the Government of Andhra Pradesh. We showcase the exceptional craftsmanship 
+              of SHG communities from across Andhra Pradesh—from the Nallamala forests to 
+              the Eastern Ghats.
+            </p>
+            <p className="section-description heritage-description">
+              Our platform connects you directly with skilled SHG artisans including the 
+              Chenchu, Lambadi, Gond, and Koya communities. Each product represents centuries 
+              of traditional knowledge, passed down through generations. From bamboo weaving 
+              to Dhokra metalwork, from natural forest honey to handloom textiles—discover 
+              authentic SHG crafts that tell stories of heritage and skill.
+            </p>
+            <Link to="/about" className="btn btn-outline btn-large">
+              Discover Our Artisans
+            </Link>
+          </div>
+          <div className="heritage-images">
+            <img src="/src/Images/TribalPic1.png" alt="SHG bamboo weaving craftsmanship" loading="lazy" />
+            <img src="/src/Images/TibePic3.png" alt="Traditional SHG handicraft artisan" loading="lazy" />
           </div>
         </div>
       </section>

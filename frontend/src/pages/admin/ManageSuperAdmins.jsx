@@ -199,9 +199,9 @@ const ManageSuperAdmins = () => {
 
       {/* Filters Section */}
       <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', gap: '1rem', alignItems: 'end' }}>
           {/* Search */}
-          <div style={{ flex: '1', minWidth: '250px' }}>
+          <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Search
             </label>
@@ -297,7 +297,7 @@ const ManageSuperAdmins = () => {
           <Button 
             variant="outline" 
             onClick={clearFilters}
-            style={{ marginBottom: '0' }}
+            style={{ height: '42px', whiteSpace: 'nowrap' }}
           >
             Clear Filters
           </Button>
@@ -305,18 +305,18 @@ const ManageSuperAdmins = () => {
       </div>
 
       <div className="dashboard-card">
-        <div className="table-container">
-          <table className="data-table">
+        <div className="dashboard-table-wrapper">
+          <table className="data-table" style={{ minWidth: '1100px', width: '100%', tableLayout: 'fixed' }}>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Mobile</th>
-                <th>State</th>
-                <th>District</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th style={{ width: '80px' }}>ID</th>
+                <th style={{ width: '150px' }}>Name</th>
+                <th style={{ width: '200px' }}>Email</th>
+                <th style={{ width: '140px' }}>Mobile</th>
+                <th style={{ width: '150px' }}>State</th>
+                <th style={{ width: '150px' }}>District</th>
+                <th style={{ width: '100px' }}>Status</th>
+                <th style={{ width: '110px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>

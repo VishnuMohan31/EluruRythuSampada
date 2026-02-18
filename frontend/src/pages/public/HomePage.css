@@ -211,78 +211,35 @@
   margin-top: var(--spacing-2xl);
 }
 
-/* About Section */
-.about-section {
-  padding: var(--spacing-3xl) 0;
-  background-color: var(--color-surface);
-  display: flex;
-  justify-content: center;
-}
-
-.about-section .container {
-  max-width: 1200px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.about-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3xl);
-  align-items: center;
-  width: 100%;
-}
-
-.about-text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  align-items: center;
-  text-align: center;
-  width: 100%;
+/* SHG Heritage section - wider text, gap above button, two larger images */
+.heritage-section .heritage-description {
   max-width: 900px;
 }
 
-.about-text .section-title {
-  text-align: center;
+.heritage-section .heritage-header .btn {
+  margin-top: var(--spacing-xl);
 }
 
-.about-description {
-  font-size: 1.125rem;
-  line-height: 1.8;
-  color: var(--color-text-light);
-  text-align: center;
+.heritage-images {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-2xl);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-2xl);
 }
 
-.about-text .btn {
-  margin-top: var(--spacing-md);
-}
-
-.about-images {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-xl);
+.heritage-images img {
   width: 100%;
-  max-width: 1000px;
-}
-
-.about-image {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-  height: 350px;
-}
-
-.about-image img {
-  width: 100%;
-  height: 100%;
+  max-width: 480px;
+  height: 340px;
   object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   transition: transform var(--transition-slow);
 }
 
-.about-image:hover img {
-  transform: scale(1.05);
+.heritage-images img:hover {
+  transform: scale(1.03);
 }
 
 /* Responsive Design */
@@ -299,9 +256,6 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .about-images {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 768px) {
@@ -333,11 +287,8 @@
     font-size: 1.75rem;
   }
 
-  .about-images {
-    grid-template-columns: 1fr;
-  }
-
-  .about-image {
-    height: 250px;
+  .heritage-images img {
+    max-width: 100%;
+    height: 260px;
   }
 }

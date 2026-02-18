@@ -1,5 +1,13 @@
 .dashboard-page {
+  width: 100%;
   max-width: 1400px;
+  min-width: 0;
+}
+
+/* Table card wrapper: horizontal scroll; minimal min-height so table grows with rows */
+.dashboard-table-wrapper {
+  overflow-x: auto;
+  min-height: 0;
 }
 
 .dashboard-header {
@@ -203,12 +211,14 @@
   font-weight: 600;
   color: var(--color-text);
   border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
 }
 
 .data-table td {
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-light);
+  white-space: nowrap;
 }
 
 .data-table tbody tr {

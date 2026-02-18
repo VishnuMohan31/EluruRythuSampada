@@ -23,16 +23,18 @@ const ManageSHGs = () => {
 
   // Remove groupTypes - not needed anymore
 
-  // Filter logic
+  // Filter logic (treat missing status as 'Active' so filters work with existing data)
   const filteredSHGs = shgs.filter(shg => {
-    const matchesSearch = 
-      shg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shg.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (shg.mandal && shg.mandal.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (shg.village && shg.village.toLowerCase().includes(searchQuery.toLowerCase()))
-    
-    const matchesStatus = !statusFilter || shg.status === statusFilter
-    
+    const search = (searchQuery || '').trim().toLowerCase()
+    const matchesSearch = !search ||
+      (shg.name && shg.name.toLowerCase().includes(search)) ||
+      (shg.id && shg.id.toLowerCase().includes(search)) ||
+      (shg.mandal && shg.mandal.toLowerCase().includes(search)) ||
+      (shg.village && shg.village.toLowerCase().includes(search)) ||
+      (shg.district && shg.district.toLowerCase().includes(search)) ||
+      (shg.state && shg.state.toLowerCase().includes(search))
+    const effectiveStatus = shg.status || 'Active'
+    const matchesStatus = !statusFilter || effectiveStatus === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -122,63 +124,130 @@ const ManageSHGs = () => {
         </Button>
       </div>
 
+      {/* Filters Section */}
+      <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '1rem', alignItems: 'end' }}>
+          {/* Search - Takes remaining space */}
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+              Search
+            </label>
+            <input
+              type="text"
+              placeholder="Search by ID, SHG Name, Mandal, or Village..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.625rem',
+                border: '2px solid var(--color-border)',
+                borderRadius: '8px',
+                fontSize: '0.875rem'
+              }}
+            />
+          </div>
+
+          {/* Status Filter - Fixed width */}
+          <div style={{ minWidth: '150px' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+              Status
+            </label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.625rem',
+                border: '2px solid var(--color-border)',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                backgroundColor: 'var(--color-surface)'
+              }}
+            >
+              <option value="">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          {/* Clear Filters Button - Auto width */}
+          <Button 
+            variant="outline" 
+            onClick={clearFilters}
+            style={{ height: '42px', whiteSpace: 'nowrap' }}
+          >
+            Clear Filters
+          </Button>
+        </div>
+      </div>
+
       <div className="dashboard-card">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>SHG Name</th>
-              <th>State</th>
-              <th>District</th>
-              <th>Mandal</th>
-              <th>Village</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {shgs.map(shg => (
-              <tr key={shg.id}>
-                <td>{shg.id}</td>
-                <td>{shg.name || '-'}</td>
-                <td>{shg.state}</td>
-                <td>{shg.district || '-'}</td>
-                <td>{shg.mandal || '-'}</td>
-                <td>{shg.village || '-'}</td>
-                <td>
-                  <span className={`status-badge ${(shg.status || 'Active').toLowerCase()}`}>
-                    {shg.status || 'Active'}
-                  </span>
-                </td>
-                <td>
-                  <div className="table-actions">
-                    <button 
-                      className="action-icon" 
-                      title="Edit"
-                      onClick={() => handleEdit(shg)}
-                    >
-                      ✏️
-                    </button>
-                    <button 
-                      className="action-icon" 
-                      title={shg.status === 'Active' ? 'Deactivate' : 'Activate'}
-                      onClick={() => handleToggleStatus(shg.id)}
-                    >
-                      {shg.status === 'Active' ? '🔒' : '🔓'}
-                    </button>
-                    <button 
-                      className="action-icon" 
-                      title="Delete"
-                      onClick={() => handleDelete(shg.id)}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </td>
+        <div className="dashboard-table-wrapper">
+          <table className="data-table" style={{ minWidth: '1000px', width: '100%', tableLayout: 'fixed' }}>
+            <thead>
+              <tr>
+                <th style={{ width: '80px' }}>ID</th>
+                <th style={{ width: '140px' }}>SHG Name</th>
+                <th style={{ width: '150px' }}>State</th>
+                <th style={{ width: '150px' }}>District</th>
+                <th style={{ width: '130px' }}>Mandal</th>
+                <th style={{ width: '130px' }}>Village</th>
+                <th style={{ width: '100px' }}>Status</th>
+                <th style={{ width: '110px' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredSHGs.length > 0 ? (
+                filteredSHGs.map(shg => (
+                  <tr key={shg.id}>
+                    <td>{shg.id}</td>
+                    <td>{shg.name || '-'}</td>
+                    <td>{shg.state}</td>
+                    <td>{shg.district || '-'}</td>
+                    <td>{shg.mandal || '-'}</td>
+                    <td>{shg.village || '-'}</td>
+                    <td>
+                      <span className={`status-badge ${(shg.status || 'Active').toLowerCase()}`}>
+                        {shg.status || 'Active'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="table-actions">
+                        <button 
+                          className="action-icon" 
+                          title="Edit"
+                          onClick={() => handleEdit(shg)}
+                        >
+                          ✏️
+                        </button>
+                        <button 
+                          className="action-icon" 
+                          title={shg.status === 'Active' ? 'Deactivate' : 'Activate'}
+                          onClick={() => handleToggleStatus(shg.id)}
+                        >
+                          {shg.status === 'Active' ? '🔒' : '🔓'}
+                        </button>
+                        <button 
+                          className="action-icon" 
+                          title="Delete"
+                          onClick={() => handleDelete(shg.id)}
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                    No SHGs found matching your filters
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Add/Edit SHG Modal */}

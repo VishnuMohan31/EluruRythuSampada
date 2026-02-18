@@ -271,6 +271,10 @@ export const mockSHGs = [
     id: 'SHG001',
     name: 'Gond',
     state: 'Andhra Pradesh',
+    district: 'Eluru',
+    mandal: 'Eluru',
+    village: 'Pedavegi',
+    status: 'Active',
     description: 'The Gond SHG is known for their vibrant art and traditional crafts.',
     imageUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800'
   },
@@ -278,6 +282,10 @@ export const mockSHGs = [
     id: 'SHG002',
     name: 'Toda',
     state: 'Tamil Nadu',
+    district: 'Nilgiris',
+    mandal: 'Kotagiri',
+    village: 'Kundah',
+    status: 'Active',
     description: 'Toda SHG is famous for their intricate embroidery work.',
     imageUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800'
   },
@@ -285,6 +293,10 @@ export const mockSHGs = [
     id: 'SHG003',
     name: 'Kota',
     state: 'Andhra Pradesh',
+    district: 'Visakhapatnam',
+    mandal: 'Anakapalle',
+    village: 'Chodavaram',
+    status: 'Inactive',
     description: 'Kota SHG specializes in pottery and terracotta crafts.',
     imageUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800'
   },
@@ -292,6 +304,10 @@ export const mockSHGs = [
     id: 'SHG004',
     name: 'Lambadi',
     state: 'Andhra Pradesh',
+    district: 'Kurnool',
+    mandal: 'Nandyal',
+    village: 'Allagadda',
+    status: 'Active',
     description: 'Lambadi artisans create beautiful jewelry and textiles.',
     imageUrl: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800'
   }

@@ -57,7 +57,7 @@ const ManageVendors = () => {
       vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       vendor.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       vendor.phone.includes(searchQuery) ||
-      vendor.email.toLowerCase().includes(searchQuery.toLowerCase())
+      (vendor.email && vendor.email.toLowerCase().includes(searchQuery.toLowerCase()))
     
     const matchesSHG = !shgFilter || vendor.shgName === shgFilter
     const matchesStatus = !statusFilter || vendor.status === statusFilter
@@ -156,9 +156,9 @@ const ManageVendors = () => {
 
       {/* Filters Section */}
       <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          {/* Search */}
-          <div style={{ flex: '1', minWidth: '250px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', gap: '1rem', alignItems: 'end' }}>
+          {/* Search - Takes remaining space */}
+          <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Search
             </label>
@@ -228,7 +228,7 @@ const ManageVendors = () => {
           <Button 
             variant="outline" 
             onClick={clearFilters}
-            style={{ marginBottom: '0' }}
+            style={{ height: '42px', whiteSpace: 'nowrap' }}
           >
             Clear Filters
           </Button>
@@ -236,21 +236,21 @@ const ManageVendors = () => {
       </div>
 
       <div className="dashboard-card">
-        <div style={{ overflowX: 'auto' }}>
-          <table className="data-table">
+        <div className="dashboard-table-wrapper">
+          <table className="data-table" style={{ minWidth: '1200px', width: '100%', tableLayout: 'fixed' }}>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>SHG Name</th>
-                <th>State</th>
-                <th>District</th>
-                <th>Mandal</th>
-                <th>Village</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th style={{ width: '80px' }}>ID</th>
+                <th style={{ width: '120px' }}>Name</th>
+                <th style={{ width: '120px' }}>SHG Name</th>
+                <th style={{ width: '130px' }}>State</th>
+                <th style={{ width: '120px' }}>District</th>
+                <th style={{ width: '100px' }}>Mandal</th>
+                <th style={{ width: '100px' }}>Village</th>
+                <th style={{ width: '200px' }}>Email</th>
+                <th style={{ width: '150px' }}>Phone</th>
+                <th style={{ width: '90px' }}>Status</th>
+                <th style={{ width: '110px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>

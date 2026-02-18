@@ -1,17 +1,35 @@
 """
 System configuration model for app settings
 """
-from sqlalchemy import Column, String, Text, DateTime
+from sqlalchemy import Column, String, Text, DateTime, Integer
 from sqlalchemy.sql import func
 from ..database import Base
 
 
 class SystemConfig(Base):
+    """Store all configurable system settings"""
     __tablename__ = "system_config"
 
-    id = Column(String, primary_key=True, index=True)
-    config_key = Column(String, unique=True, nullable=False, index=True)
-    config_value = Column(Text)
-    config_type = Column(String)  # string, number, boolean, json
-    description = Column(Text)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # Primary key as auto-increment integer
+    _id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String, unique=True, index=True, nullable=False)  # Format: CFG001
+    
+    config_key = Column(String(100), unique=True, nullable=False, index=True)
+    config_value = Column(Text, nullable=True)
+    config_type = Column(String(20), nullable=False)  # string, number, boolean, json, url
+    description = Column(Text, nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    updated_by = Column(String, nullable=True)  # User ID who last updated
+
+
+# Configurable keys:
+# - app_name: Application name
+# - app_logo_url: S3 URL for logo
+# - default_theme: Default theme name
+# - header_content: HTML content for header
+# - footer_content: HTML content for footer
+# - terms_content: Terms & Conditions page content
+# - privacy_content: Privacy Policy page content
+# - disclaimer_content: Disclaimer page content

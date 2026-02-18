@@ -1,7 +1,7 @@
 """
 User model for authentication and authorization
 """
-from sqlalchemy import Column, String, Boolean, DateTime, Enum
+from sqlalchemy import Column, String, Boolean, DateTime, Enum, Integer
 from sqlalchemy.sql import func
 from ..database import Base
 import enum
@@ -15,12 +15,27 @@ class UserRole(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(String, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    full_name = Column(String, nullable=False)
+    # Primary key as auto-increment integer
+    _id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String, unique=True, index=True, nullable=False)  # Format: ADM001, SAD001
+    
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    full_name = Column(String(100), nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(Enum(UserRole), nullable=False, default=UserRole.ADMIN)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    role = Column(Enum(UserRole), nullable=False)
+    
+    # Super Admin specific fields (null for Admin)
+    state = Column(String(100), nullable=True)  # Fixed for Super Admin
+    district = Column(String(100), nullable=True)  # Fixed for Super Admin
+    
+    # Status and audit fields
+    is_active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_by = Column(String, nullable=True)  # User ID who created this user
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    updated_by = Column(String, nullable=True)  # User ID who last updated
     last_login = Column(DateTime(timezone=True), nullable=True)
+    
+    # Soft delete fields
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_by = Column(String, nullable=True)
