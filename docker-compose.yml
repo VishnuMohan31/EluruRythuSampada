@@ -91,6 +91,7 @@ services:
       BACKUP_RETENTION_COUNT: ${BACKUP_RETENTION_COUNT:-5}
     
     volumes:
+      - ./storage:/app/storage
       - ./backend/logs:/app/logs
     ports:
       - "${BACKEND_PORT:-8000}:8000"

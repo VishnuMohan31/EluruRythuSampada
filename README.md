@@ -52,6 +52,13 @@ When you run `docker-compose up -d`:
 4. Inserts default admin user
 5. Backend connects and starts
 
+### Storage Auto-Setup
+On backend startup:
+1. Creates `storage/products/` for product images
+2. Creates `storage/temp/` for temporary files
+3. Storage folder is mounted as Docker volume (persists data)
+4. Files are NOT tracked in git (keeps repo clean)
+
 ### Configuration
 - Root `.env` - Docker configuration
 - `backend/.env` - Backend configuration (if running locally)

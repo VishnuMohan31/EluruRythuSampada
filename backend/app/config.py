@@ -61,6 +61,7 @@ class Settings(BaseSettings):
     # File Upload
     MAX_IMAGE_SIZE_MB: int = 5
     ALLOWED_IMAGE_FORMATS: str = "jpg,jpeg,png,webp"
+    STORAGE_PATH: str = "storage"
     
     # Logging
     LOG_LEVEL: str = "INFO"
@@ -93,5 +94,7 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-# Create logs directory if it doesn't exist
+# Create required directories if they don't exist
 os.makedirs("logs", exist_ok=True)
+os.makedirs(os.path.join(settings.STORAGE_PATH, "products"), exist_ok=True)
+os.makedirs(os.path.join(settings.STORAGE_PATH, "temp"), exist_ok=True)

@@ -47,9 +47,21 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     """Application startup event."""
+    from pathlib import Path
+    
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"Debug mode: {settings.DEBUG}")
+    
+    # Ensure storage directories exist
+    try:
+        storage_base = Path(settings.STORAGE_PATH)
+        (storage_base / "products").mkdir(parents=True, exist_ok=True)
+        (storage_base / "temp").mkdir(parents=True, exist_ok=True)
+        logger.info(f"Storage directories initialized at: {storage_base.absolute()}")
+    except Exception as e:
+        logger.error(f"Failed to create storage directories: {str(e)}")
+        raise
 
 
 @app.on_event("shutdown")
