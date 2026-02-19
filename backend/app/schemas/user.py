@@ -8,7 +8,7 @@ from datetime import datetime
 
 class UserBase(BaseModel):
     email: EmailStr
-    full_name: str
+    name: str
     role: str
     mobile_number: Optional[str] = None
     state: Optional[str] = None
@@ -21,7 +21,7 @@ class UserCreate(UserBase):
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
-    full_name: Optional[str] = None
+    name: Optional[str] = None
     mobile_number: Optional[str] = None
     state: Optional[str] = None
     district: Optional[str] = None
@@ -37,6 +37,11 @@ class UserResponse(UserBase):
 
     class Config:
         from_attributes = True
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
 
 
 class Token(BaseModel):

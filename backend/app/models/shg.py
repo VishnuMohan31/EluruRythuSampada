@@ -41,3 +41,4 @@ class SHG(Base):
     # Relationships
     products = relationship("Product", back_populates="shg")
     vendors = relationship("Vendor", back_populates="shg")
+    contact_logs = relationship("ContactLog", back_populates="shg")

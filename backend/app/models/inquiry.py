@@ -29,7 +29,7 @@ class Buyer(Base):
 
 
 class ContactLog(Base):
-    """Log of all vendor contacts by buyers"""
+    """Log of all SHG contacts by buyers"""
     __tablename__ = "contact_logs"
 
     # Primary key as auto-increment integer
@@ -38,7 +38,7 @@ class ContactLog(Base):
     
     buyer_id = Column(String, ForeignKey("buyers.id"), nullable=False, index=True)
     product_id = Column(String, ForeignKey("products.id"), nullable=False, index=True)
-    vendor_id = Column(String, ForeignKey("vendors.id"), nullable=False, index=True)
+    shg_id = Column(String, ForeignKey("shgs.id"), nullable=False, index=True)
     
     ip_address = Column(String(45), nullable=False, index=True)  # IPv4 or IPv6
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
@@ -46,4 +46,4 @@ class ContactLog(Base):
     # Relationships
     buyer = relationship("Buyer", back_populates="contact_logs")
     product = relationship("Product", back_populates="contact_logs")
-    vendor = relationship("Vendor", back_populates="contact_logs")
+    shg = relationship("SHG", back_populates="contact_logs")

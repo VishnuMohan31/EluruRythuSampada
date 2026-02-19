@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:
@@ -91,6 +89,7 @@ services:
       BACKUP_RETENTION_COUNT: ${BACKUP_RETENTION_COUNT:-5}
     
     volumes:
+      - ./backend/app:/app/app:ro  # Mount backend code (read-only for safety)
       - ./storage:/app/storage
       - ./backend/logs:/app/logs
     ports:

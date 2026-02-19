@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { mockStats } from '@/data/mockData'
+import { useState, useEffect } from 'react'
 import './Dashboard.css'
 
 const AdminDashboard = () => {
@@ -7,58 +6,101 @@ const AdminDashboard = () => {
   const [shgTimePeriod, setShgTimePeriod] = useState('30') // For SHG Inquiries
   // Product metrics always use 'all' time period
 
-  // Mock data for metrics
-  const topSHGInquiries = [
-    { id: 'SHG001', name: 'Gond SHG', inquiries: 245, state: 'Andhra Pradesh' },
-    { id: 'SHG004', name: 'Lambadi SHG', inquiries: 198, state: 'Andhra Pradesh' },
-    { id: 'SHG007', name: 'Chenchu SHG', inquiries: 176, state: 'Andhra Pradesh' },
-    { id: 'SHG002', name: 'Toda SHG', inquiries: 154, state: 'Tamil Nadu' },
-    { id: 'SHG003', name: 'Kota SHG', inquiries: 142, state: 'Andhra Pradesh' },
-    { id: 'SHG005', name: 'Warli SHG', inquiries: 128, state: 'Maharashtra' },
-    { id: 'SHG006', name: 'Bastar SHG', inquiries: 115, state: 'Chhattisgarh' },
-    { id: 'SHG008', name: 'Bhil SHG', inquiries: 98, state: 'Rajasthan' },
-    { id: 'SHG009', name: 'Santhal SHG', inquiries: 87, state: 'Jharkhand' },
-    { id: 'SHG010', name: 'Munda SHG', inquiries: 76, state: 'Odisha' },
-  ]
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    totalSHGs: 0,
+    totalVendors: 0,
+    totalBuyers: 0,
+    totalContacts: 0,
+    totalViews: 0
+  })
+  const [topSHGInquiries, setTopSHGInquiries] = useState([])
+  const [leastSHGInquiries, setLeastSHGInquiries] = useState([])
+  const [topProductInquiries, setTopProductInquiries] = useState([])
+  const [leastProductInquiries, setLeastProductInquiries] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [statsLoading, setStatsLoading] = useState(true)
 
-  const leastSHGInquiries = [
-    { id: 'SHG020', name: 'Khasi SHG', inquiries: 12, state: 'Meghalaya' },
-    { id: 'SHG019', name: 'Garo SHG', inquiries: 15, state: 'Meghalaya' },
-    { id: 'SHG018', name: 'Naga SHG', inquiries: 18, state: 'Nagaland' },
-    { id: 'SHG017', name: 'Mizo SHG', inquiries: 21, state: 'Mizoram' },
-    { id: 'SHG016', name: 'Bodo SHG', inquiries: 24, state: 'Assam' },
-    { id: 'SHG015', name: 'Lepcha SHG', inquiries: 28, state: 'Sikkim' },
-    { id: 'SHG014', name: 'Dimasa SHG', inquiries: 32, state: 'Assam' },
-    { id: 'SHG013', name: 'Karbi SHG', inquiries: 35, state: 'Assam' },
-    { id: 'SHG012', name: 'Rabha SHG', inquiries: 39, state: 'Assam' },
-    { id: 'SHG011', name: 'Tiwa SHG', inquiries: 42, state: 'Assam' },
-  ]
+  // Fetch stats from API
+  useEffect(() => {
+    fetchStats()
+  }, [])
 
-  const topProductInquiries = [
-    { id: 'PRD001', name: 'Bamboo Tokri', inquiries: 456, shg: 'Gond SHG' },
-    { id: 'PRD002', name: 'Toda Poothkuli', inquiries: 389, shg: 'Toda SHG' },
-    { id: 'PRD004', name: 'Lambadi Haar', inquiries: 345, shg: 'Lambadi SHG' },
-    { id: 'PRD003', name: 'Mitti Ka Matka', inquiries: 312, shg: 'Kota SHG' },
-    { id: 'PRD008', name: 'Jungle Madhu', inquiries: 287, shg: 'Chenchu SHG' },
-    { id: 'PRD005', name: 'Warli Chitra', inquiries: 256, shg: 'Warli SHG' },
-    { id: 'PRD007', name: 'Dhokra Ghoda', inquiries: 234, shg: 'Bastar SHG' },
-    { id: 'PRD006', name: 'Handloom Khadi Saree', inquiries: 198, shg: 'Gond SHG' },
-    { id: 'PRD009', name: 'Bamboo Diya Stand', inquiries: 176, shg: 'Gond SHG' },
-    { id: 'PRD010', name: 'Lambadi Toran', inquiries: 154, shg: 'Lambadi SHG' },
-  ]
+  const fetchStats = async () => {
+    try {
+      setStatsLoading(true)
+      const token = localStorage.getItem('authToken')
+      const response = await fetch('http://localhost:8000/api/analytics/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setStats(data)
+      } else {
+        setStats({
+          totalProducts: 0,
+          totalSHGs: 0,
+          totalVendors: 0,
+          totalBuyers: 0,
+          totalContacts: 0,
+          totalViews: 0
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error)
+      setStats({
+        totalProducts: 0,
+        totalSHGs: 0,
+        totalVendors: 0,
+        totalBuyers: 0,
+        totalContacts: 0,
+        totalViews: 0
+      })
+    } finally {
+      setStatsLoading(false)
+    }
+  }
 
-  const leastProductInquiries = [
-    { id: 'PRD030', name: 'Cane Basket', inquiries: 8, shg: 'Khasi SHG' },
-    { id: 'PRD029', name: 'Bamboo Hat', inquiries: 11, shg: 'Garo SHG' },
-    { id: 'PRD028', name: 'Tribal Mask', inquiries: 14, shg: 'Naga SHG' },
-    { id: 'PRD027', name: 'Woven Shawl', inquiries: 17, shg: 'Mizo SHG' },
-    { id: 'PRD026', name: 'Cane Furniture', inquiries: 20, shg: 'Bodo SHG' },
-    { id: 'PRD025', name: 'Carpet', inquiries: 23, shg: 'Lepcha SHG' },
-    { id: 'PRD024', name: 'Wooden Bowl', inquiries: 26, shg: 'Dimasa SHG' },
-    { id: 'PRD023', name: 'Bamboo Flute', inquiries: 29, shg: 'Karbi SHG' },
-    { id: 'PRD022', name: 'Clay Doll', inquiries: 32, shg: 'Rabha SHG' },
-    { id: 'PRD021', name: 'Brass Plate', inquiries: 35, shg: 'Tiwa SHG' },
-  ]
+  // Fetch metrics data from API
+  useEffect(() => {
+    fetchMetricsData()
+  }, [metricType, shgTimePeriod])
+
+  const fetchMetricsData = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`http://localhost:8000/api/analytics/metrics?type=${metricType}&period=${shgTimePeriod}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setTopSHGInquiries(data.topSHGs || [])
+        setLeastSHGInquiries(data.leastSHGs || [])
+        setTopProductInquiries(data.topProducts || [])
+        setLeastProductInquiries(data.leastProducts || [])
+      } else {
+        setTopSHGInquiries([])
+        setLeastSHGInquiries([])
+        setTopProductInquiries([])
+        setLeastProductInquiries([])
+      }
+    } catch (error) {
+      console.error('Error fetching metrics data:', error)
+      setTopSHGInquiries([])
+      setLeastSHGInquiries([])
+      setTopProductInquiries([])
+      setLeastProductInquiries([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const renderListItem = (item, index, isProduct = false, isLeast = false) => {
     const label = metricType === 'product' ? 'products' : 'inquiries'
@@ -116,48 +158,60 @@ const AdminDashboard = () => {
         <div className="stat-card">
           <div className="stat-icon">📦</div>
           <div className="stat-content">
-            <div className="stat-value">{mockStats.totalProducts}</div>
-            <div className="stat-label">Total Products</div>
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalProducts}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>Total Products</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">🏛</div>
           <div className="stat-content">
-            <div className="stat-value">{mockStats.totalSHGs}</div>
-            <div className="stat-label">SHG Communities</div>
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalSHGs}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>SHG Communities</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">🏪</div>
           <div className="stat-content">
-            <div className="stat-value">{mockStats.totalVendors}</div>
-            <div className="stat-label">Active Vendors</div>
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalVendors}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>Active Vendors</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">👥</div>
           <div className="stat-content">
-            <div className="stat-value">{mockStats.totalBuyers}</div>
-            <div className="stat-label">Registered Buyers</div>
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalBuyers}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>Registered Buyers</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">📞</div>
           <div className="stat-content">
-            <div className="stat-value">{mockStats.totalContacts}</div>
-            <div className="stat-label">Vendor Contacts</div>
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalContacts}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>Vendor Contacts</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">👁</div>
           <div className="stat-content">
-            <div className="stat-value">{mockStats.totalViews.toLocaleString()}</div>
-            <div className="stat-label">Product Views</div>
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalViews.toLocaleString()}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>Product Views</div>
           </div>
         </div>
       </div>
@@ -284,10 +338,19 @@ const AdminDashboard = () => {
               🔥 Top 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {metricType === 'shg' 
-                ? topSHGInquiries.map((shg, index) => renderListItem(shg, index, false, false))
-                : topProductInquiries.map((product, index) => renderListItem(product, index, true, false))
-              }
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                  Loading...
+                </div>
+              ) : (metricType === 'shg' ? topSHGInquiries : topProductInquiries).length > 0 ? (
+                metricType === 'shg' 
+                  ? topSHGInquiries.map((shg, index) => renderListItem(shg, index, false, false))
+                  : topProductInquiries.map((product, index) => renderListItem(product, index, true, false))
+              ) : (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                  No data available
+                </div>
+              )}
             </div>
           </div>
 
@@ -297,10 +360,19 @@ const AdminDashboard = () => {
               📉 Least 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {metricType === 'shg' 
-                ? leastSHGInquiries.map((shg, index) => renderListItem(shg, index, false, true))
-                : leastProductInquiries.map((product, index) => renderListItem(product, index, true, true))
-              }
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                  Loading...
+                </div>
+              ) : (metricType === 'shg' ? leastSHGInquiries : leastProductInquiries).length > 0 ? (
+                metricType === 'shg' 
+                  ? leastSHGInquiries.map((shg, index) => renderListItem(shg, index, false, true))
+                  : leastProductInquiries.map((product, index) => renderListItem(product, index, true, true))
+              ) : (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                  No data available
+                </div>
+              )}
             </div>
           </div>
         </div>

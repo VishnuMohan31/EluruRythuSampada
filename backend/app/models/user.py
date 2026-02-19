@@ -1,15 +1,9 @@
 """
 User model for authentication and authorization
 """
-from sqlalchemy import Column, String, Boolean, DateTime, Enum, Integer
+from sqlalchemy import Column, String, Boolean, DateTime, Integer
 from sqlalchemy.sql import func
 from ..database import Base
-import enum
-
-
-class UserRole(str, enum.Enum):
-    ADMIN = "admin"
-    SUPER_ADMIN = "super_admin"
 
 
 class User(Base):
@@ -23,7 +17,7 @@ class User(Base):
     full_name = Column(String(100), nullable=False)
     mobile_number = Column(String(20), nullable=True)  # Mobile number for super admins
     hashed_password = Column(String, nullable=False)
-    role = Column(Enum(UserRole), nullable=False)
+    role = Column(String(20), nullable=False)  # 'admin' or 'super_admin'
     
     # Super Admin specific fields (null for Admin)
     state = Column(String(100), nullable=True)  # Fixed for Super Admin

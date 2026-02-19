@@ -17,19 +17,48 @@ const AdminLogin = () => {
     setLoading(true)
     setError('')
 
-    // Mock login - replace with actual API call
-    setTimeout(() => {
-      if (formData.email && formData.password) {
-        login(
-          { id: 'USR001', email: formData.email, full_name: 'Admin User', role: 'admin' },
-          'mock-token-123'
-        )
-        navigate('/admin')
-      } else {
-        setError('Invalid credentials')
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        // Handle specific error messages
+        if (response.status === 401) {
+          setError('Invalid email or password. Please try again.')
+        } else if (response.status === 403) {
+          setError('Your account has been deactivated. Please contact support.')
+        } else {
+          setError(data.detail || 'Login failed. Please try again.')
+        }
+        setLoading(false)
+        return
       }
+
+      // Check if user is admin
+      if (data.user.role !== 'admin') {
+        setError('Access denied. This portal is for Admin users only.')
+        setLoading(false)
+        return
+      }
+
+      login(data.user, data.access_token)
+      navigate('/admin')
+    } catch (err) {
+      console.error('Login error:', err)
+      setError('Unable to connect to server. Please check your connection and try again.')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   return (

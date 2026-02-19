@@ -1,17 +1,10 @@
 """
 Vendor model for SHG artisans/vendors
 """
-from sqlalchemy import Column, String, Text, Boolean, DateTime, ForeignKey, Enum, Integer
+from sqlalchemy import Column, String, Text, Boolean, DateTime, ForeignKey, Integer
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..database import Base
-import enum
-
-
-class VendorStatus(str, enum.Enum):
-    PENDING = "Pending"
-    APPROVED = "Approved"
-    REJECTED = "Rejected"
 
 
 class Vendor(Base):
@@ -35,7 +28,7 @@ class Vendor(Base):
     email = Column(String(255), nullable=True, index=True)
     
     # Approval status
-    status = Column(Enum(VendorStatus), default=VendorStatus.PENDING, nullable=False, index=True)
+    status = Column(String(20), default='Pending', nullable=False, index=True)  # 'Pending', 'Approved', 'Rejected'
     
     # Status and audit fields
     is_active = Column(Boolean, default=True, nullable=False, index=True)
@@ -50,5 +43,3 @@ class Vendor(Base):
     
     # Relationships
     shg = relationship("SHG", back_populates="vendors")
-    products = relationship("Product", back_populates="vendor")
-    contact_logs = relationship("ContactLog", back_populates="vendor")

@@ -1,16 +1,20 @@
 """
 Product routes
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import uuid
+import os
+from pathlib import Path
+import shutil
 
 from ..core.deps import get_db, get_current_admin
 from ..models.product import Product
 from ..models.category import Category
 from ..models.shg import SHG
 from ..schemas.product import ProductCreate, ProductUpdate, ProductResponse
+from ..config import settings
 
 router = APIRouter()
 
@@ -23,11 +27,14 @@ async def get_products(
     shg_id: Optional[str] = None,
     search: Optional[str] = None,
     is_featured: Optional[bool] = None,
+    include_inactive: bool = False,
     db: Session = Depends(get_db)
 ):
     """Get all products with filters"""
-    query = db.query(Product).filter(Product.is_active == True)
+    query = db.query(Product)
     
+    if not include_inactive:
+        query = query.filter(Product.is_active == True)
     if category_id:
         query = query.filter(Product.category_id == category_id)
     if shg_id:
@@ -66,21 +73,10 @@ async def create_product(
 ):
     """Create new product"""
     db_product = Product(
-        id=str(uuid.uuid4()),
-        **product.dict()
+        **product.dict(),
+        created_by=current_user.id
     )
     db.add(db_product)
-    
-    # Update category count
-    category = db.query(Category).filter(Category.id == product.category_id).first()
-    if category:
-        category.product_count += 1
-    
-    # Update SHG count
-    shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
-    if shg:
-        shg.product_count += 1
-    
     db.commit()
     db.refresh(db_product)
     return db_product
@@ -102,22 +98,77 @@ async def update_product(
     for field, value in update_data.items():
         setattr(db_product, field, value)
     
+    db_product.updated_by = current_user.id
     db.commit()
     db.refresh(db_product)
     return db_product
 
 
-@router.delete("/{product_id}")
-async def delete_product(
+@router.put("/{product_id}/deactivate")
+async def deactivate_product(
     product_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Delete product"""
+    """Deactivate product (soft delete)"""
     db_product = db.query(Product).filter(Product.id == product_id).first()
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    db.delete(db_product)
+    db_product.is_active = False
+    db_product.updated_by = current_user.id
     db.commit()
-    return {"message": "Product deleted successfully"}
+    db.refresh(db_product)
+    return {"message": "Product deactivated successfully", "product": db_product}
+
+
+@router.put("/{product_id}/reactivate")
+async def reactivate_product(
+    product_id: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_admin)
+):
+    """Reactivate product"""
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    db_product.is_active = True
+    db_product.updated_by = current_user.id
+    db.commit()
+    db.refresh(db_product)
+    return {"message": "Product reactivated successfully", "product": db_product}
+
+
+@router.post("/upload-image")
+async def upload_product_image(
+    file: UploadFile = File(...),
+    current_user = Depends(get_current_admin)
+):
+    """Upload product image"""
+    # Validate file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Validate file size (max 5MB)
+    file.file.seek(0, 2)
+    file_size = file.file.tell()
+    file.file.seek(0)
+    if file_size > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File size must be less than 5MB")
+    
+    # Generate unique filename
+    file_extension = os.path.splitext(file.filename)[1]
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    
+    # Save file
+    storage_path = Path(settings.STORAGE_PATH) / "products"
+    storage_path.mkdir(parents=True, exist_ok=True)
+    file_path = storage_path / unique_filename
+    
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    # Return relative URL
+    image_url = f"/storage/products/{unique_filename}"
+    return {"image_url": image_url, "filename": unique_filename}

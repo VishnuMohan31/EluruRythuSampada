@@ -445,18 +445,18 @@ CREATE TABLE contact_logs (
     id VARCHAR(20) UNIQUE NOT NULL,
     buyer_id VARCHAR(20) NOT NULL,
     product_id VARCHAR(20) NOT NULL,
-    vendor_id VARCHAR(20) NOT NULL,
+    shg_id VARCHAR(20) NOT NULL,
     ip_address VARCHAR(45) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (buyer_id) REFERENCES buyers(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE
+    FOREIGN KEY (shg_id) REFERENCES shgs(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_contact_logs_id ON contact_logs(id);
 CREATE INDEX idx_contact_logs_buyer_id ON contact_logs(buyer_id);
 CREATE INDEX idx_contact_logs_product_id ON contact_logs(product_id);
-CREATE INDEX idx_contact_logs_vendor_id ON contact_logs(vendor_id);
+CREATE INDEX idx_contact_logs_shg_id ON contact_logs(shg_id);
 CREATE INDEX idx_contact_logs_ip_address ON contact_logs(ip_address);
 CREATE INDEX idx_contact_logs_created_at ON contact_logs(created_at);
 
@@ -534,9 +534,9 @@ CREATE TABLE daily_analytics (
     id VARCHAR(20) UNIQUE NOT NULL,
     date DATE UNIQUE NOT NULL,
     total_product_views INTEGER NOT NULL DEFAULT 0,
-    total_vendor_contacts INTEGER NOT NULL DEFAULT 0,
+    total_shg_contacts INTEGER NOT NULL DEFAULT 0,
     new_products INTEGER NOT NULL DEFAULT 0,
-    new_vendors INTEGER NOT NULL DEFAULT 0,
+    new_shgs INTEGER NOT NULL DEFAULT 0,
     new_buyers INTEGER NOT NULL DEFAULT 0,
     top_products JSONB,
     top_categories JSONB,
@@ -561,7 +561,7 @@ VALUES (
     'admin',
     'admin@shg.com',
     'System Administrator',
-    '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYzS.sLR1Iu', -- password: admin123
+    '$2b$12$DNHMGt4qtjJdCNhf9VDFaO3eaQtgKqPgCDOlt6uTpk1xKGP1FVrhK', -- password: admin123
     TRUE
 );
 

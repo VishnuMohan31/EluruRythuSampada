@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Edit2, Trash2, RotateCcw } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Edit2, Trash2, RotateCcw, Eye, EyeOff } from 'lucide-react'
 import Button from '@components/common/Button'
 import './Dashboard.css'
 
@@ -10,44 +10,57 @@ const ManageSuperAdmins = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingAdmin, setEditingAdmin] = useState(null)
-  const [superAdmins, setSuperAdmins] = useState([
-    { 
-      id: 'USR002', 
-      name: 'John Doe', 
-      email: 'john@example.com', 
-      mobile: '+91 9876543210',
-      state: 'Andhra Pradesh',
-      district: 'Eluru',
-      status: 'Active' 
-    },
-    { 
-      id: 'USR003', 
-      name: 'Jane Smith', 
-      email: 'jane@example.com', 
-      mobile: '+91 9123456789',
-      state: 'Andhra Pradesh',
-      district: 'Visakhapatnam',
-      status: 'Active' 
-    },
-    { 
-      id: 'USR004', 
-      name: 'Ramesh Kumar', 
-      email: 'ramesh@example.com', 
-      mobile: '+91 9988776655',
-      state: 'Andhra Pradesh',
-      district: 'Vijayawada',
-      status: 'Active' 
-    },
-    { 
-      id: 'USR005', 
-      name: 'Lakshmi Devi', 
-      email: 'lakshmi@example.com', 
-      mobile: '+91 9876512345',
-      state: 'Andhra Pradesh',
-      district: 'Eluru',
-      status: 'Inactive' 
-    },
-  ])
+  const [superAdmins, setSuperAdmins] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  // Fetch super admins from API
+  useEffect(() => {
+    fetchSuperAdmins()
+  }, [])
+
+  const fetchSuperAdmins = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('authToken')
+      
+      if (!token) {
+        console.error('No authentication token found')
+        setSuperAdmins([])
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch('http://localhost:8000/api/users?role=super_admin', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (response.status === 401) {
+        console.error('Unauthorized - token may be invalid or expired')
+        // Optionally redirect to login
+        // window.location.href = '/admin/login'
+        setSuperAdmins([])
+        setLoading(false)
+        return
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch super admins: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      setSuperAdmins(data)
+    } catch (error) {
+      console.error('Error fetching super admins:', error)
+      setSuperAdmins([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -60,13 +73,20 @@ const ManageSuperAdmins = () => {
 
   const stateDistrictMap = {
     'Andhra Pradesh': [
-      'Anantapur', 'Chittoor', 'East Godavari', 'Eluru', 'Guntur', 
-      'Krishna', 'Kurnool', 'Prakasam', 'Srikakulam', 'Visakhapatnam', 
-      'Vizianagaram', 'West Godavari', 'Vijayawada'
+      'Alluri Sitharama Raju', 'Anakapalli', 'Ananthapuramu', 'Annamayya', 'Bapatla',
+      'Chittoor', 'Dr. B.R. Ambedkar Konaseema', 'East Godavari', 'Eluru', 'Guntur',
+      'Kakinada', 'Krishna', 'Kurnool', 'Nandyal', 'NTR', 'Palnadu', 'Parvathipuram Manyam',
+      'Prakasam', 'SPSR Nellore', 'Sri Sathya Sai', 'Srikakulam',
+      'Tirupati', 'Visakhapatnam', 'Vizianagaram', 'West Godavari', 'YSR'
     ],
     'Telangana': [
-      'Adilabad', 'Hyderabad', 'Karimnagar', 'Khammam', 'Mahbubnagar',
-      'Medak', 'Nalgonda', 'Nizamabad', 'Rangareddy', 'Warangal'
+      'Adilabad', 'Bhadradri Kothagudem', 'Hyderabad', 'Jagtial', 'Jangaon',
+      'Jayashankar Bhupalpally', 'Jogulamba Gadwal', 'Kamareddy', 'Karimnagar',
+      'Khammam', 'Komaram Bheem', 'Mahabubabad', 'Mahbubnagar', 'Mancherial',
+      'Medak', 'Medchal-Malkajgiri', 'Mulugu', 'Nagarkurnool', 'Nalgonda',
+      'Narayanpet', 'Nirmal', 'Nizamabad', 'Peddapalli', 'Rajanna Sircilla',
+      'Rangareddy', 'Sangareddy', 'Siddipet', 'Suryapet', 'Vikarabad',
+      'Wanaparthy', 'Warangal Rural', 'Warangal Urban', 'Yadadri Bhuvanagiri'
     ]
   }
 
@@ -115,7 +135,7 @@ const ManageSuperAdmins = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
     // Validate passwords match
@@ -124,31 +144,87 @@ const ManageSuperAdmins = () => {
       return
     }
 
-    if (editingAdmin) {
-      // Update existing admin
-      setSuperAdmins(prev => prev.map(admin => 
-        admin.id === editingAdmin.id 
-          ? { ...admin, ...formData, id: admin.id } // Keep the same ID
-          : admin
-      ))
-      alert('Super Admin updated successfully!')
-    } else {
-      // Add new admin
-      const newAdmin = {
-        id: `USR${String(superAdmins.length + 2).padStart(3, '0')}`,
-        ...formData,
-        status: 'Active'
+    try {
+      const token = localStorage.getItem('authToken')
+      
+      if (!token) {
+        alert('Authentication required. Please log in again.')
+        return
       }
-      setSuperAdmins(prev => [...prev, newAdmin])
-      alert('Super Admin added successfully!')
+
+      if (editingAdmin) {
+        // Update existing admin
+        const updateData = {
+          name: formData.name,
+          email: formData.email,
+          mobile_number: formData.mobile,
+          state: formData.state,
+          district: formData.district
+        }
+        
+        // Only include password if it's provided
+        if (formData.password) {
+          updateData.password = formData.password
+        }
+
+        const response = await fetch(`http://localhost:8000/api/users/${editingAdmin.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(updateData)
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.detail || 'Failed to update super admin')
+        }
+
+        alert('Super Admin updated successfully!')
+        fetchSuperAdmins()
+      } else {
+        // Add new admin
+        const createData = {
+          name: formData.name,
+          email: formData.email,
+          mobile_number: formData.mobile,
+          state: formData.state,
+          district: formData.district,
+          password: formData.password,
+          role: 'super_admin'
+        }
+
+        const response = await fetch('http://localhost:8000/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(createData)
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.detail || 'Failed to create super admin')
+        }
+
+        alert('Super Admin added successfully!')
+        fetchSuperAdmins()
+      }
+      
+      closeModal()
+    } catch (error) {
+      console.error('Error saving super admin:', error)
+      alert(error.message || 'Failed to save super admin. Please try again.')
     }
-    
-    closeModal()
   }
 
   const closeModal = () => {
     setShowModal(false)
     setEditingAdmin(null)
+    setShowPassword(false)
+    setShowConfirmPassword(false)
     setFormData({
       name: '',
       email: '',
@@ -165,34 +241,60 @@ const ManageSuperAdmins = () => {
     setFormData({
       name: admin.name,
       email: admin.email,
-      mobile: admin.mobile,
-      state: admin.state,
-      district: admin.district,
+      mobile: admin.mobile_number || admin.mobile || '',
+      state: admin.state || '',
+      district: admin.district || '',
       password: '',
       confirmPassword: ''
     })
     setShowModal(true)
   }
 
-  const handleDeactivate = (adminId) => {
+  const handleDeactivate = async (adminId) => {
     if (window.confirm('Are you sure you want to deactivate this Super Admin?')) {
-      setSuperAdmins(prev => prev.map(admin => 
-        admin.id === adminId 
-          ? { ...admin, status: 'Inactive' }
-          : admin
-      ))
-      alert('Super Admin deactivated successfully!')
+      try {
+        const token = localStorage.getItem('authToken')
+        const response = await fetch(`http://localhost:8000/api/users/${adminId}/deactivate`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to deactivate super admin')
+        }
+
+        alert('Super Admin deactivated successfully!')
+        fetchSuperAdmins()
+      } catch (error) {
+        console.error('Error deactivating super admin:', error)
+        alert('Failed to deactivate super admin. Please try again.')
+      }
     }
   }
 
-  const handleReactivate = (adminId) => {
+  const handleReactivate = async (adminId) => {
     if (window.confirm('Are you sure you want to reactivate this Super Admin?')) {
-      setSuperAdmins(prev => prev.map(admin => 
-        admin.id === adminId 
-          ? { ...admin, status: 'Active' }
-          : admin
-      ))
-      alert('Super Admin reactivated successfully!')
+      try {
+        const token = localStorage.getItem('authToken')
+        const response = await fetch(`http://localhost:8000/api/users/${adminId}/reactivate`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to reactivate super admin')
+        }
+
+        alert('Super Admin reactivated successfully!')
+        fetchSuperAdmins()
+      } catch (error) {
+        console.error('Error reactivating super admin:', error)
+        alert('Failed to reactivate super admin. Please try again.')
+      }
     }
   }
 
@@ -328,18 +430,24 @@ const ManageSuperAdmins = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredAdmins.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                    Loading super admins...
+                  </td>
+                </tr>
+              ) : filteredAdmins.length > 0 ? (
                 filteredAdmins.map(admin => (
                   <tr key={admin.id}>
                     <td>{admin.id}</td>
                     <td>{admin.name}</td>
                     <td>{admin.email}</td>
-                    <td>{admin.mobile}</td>
+                    <td>{admin.mobile_number || admin.mobile}</td>
                     <td>{admin.state}</td>
                     <td>{admin.district}</td>
                     <td>
-                      <span className={`status-badge ${admin.status.toLowerCase()}`}>
-                        {admin.status}
+                      <span className={`status-badge ${(admin.is_active ? 'active' : 'inactive')}`}>
+                        {admin.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td>
@@ -351,7 +459,7 @@ const ManageSuperAdmins = () => {
                         >
                           <Edit2 size={18} />
                         </button>
-                        {admin.status === 'Active' ? (
+                        {admin.is_active ? (
                           <button 
                             className="action-icon-btn delete" 
                             title="Deactivate"
@@ -375,7 +483,9 @@ const ManageSuperAdmins = () => {
               ) : (
                 <tr>
                   <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
-                    No super admins found matching your filters
+                    {localStorage.getItem('authToken') 
+                      ? 'No super admins found matching your filters' 
+                      : 'Please log in to view super admins'}
                   </td>
                 </tr>
               )}
@@ -522,21 +632,43 @@ const ManageSuperAdmins = () => {
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     Password {!editingAdmin && <span style={{ color: 'red' }}>*</span>}
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder={editingAdmin ? 'Leave blank to keep current' : 'Enter password'}
-                    required={!editingAdmin}
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder={editingAdmin ? 'Leave blank to keep current' : 'Enter password'}
+                      required={!editingAdmin}
+                      style={{
+                        width: '100%',
+                        padding: '0.625rem',
+                        paddingRight: '2.5rem',
+                        border: '2px solid var(--color-border)',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '0.25rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'var(--color-text-light)'
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Confirm Password */}
@@ -544,21 +676,43 @@ const ManageSuperAdmins = () => {
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     Confirm Password {!editingAdmin && <span style={{ color: 'red' }}>*</span>}
                   </label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    placeholder={editingAdmin ? 'Leave blank to keep current' : 'Re-enter password'}
-                    required={!editingAdmin}
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder={editingAdmin ? 'Leave blank to keep current' : 'Re-enter password'}
+                      required={!editingAdmin}
+                      style={{
+                        width: '100%',
+                        padding: '0.625rem',
+                        paddingRight: '2.5rem',
+                        border: '2px solid var(--color-border)',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '0.25rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'var(--color-text-light)'
+                      }}
+                    >
+                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
                 </div>
               </div>
 

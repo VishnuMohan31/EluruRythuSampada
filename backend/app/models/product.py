@@ -46,4 +46,4 @@ class Product(Base):
     subcategory = relationship("Subcategory", back_populates="products")
     shg = relationship("SHG", back_populates="products")
     product_views = relationship("ProductView", back_populates="product")
-    inquiries = relationship("Inquiry", back_populates="product")
+    contact_logs = relationship("ContactLog", back_populates="product")

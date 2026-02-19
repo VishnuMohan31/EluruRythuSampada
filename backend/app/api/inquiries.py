@@ -7,7 +7,7 @@ from typing import List
 import uuid
 
 from ..core.deps import get_db, get_current_admin
-from ..models.inquiry import Inquiry
+from ..models.inquiry import ContactLog, Buyer
 from ..models.product import Product
 from ..schemas.inquiry import InquiryCreate, InquiryUpdate, InquiryResponse
 
@@ -18,29 +18,25 @@ router = APIRouter()
 async def get_inquiries(
     skip: int = 0,
     limit: int = 100,
-    status: str = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Get all inquiries (admin only)"""
-    query = db.query(Inquiry)
-    if status:
-        query = query.filter(Inquiry.status == status)
-    inquiries = query.offset(skip).limit(limit).all()
-    return inquiries
+    """Get all contact logs (admin only)"""
+    contact_logs = db.query(ContactLog).offset(skip).limit(limit).all()
+    return contact_logs
 
 
-@router.get("/{inquiry_id}", response_model=InquiryResponse)
+@router.get("/{contact_id}", response_model=InquiryResponse)
 async def get_inquiry(
-    inquiry_id: str,
+    contact_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Get inquiry by ID"""
-    inquiry = db.query(Inquiry).filter(Inquiry.id == inquiry_id).first()
-    if not inquiry:
-        raise HTTPException(status_code=404, detail="Inquiry not found")
-    return inquiry
+    """Get contact log by ID"""
+    contact_log = db.query(ContactLog).filter(ContactLog.id == contact_id).first()
+    if not contact_log:
+        raise HTTPException(status_code=404, detail="Contact log not found")
+    return contact_log
 
 
 @router.post("/", response_model=InquiryResponse)
@@ -48,52 +44,52 @@ async def create_inquiry(
     inquiry: InquiryCreate,
     db: Session = Depends(get_db)
 ):
-    """Create new inquiry (public endpoint)"""
-    db_inquiry = Inquiry(id=str(uuid.uuid4()), **inquiry.dict())
-    db.add(db_inquiry)
+    """Create new contact log (public endpoint)"""
+    # Create or get buyer
+    buyer = db.query(Buyer).filter(Buyer.email == inquiry.email).first()
+    if not buyer:
+        buyer = Buyer(
+            name=inquiry.name,
+            email=inquiry.email,
+            location=inquiry.location,
+            phone=inquiry.phone
+        )
+        db.add(buyer)
+        db.flush()
     
-    # Update product inquiry count
+    # Get product to find SHG
     product = db.query(Product).filter(Product.id == inquiry.product_id).first()
-    if product:
-        product.inquiry_count += 1
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Create contact log
+    contact_log = ContactLog(
+        buyer_id=buyer.id,
+        product_id=inquiry.product_id,
+        shg_id=product.shg_id,
+        ip_address=inquiry.ip_address
+    )
+    db.add(contact_log)
+    
+    # Update product view count
+    product.view_count += 1
     
     db.commit()
-    db.refresh(db_inquiry)
-    return db_inquiry
+    db.refresh(contact_log)
+    return contact_log
 
 
-@router.put("/{inquiry_id}", response_model=InquiryResponse)
-async def update_inquiry(
-    inquiry_id: str,
-    inquiry_update: InquiryUpdate,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_admin)
-):
-    """Update inquiry (admin only)"""
-    db_inquiry = db.query(Inquiry).filter(Inquiry.id == inquiry_id).first()
-    if not db_inquiry:
-        raise HTTPException(status_code=404, detail="Inquiry not found")
-    
-    update_data = inquiry_update.dict(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(db_inquiry, field, value)
-    
-    db.commit()
-    db.refresh(db_inquiry)
-    return db_inquiry
-
-
-@router.delete("/{inquiry_id}")
+@router.delete("/{contact_id}")
 async def delete_inquiry(
-    inquiry_id: str,
+    contact_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Delete inquiry"""
-    db_inquiry = db.query(Inquiry).filter(Inquiry.id == inquiry_id).first()
-    if not db_inquiry:
-        raise HTTPException(status_code=404, detail="Inquiry not found")
+    """Delete contact log"""
+    contact_log = db.query(ContactLog).filter(ContactLog.id == contact_id).first()
+    if not contact_log:
+        raise HTTPException(status_code=404, detail="Contact log not found")
     
-    db.delete(db_inquiry)
+    db.delete(contact_log)
     db.commit()
-    return {"message": "Inquiry deleted successfully"}
+    return {"message": "Contact log deleted successfully"}

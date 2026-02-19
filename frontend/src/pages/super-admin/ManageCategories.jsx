@@ -1,27 +1,90 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
-import { mockCategories } from '@/data/mockData'
 import '../admin/Dashboard.css'
 
 const ManageCategories = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [categories, setCategories] = useState(mockCategories.map(cat => ({
-    ...cat,
-    status: 'Active' // Add status to categories
-  })))
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const handleDeactivate = (categoryId) => {
-    setCategories(categories.map(cat => 
-      cat.id === categoryId ? { ...cat, status: 'Inactive' } : cat
-    ))
+  // Fetch categories from API
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('authToken')
+      const response = await fetch('http://localhost:8000/api/categories?include_inactive=true', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to fetch categories')
+      const data = await response.json()
+      // Map backend data to frontend format
+      const mappedData = data.map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description || '',
+        status: cat.is_active ? 'Active' : 'Inactive'
+      }))
+      setCategories(mappedData)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      alert('Failed to load categories')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleReactivate = (categoryId) => {
-    setCategories(categories.map(cat => 
-      cat.id === categoryId ? { ...cat, status: 'Active' } : cat
-    ))
+  const handleDeactivate = async (categoryId) => {
+    if (!window.confirm('Are you sure you want to deactivate this category?')) return
+    
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`http://localhost:8000/api/categories/${categoryId}/deactivate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to deactivate category')
+      
+      setCategories(categories.map(cat => 
+        cat.id === categoryId ? { ...cat, status: 'Inactive' } : cat
+      ))
+      alert('Category deactivated successfully!')
+    } catch (error) {
+      console.error('Error deactivating category:', error)
+      alert('Failed to deactivate category')
+    }
+  }
+
+  const handleReactivate = async (categoryId) => {
+    if (!window.confirm('Are you sure you want to reactivate this category?')) return
+    
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`http://localhost:8000/api/categories/${categoryId}/reactivate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to reactivate category')
+      
+      setCategories(categories.map(cat => 
+        cat.id === categoryId ? { ...cat, status: 'Active' } : cat
+      ))
+      alert('Category reactivated successfully!')
+    } catch (error) {
+      console.error('Error reactivating category:', error)
+      alert('Failed to reactivate category')
+    }
   }
 
   // Filter logic

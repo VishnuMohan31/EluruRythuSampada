@@ -1,5 +1,5 @@
 """
-Inquiry schemas for validation
+Contact Log schemas for buyer-SHG communication
 """
 from pydantic import BaseModel, EmailStr
 from typing import Optional
@@ -7,11 +7,12 @@ from datetime import datetime
 
 
 class InquiryBase(BaseModel):
+    name: str
+    email: EmailStr
+    location: str
+    phone: Optional[str] = None
     product_id: str
-    buyer_name: str
-    buyer_email: EmailStr
-    buyer_phone: Optional[str] = None
-    message: str
+    ip_address: str
 
 
 class InquiryCreate(InquiryBase):
@@ -19,16 +20,16 @@ class InquiryCreate(InquiryBase):
 
 
 class InquiryUpdate(BaseModel):
-    status: Optional[str] = None
-    admin_notes: Optional[str] = None
+    pass
 
 
-class InquiryResponse(InquiryBase):
+class InquiryResponse(BaseModel):
     id: str
-    status: str
-    admin_notes: Optional[str] = None
+    buyer_id: str
+    product_id: str
+    shg_id: str
+    ip_address: str
     created_at: datetime
-    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

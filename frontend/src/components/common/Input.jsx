@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import './Input.css'
 
 const Input = ({
@@ -14,6 +15,10 @@ const Input = ({
   className = '',
   ...props
 }) => {
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = type === 'password'
+  const inputType = isPassword && showPassword ? 'text' : type
+
   return (
     <div className={`input-wrapper ${className}`}>
       {label && (
@@ -22,18 +27,30 @@ const Input = ({
           {required && <span className="input-required">*</span>}
         </label>
       )}
-      <input
-        type={type}
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        required={required}
-        className={`input ${error ? 'input-error' : ''}`}
-        {...props}
-      />
+      <div className="input-container">
+        <input
+          type={inputType}
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          required={required}
+          className={`input ${error ? 'input-error' : ''} ${isPassword ? 'input-with-icon' : ''}`}
+          {...props}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        )}
+      </div>
       {error && <span className="input-error-message">{error}</span>}
     </div>
   )

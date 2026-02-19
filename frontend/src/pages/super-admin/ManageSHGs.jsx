@@ -1,7 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
-import { mockSHGs } from '@/data/mockData'
 import '../admin/Dashboard.css'
 
 const ManageSHGs = () => {
@@ -9,7 +8,8 @@ const ManageSHGs = () => {
   const [editingSHG, setEditingSHG] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [shgs, setSHGs] = useState(mockSHGs)
+  const [shgs, setSHGs] = useState([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     name: '', // SHG Group Name (text input)
     contactPerson: '',
@@ -20,7 +20,41 @@ const ManageSHGs = () => {
     description: ''
   })
 
-  // Remove groupTypes - not needed anymore
+  // Fetch SHGs from API
+  useEffect(() => {
+    fetchSHGs()
+  }, [])
+
+  const fetchSHGs = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('authToken')
+      const response = await fetch('http://localhost:8000/api/shgs?include_inactive=true', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to fetch SHGs')
+      const data = await response.json()
+      // Map backend data to frontend format
+      const mappedData = data.map(shg => ({
+        id: shg.id,
+        name: shg.name,
+        contactPerson: shg.contact_person,
+        mobileNumber: shg.mobile_number,
+        mandal: shg.mandal,
+        village: shg.village,
+        description: shg.description || '',
+        status: shg.is_active ? 'Active' : 'Inactive'
+      }))
+      setSHGs(mappedData)
+    } catch (error) {
+      console.error('Error fetching SHGs:', error)
+      alert('Failed to load SHGs')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Filter logic (treat missing status as 'Active' so filters work with existing data)
   const filteredSHGs = shgs.filter(shg => {
@@ -47,28 +81,65 @@ const ManageSHGs = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (editingSHG) {
-      // Update existing SHG
-      setSHGs(prev => prev.map(shg => 
-        shg.id === editingSHG.id 
-          ? { ...shg, ...formData, id: shg.id }
-          : shg
-      ))
-      alert('SHG updated successfully!')
-    } else {
-      // Add new SHG
-      const newSHG = {
-        id: `SHG${String(shgs.length + 1).padStart(3, '0')}`,
-        ...formData
+    try {
+      const token = localStorage.getItem('authToken')
+      
+      if (editingSHG) {
+        // Update existing SHG
+        const response = await fetch(`http://localhost:8000/api/shgs/${editingSHG.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            contact_person: formData.contactPerson,
+            mobile_number: formData.mobileNumber,
+            state: 'Telangana',
+            district: 'West Godavari',
+            mandal: formData.mandal,
+            village: formData.village,
+            description: formData.description
+          })
+        })
+        if (!response.ok) throw new Error('Failed to update SHG')
+        
+        alert('SHG updated successfully!')
+        fetchSHGs()
+      } else {
+        // Add new SHG
+        const response = await fetch('http://localhost:8000/api/shgs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            contact_person: formData.contactPerson,
+            mobile_number: formData.mobileNumber,
+            state: 'Telangana',
+            district: 'West Godavari',
+            mandal: formData.mandal,
+            village: formData.village,
+            description: formData.description
+          })
+        })
+        if (!response.ok) throw new Error('Failed to create SHG')
+        
+        alert('SHG added successfully!')
+        fetchSHGs()
       }
-      setSHGs(prev => [...prev, newSHG])
-      alert('SHG added successfully!')
+      
+      closeModal()
+    } catch (error) {
+      console.error('Error saving SHG:', error)
+      alert('Failed to save SHG')
     }
-    
-    closeModal()
   }
 
   const closeModal = () => {
@@ -99,25 +170,49 @@ const ManageSHGs = () => {
     setShowModal(true)
   }
 
-  const handleDeactivate = (shgId) => {
-    if (window.confirm('Are you sure you want to deactivate this SHG?')) {
+  const handleDeactivate = async (shgId) => {
+    if (!window.confirm('Are you sure you want to deactivate this SHG?')) return
+    
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`http://localhost:8000/api/shgs/${shgId}/deactivate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to deactivate SHG')
+      
       setSHGs(prev => prev.map(shg => 
-        shg.id === shgId 
-          ? { ...shg, status: 'Inactive' }
-          : shg
+        shg.id === shgId ? { ...shg, status: 'Inactive' } : shg
       ))
       alert('SHG deactivated successfully!')
+    } catch (error) {
+      console.error('Error deactivating SHG:', error)
+      alert('Failed to deactivate SHG')
     }
   }
 
-  const handleReactivate = (shgId) => {
-    if (window.confirm('Are you sure you want to reactivate this SHG?')) {
+  const handleReactivate = async (shgId) => {
+    if (!window.confirm('Are you sure you want to reactivate this SHG?')) return
+    
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`http://localhost:8000/api/shgs/${shgId}/reactivate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to reactivate SHG')
+      
       setSHGs(prev => prev.map(shg => 
-        shg.id === shgId 
-          ? { ...shg, status: 'Active' }
-          : shg
+        shg.id === shgId ? { ...shg, status: 'Active' } : shg
       ))
       alert('SHG reactivated successfully!')
+    } catch (error) {
+      console.error('Error reactivating SHG:', error)
+      alert('Failed to reactivate SHG')
     }
   }
 

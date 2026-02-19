@@ -17,10 +17,14 @@ router = APIRouter()
 async def get_categories(
     skip: int = 0,
     limit: int = 100,
+    include_inactive: bool = False,
     db: Session = Depends(get_db)
 ):
     """Get all categories"""
-    categories = db.query(Category).filter(Category.is_active == True).offset(skip).limit(limit).all()
+    query = db.query(Category)
+    if not include_inactive:
+        query = query.filter(Category.is_active == True)
+    categories = query.offset(skip).limit(limit).all()
     return categories
 
 
@@ -44,8 +48,8 @@ async def create_category(
 ):
     """Create new category"""
     db_category = Category(
-        id=str(uuid.uuid4()),
-        **category.dict()
+        **category.dict(),
+        created_by=current_user.id
     )
     db.add(db_category)
     db.commit()
@@ -69,22 +73,43 @@ async def update_category(
     for field, value in update_data.items():
         setattr(db_category, field, value)
     
+    db_category.updated_by = current_user.id
     db.commit()
     db.refresh(db_category)
     return db_category
 
 
-@router.delete("/{category_id}")
-async def delete_category(
+@router.put("/{category_id}/deactivate")
+async def deactivate_category(
     category_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Delete category"""
+    """Deactivate category (soft delete)"""
     db_category = db.query(Category).filter(Category.id == category_id).first()
     if not db_category:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    db.delete(db_category)
+    db_category.is_active = False
+    db_category.updated_by = current_user.id
     db.commit()
-    return {"message": "Category deleted successfully"}
+    db.refresh(db_category)
+    return {"message": "Category deactivated successfully", "category": db_category}
+
+
+@router.put("/{category_id}/reactivate")
+async def reactivate_category(
+    category_id: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_admin)
+):
+    """Reactivate category"""
+    db_category = db.query(Category).filter(Category.id == category_id).first()
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    db_category.is_active = True
+    db_category.updated_by = current_user.id
+    db.commit()
+    db.refresh(db_category)
+    return {"message": "Category reactivated successfully", "category": db_category}

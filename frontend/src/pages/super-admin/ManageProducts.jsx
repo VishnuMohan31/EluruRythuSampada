@@ -1,7 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
-import { mockProducts } from '@/data/mockData'
 import '../admin/Dashboard.css'
 
 const ManageProducts = () => {
@@ -11,18 +10,10 @@ const ManageProducts = () => {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [shgFilter, setShgFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [products, setProducts] = useState(
-    mockProducts.map(product => ({
-      ...product,
-      mandal: product.shg?.mandal || 'Eluru',
-      village: product.shg?.village || 'Pedavegi',
-      shgName: product.shg?.name || 'Gond SHG',
-      status: 'Active',
-      image: product.image || null,
-      youtubeLink: product.youtubeLink || '',
-      instagramLink: product.instagramLink || ''
-    }))
-  )
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [shgs, setSHGs] = useState([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -38,9 +29,84 @@ const ManageProducts = () => {
     status: 'Active'
   })
 
+  // Fetch products, categories, and SHGs from API
+  useEffect(() => {
+    fetchProducts()
+    fetchCategories()
+    fetchSHGs()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('authToken')
+      const response = await fetch('http://localhost:8000/api/products?include_inactive=true', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const data = await response.json()
+      // Map backend data to frontend format
+      const mappedData = data.map(product => ({
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        category: { name: product.category?.name || '' },
+        subcategory: product.subcategory?.name || '',
+        shgName: product.shg?.name || '',
+        shgId: product.shg_id,
+        mandal: product.shg?.mandal || '',
+        village: product.shg?.village || '',
+        image: product.image_url,
+        youtubeLink: product.youtube_link || '',
+        instagramLink: product.instagram_link || '',
+        status: product.is_active ? 'Active' : 'Inactive'
+      }))
+      setProducts(mappedData)
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      alert('Failed to load products')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch('http://localhost:8000/api/categories', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to fetch categories')
+      const data = await response.json()
+      setCategories(data)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
+
+  const fetchSHGs = async () => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch('http://localhost:8000/api/shgs', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to fetch SHGs')
+      const data = await response.json()
+      setSHGs(data)
+    } catch (error) {
+      console.error('Error fetching SHGs:', error)
+    }
+  }
+
   // Get unique values for filters
-  const uniqueCategories = [...new Set(products.map(p => p.category.name))].sort()
-  const uniqueSHGs = [...new Set(products.map(p => p.shgName))].sort()
+  const uniqueCategories = categories.map(c => c.name).sort()
+  const uniqueSHGs = shgs.map(s => s.name).sort()
 
   // Filter logic
   const filteredProducts = products.filter(product => {
@@ -78,25 +144,49 @@ const ManageProducts = () => {
     setShowModal(true)
   }
 
-  const handleDeactivate = (productId) => {
-    if (window.confirm('Are you sure you want to deactivate this product?')) {
+  const handleDeactivate = async (productId) => {
+    if (!window.confirm('Are you sure you want to deactivate this product?')) return
+    
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`http://localhost:8000/api/products/${productId}/deactivate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to deactivate product')
+      
       setProducts(prev => prev.map(product => 
-        product.id === productId 
-          ? { ...product, status: 'Inactive' }
-          : product
+        product.id === productId ? { ...product, status: 'Inactive' } : product
       ))
       alert('Product deactivated successfully!')
+    } catch (error) {
+      console.error('Error deactivating product:', error)
+      alert('Failed to deactivate product')
     }
   }
 
-  const handleReactivate = (productId) => {
-    if (window.confirm('Are you sure you want to reactivate this product?')) {
+  const handleReactivate = async (productId) => {
+    if (!window.confirm('Are you sure you want to reactivate this product?')) return
+    
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`http://localhost:8000/api/products/${productId}/reactivate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Failed to reactivate product')
+      
       setProducts(prev => prev.map(product => 
-        product.id === productId 
-          ? { ...product, status: 'Active' }
-          : product
+        product.id === productId ? { ...product, status: 'Active' } : product
       ))
       alert('Product reactivated successfully!')
+    } catch (error) {
+      console.error('Error reactivating product:', error)
+      alert('Failed to reactivate product')
     }
   }
 
@@ -131,34 +221,84 @@ const ManageProducts = () => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (editingProduct) {
-      setProducts(prev => prev.map(product => 
-        product.id === editingProduct.id 
-          ? { 
-              ...product, 
-              ...formData,
-              image: formData.imagePreview,
-              category: { name: formData.category },
-              id: product.id 
-            }
-          : product
-      ))
-      alert('Product updated successfully!')
-    } else {
-      const newProduct = {
-        id: `PRD${String(products.length + 1).padStart(3, '0')}`,
-        ...formData,
-        image: formData.imagePreview,
-        category: { name: formData.category }
+    try {
+      const token = localStorage.getItem('authToken')
+      let imageUrl = formData.imagePreview
+
+      // Upload image if new file selected
+      if (formData.image) {
+        const imageFormData = new FormData()
+        imageFormData.append('file', formData.image)
+        
+        const uploadResponse = await fetch('http://localhost:8000/api/products/upload-image', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: imageFormData
+        })
+        
+        if (!uploadResponse.ok) throw new Error('Failed to upload image')
+        const uploadData = await uploadResponse.json()
+        imageUrl = uploadData.image_url
       }
-      setProducts(prev => [...prev, newProduct])
-      alert('Product added successfully!')
+
+      // Find category and SHG IDs
+      const category = categories.find(c => c.name === formData.category)
+      const shg = shgs.find(s => s.name === formData.shgName)
+
+      if (!category || !shg) {
+        alert('Please select valid category and SHG')
+        return
+      }
+
+      const productData = {
+        name: formData.name,
+        description: formData.description,
+        category_id: category.id,
+        shg_id: shg.id,
+        image_url: imageUrl,
+        youtube_link: formData.youtubeLink || null,
+        instagram_link: formData.instagramLink || null
+      }
+
+      if (editingProduct) {
+        // Update existing product
+        const response = await fetch(`http://localhost:8000/api/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(productData)
+        })
+        if (!response.ok) throw new Error('Failed to update product')
+        
+        alert('Product updated successfully!')
+      } else {
+        // Create new product
+        const response = await fetch('http://localhost:8000/api/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(productData)
+        })
+        if (!response.ok) throw new Error('Failed to create product')
+        
+        alert('Product added successfully!')
+      }
+      
+      fetchProducts()
+      closeModal()
+    } catch (error) {
+      console.error('Error saving product:', error)
+      alert('Failed to save product')
     }
-    
-    closeModal()
   }
 
   const closeModal = () => {

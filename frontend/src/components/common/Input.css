@@ -16,6 +16,11 @@
   margin-left: 4px;
 }
 
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
 .input {
   width: 100%;
   padding: var(--spacing-md);
@@ -26,6 +31,34 @@
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+}
+
+.input-with-icon {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color var(--transition-fast);
+}
+
+.password-toggle:hover {
+  color: var(--color-primary);
+}
+
+.password-toggle:focus {
+  outline: none;
 }
 
 .input:focus {

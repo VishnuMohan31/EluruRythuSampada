@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from .config import settings
 from .database import engine, Base
-from .api import auth, products, categories, shgs, vendors, inquiries, users
+from .api import auth, products, categories, shgs, inquiries, users, analytics, reports
 import logging
 
 # Configure logging
@@ -35,13 +35,24 @@ app = FastAPI(
 )
 
 # Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if settings.DEBUG:
+    # Development: Allow all origins
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # Production: Specific origins with credentials
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins_list,
+        allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.on_event("startup")
@@ -80,6 +91,12 @@ async def root():
     }
 
 
+@app.get("/favicon.ico")
+async def favicon():
+    """Favicon endpoint to prevent 404 errors."""
+    return JSONResponse(status_code=204, content=None)
+
+
 @app.get("/health")
 async def health_check():
     """
@@ -87,11 +104,12 @@ async def health_check():
     Returns application status and database connectivity.
     """
     from datetime import datetime
+    from sqlalchemy import text
     
     try:
         # Test database connection
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
         db_status = "connected"
     except Exception as e:
         logger.error(f"Database health check failed: {str(e)}")
@@ -112,9 +130,10 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(products.router, prefix="/api/products", tags=["Products"])
 app.include_router(categories.router, prefix="/api/categories", tags=["Categories"])
 app.include_router(shgs.router, prefix="/api/shgs", tags=["SHGs"])
-app.include_router(vendors.router, prefix="/api/vendors", tags=["Vendors"])
 app.include_router(inquiries.router, prefix="/api/inquiries", tags=["Inquiries"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
+app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 
 
 if __name__ == "__main__":
