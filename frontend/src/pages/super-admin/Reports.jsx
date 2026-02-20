@@ -1,17 +1,24 @@
 import React from 'react'
 import Button from '@components/common/Button'
+import { logger } from '@/utils/api'
 import '../admin/Dashboard.css'
 
 const Reports = () => {
   const handleExportInquiries = async () => {
     try {
+      logger.info('Exporting Inquiries Report', 'CSV download')
       const token = localStorage.getItem('authToken')
+      
       const response = await fetch('http://localhost:8000/api/reports/inquiries/export', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-      if (!response.ok) throw new Error('Failed to export inquiries')
+      
+      if (!response.ok) {
+        logger.error('Export Inquiries Failed', `${response.status} ${response.statusText}`)
+        throw new Error('Failed to export inquiries')
+      }
       
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
@@ -22,21 +29,29 @@ const Reports = () => {
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
+      
+      logger.success('Inquiries Report Exported', a.download)
     } catch (error) {
-      console.error('Error exporting inquiries:', error)
+      logger.error('Export Inquiries Failed', error.message)
       alert('Failed to export inquiries')
     }
   }
 
   const handleExportProducts = async () => {
     try {
+      logger.info('Exporting Products Report', 'CSV download')
       const token = localStorage.getItem('authToken')
+      
       const response = await fetch('http://localhost:8000/api/reports/products/export', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-      if (!response.ok) throw new Error('Failed to export products')
+      
+      if (!response.ok) {
+        logger.error('Export Products Failed', `${response.status} ${response.statusText}`)
+        throw new Error('Failed to export products')
+      }
       
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
@@ -47,8 +62,10 @@ const Reports = () => {
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
+      
+      logger.success('Products Report Exported', a.download)
     } catch (error) {
-      console.error('Error exporting products:', error)
+      logger.error('Export Products Failed', error.message)
       alert('Failed to export products')
     }
   }

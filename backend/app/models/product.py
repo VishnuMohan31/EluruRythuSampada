@@ -1,7 +1,7 @@
 """
 Product model for SHG products
 """
-from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime, ForeignKey, JSON
+from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..database import Base
@@ -10,16 +10,14 @@ from ..database import Base
 class Product(Base):
     __tablename__ = "products"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: PRD001
+    # Primary key with formatted ID (PRD001)
+    id = Column(String(20), primary_key=True, index=True)
     
     name = Column(String(200), nullable=False, index=True)
     description = Column(Text, nullable=False)
     
     # Foreign keys (required)
     category_id = Column(String, ForeignKey("categories.id"), nullable=False, index=True)
-    subcategory_id = Column(String, ForeignKey("subcategories.id"), nullable=True, index=True)  # Optional
     shg_id = Column(String, ForeignKey("shgs.id"), nullable=False, index=True)
     
     # Media
@@ -43,7 +41,6 @@ class Product(Base):
     
     # Relationships
     category = relationship("Category", back_populates="products")
-    subcategory = relationship("Subcategory", back_populates="products")
     shg = relationship("SHG", back_populates="products")
     product_views = relationship("ProductView", back_populates="product")
     contact_logs = relationship("ContactLog", back_populates="product")

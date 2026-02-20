@@ -3,6 +3,7 @@ SHG (Self Help Group) routes
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import List
 import uuid
 
@@ -43,8 +44,21 @@ async def create_shg(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Create new SHG"""
-    db_shg = SHG(**shg.dict(), created_by=current_user.id)
+    """Create new SHG - Auto-fills state/district from super admin"""
+    shg_data = shg.dict()
+    
+    # If super admin, auto-fill their state and district
+    if current_user.role == 'super_admin':
+        shg_data['state'] = current_user.state
+        shg_data['district'] = current_user.district
+    
+    # Generate ID
+    result = db.execute(text("SELECT nextval('shgs_id_seq')"))
+    seq_num = result.scalar()
+    shg_id = f"SHG{seq_num:03d}"
+    
+    # Create SHG
+    db_shg = SHG(id=shg_id, **shg_data, created_by=current_user.id)
     db.add(db_shg)
     db.commit()
     db.refresh(db_shg)

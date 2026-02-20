@@ -9,9 +9,8 @@ from ..database import Base
 class User(Base):
     __tablename__ = "users"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: ADM001, SAD001
+    # Primary key with formatted ID (ADM001, SAD001)
+    id = Column(String(20), primary_key=True, index=True)
     
     email = Column(String(255), unique=True, index=True, nullable=False)
     full_name = Column(String(100), nullable=False)

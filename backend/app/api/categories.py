@@ -3,6 +3,7 @@ Category routes
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import List
 import uuid
 
@@ -46,9 +47,23 @@ async def create_category(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Create new category"""
+    """Create new category - Auto-fills state/district from super admin"""
+    category_data = category.dict()
+    
+    # If super admin, auto-fill their state and district
+    if current_user.role == 'super_admin':
+        category_data['state'] = current_user.state
+        category_data['district'] = current_user.district
+    
+    # Generate ID
+    result = db.execute(text("SELECT nextval('categories_id_seq')"))
+    seq_num = result.scalar()
+    category_id = f"CAT{seq_num:03d}"
+    
+    # Create category
     db_category = Category(
-        **category.dict(),
+        id=category_id,
+        **category_data,
         created_by=current_user.id
     )
     db.add(db_category)

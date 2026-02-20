@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw, Eye, EyeOff } from 'lucide-react'
 import Button from '@components/common/Button'
+import { api, logger } from '@/utils/api'
 import './Dashboard.css'
 
 const ManageSuperAdmins = () => {
@@ -23,38 +24,14 @@ const ManageSuperAdmins = () => {
   const fetchSuperAdmins = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('authToken')
+      logger.info('Fetching Super Admins', 'role=super_admin')
       
-      if (!token) {
-        console.error('No authentication token found')
-        setSuperAdmins([])
-        setLoading(false)
-        return
-      }
-
-      const response = await fetch('http://localhost:8000/api/users?role=super_admin', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      const data = await api.get('/api/users?role=super_admin')
+      logger.success('Fetched Super Admins', `${data.length} users`)
       
-      if (response.status === 401) {
-        console.error('Unauthorized - token may be invalid or expired')
-        // Optionally redirect to login
-        // window.location.href = '/admin/login'
-        setSuperAdmins([])
-        setLoading(false)
-        return
-      }
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch super admins: ${response.status}`)
-      }
-      
-      const data = await response.json()
       setSuperAdmins(data)
     } catch (error) {
-      console.error('Error fetching super admins:', error)
+      logger.error('Fetch Super Admins Failed', error.message)
       setSuperAdmins([])
     } finally {
       setLoading(false)
@@ -62,7 +39,7 @@ const ManageSuperAdmins = () => {
   }
 
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
     email: '',
     mobile: '',
     state: '',
@@ -99,13 +76,13 @@ const ManageSuperAdmins = () => {
   // Filter logic
   const filteredAdmins = superAdmins.filter(admin => {
     const matchesSearch = 
-      admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      admin.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      admin.mobile.includes(searchQuery) ||
-      admin.id.toLowerCase().includes(searchQuery.toLowerCase())
+      (admin.full_name && admin.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (admin.email && admin.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (admin.mobile_number && admin.mobile_number.includes(searchQuery)) ||
+      (admin.id && admin.id.toLowerCase().includes(searchQuery.toLowerCase()))
     
-    const matchesState = !stateFilter || admin.state === stateFilter
-    const matchesDistrict = !districtFilter || admin.district === districtFilter
+    const matchesState = !stateFilter || (admin.state && admin.state === stateFilter)
+    const matchesDistrict = !districtFilter || (admin.district && admin.district === districtFilter)
     const matchesStatus = !statusFilter || admin.status === statusFilter
     
     return matchesSearch && matchesState && matchesDistrict && matchesStatus
@@ -145,48 +122,33 @@ const ManageSuperAdmins = () => {
     }
 
     try {
-      const token = localStorage.getItem('authToken')
-      
-      if (!token) {
-        alert('Authentication required. Please log in again.')
-        return
-      }
-
       if (editingAdmin) {
         // Update existing admin
+        logger.info('Updating Super Admin', editingAdmin.id)
+        
         const updateData = {
-          name: formData.name,
+          full_name: formData.full_name,
           email: formData.email,
           mobile_number: formData.mobile,
           state: formData.state,
           district: formData.district
         }
         
-        // Only include password if it's provided
         if (formData.password) {
           updateData.password = formData.password
         }
 
-        const response = await fetch(`http://localhost:8000/api/users/${editingAdmin.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(updateData)
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.detail || 'Failed to update super admin')
-        }
-
+        const updatedUser = await api.put(`/api/users/${editingAdmin.id}`, updateData)
+        logger.success('Super Admin Updated', updatedUser)
+        
         alert('Super Admin updated successfully!')
         fetchSuperAdmins()
       } else {
         // Add new admin
+        logger.info('Creating Super Admin', formData.email)
+        
         const createData = {
-          name: formData.name,
+          full_name: formData.full_name,
           email: formData.email,
           mobile_number: formData.mobile,
           state: formData.state,
@@ -195,27 +157,16 @@ const ManageSuperAdmins = () => {
           role: 'super_admin'
         }
 
-        const response = await fetch('http://localhost:8000/api/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(createData)
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.detail || 'Failed to create super admin')
-        }
-
+        const newUser = await api.post('/api/users/', createData)
+        logger.success('Super Admin Created', newUser)
+        
         alert('Super Admin added successfully!')
         fetchSuperAdmins()
       }
       
       closeModal()
     } catch (error) {
-      console.error('Error saving super admin:', error)
+      logger.error('Save Super Admin Failed', error.message)
       alert(error.message || 'Failed to save super admin. Please try again.')
     }
   }
@@ -226,7 +177,7 @@ const ManageSuperAdmins = () => {
     setShowPassword(false)
     setShowConfirmPassword(false)
     setFormData({
-      name: '',
+      full_name: '',
       email: '',
       mobile: '',
       state: '',
@@ -239,7 +190,7 @@ const ManageSuperAdmins = () => {
   const handleEdit = (admin) => {
     setEditingAdmin(admin)
     setFormData({
-      name: admin.name,
+      full_name: admin.full_name,
       email: admin.email,
       mobile: admin.mobile_number || admin.mobile || '',
       state: admin.state || '',
@@ -253,22 +204,14 @@ const ManageSuperAdmins = () => {
   const handleDeactivate = async (adminId) => {
     if (window.confirm('Are you sure you want to deactivate this Super Admin?')) {
       try {
-        const token = localStorage.getItem('authToken')
-        const response = await fetch(`http://localhost:8000/api/users/${adminId}/deactivate`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-
-        if (!response.ok) {
-          throw new Error('Failed to deactivate super admin')
-        }
-
+        logger.info('Deactivating Super Admin', adminId)
+        await api.put(`/api/users/${adminId}/deactivate`)
+        logger.success('Super Admin Deactivated', adminId)
+        
         alert('Super Admin deactivated successfully!')
         fetchSuperAdmins()
       } catch (error) {
-        console.error('Error deactivating super admin:', error)
+        logger.error('Deactivate Super Admin Failed', error.message)
         alert('Failed to deactivate super admin. Please try again.')
       }
     }
@@ -277,22 +220,14 @@ const ManageSuperAdmins = () => {
   const handleReactivate = async (adminId) => {
     if (window.confirm('Are you sure you want to reactivate this Super Admin?')) {
       try {
-        const token = localStorage.getItem('authToken')
-        const response = await fetch(`http://localhost:8000/api/users/${adminId}/reactivate`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-
-        if (!response.ok) {
-          throw new Error('Failed to reactivate super admin')
-        }
-
+        logger.info('Reactivating Super Admin', adminId)
+        await api.put(`/api/users/${adminId}/reactivate`)
+        logger.success('Super Admin Reactivated', adminId)
+        
         alert('Super Admin reactivated successfully!')
         fetchSuperAdmins()
       } catch (error) {
-        console.error('Error reactivating super admin:', error)
+        logger.error('Reactivate Super Admin Failed', error.message)
         alert('Failed to reactivate super admin. Please try again.')
       }
     }
@@ -440,7 +375,7 @@ const ManageSuperAdmins = () => {
                 filteredAdmins.map(admin => (
                   <tr key={admin.id}>
                     <td>{admin.id}</td>
-                    <td>{admin.name}</td>
+                    <td>{admin.full_name}</td>
                     <td>{admin.email}</td>
                     <td>{admin.mobile_number || admin.mobile}</td>
                     <td>{admin.state}</td>
@@ -514,8 +449,8 @@ const ManageSuperAdmins = () => {
                   </label>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="full_name"
+                    value={formData.full_name}
                     onChange={handleInputChange}
                     placeholder="Enter full name"
                     required

@@ -1,14 +1,14 @@
 """
 User schemas for validation
 """
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from typing import Optional
 from datetime import datetime
 
 
 class UserBase(BaseModel):
     email: EmailStr
-    name: str
+    full_name: str
     role: str
     mobile_number: Optional[str] = None
     state: Optional[str] = None
@@ -17,11 +17,17 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    
+    @validator('password')
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError('Password must be at least 6 characters long')
+        return v
 
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
-    name: Optional[str] = None
+    full_name: Optional[str] = None
     mobile_number: Optional[str] = None
     state: Optional[str] = None
     district: Optional[str] = None
@@ -42,6 +48,12 @@ class UserResponse(UserBase):
 class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str
+    
+    @validator('new_password')
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError('Password must be at least 6 characters long')
+        return v
 
 
 class Token(BaseModel):

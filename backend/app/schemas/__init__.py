@@ -5,7 +5,6 @@ from .user import UserCreate, UserUpdate, UserResponse, Token
 from .product import ProductCreate, ProductUpdate, ProductResponse
 from .category import CategoryCreate, CategoryUpdate, CategoryResponse
 from .shg import SHGCreate, SHGUpdate, SHGResponse
-from .vendor import VendorCreate, VendorUpdate, VendorResponse
 from .inquiry import InquiryCreate, InquiryUpdate, InquiryResponse
 from .analytics import AnalyticsResponse
 from .system_config import SystemConfigUpdate, SystemConfigResponse
@@ -15,7 +14,6 @@ __all__ = [
     "ProductCreate", "ProductUpdate", "ProductResponse",
     "CategoryCreate", "CategoryUpdate", "CategoryResponse",
     "SHGCreate", "SHGUpdate", "SHGResponse",
-    "VendorCreate", "VendorUpdate", "VendorResponse",
     "InquiryCreate", "InquiryUpdate", "InquiryResponse",
     "AnalyticsResponse",
     "SystemConfigUpdate", "SystemConfigResponse"

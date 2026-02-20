@@ -27,7 +27,7 @@ const ProductCard = ({ product }) => {
         
         <div className="product-meta">
           <span className="product-category">
-            {product.category.name} • {product.subcategory.name}
+            {product.category.name}
           </span>
         </div>
         

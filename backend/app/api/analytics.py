@@ -9,7 +9,6 @@ from typing import Optional
 from ..core.deps import get_db, get_current_admin
 from ..models.product import Product
 from ..models.shg import SHG
-from ..models.vendor import Vendor
 from ..models.inquiry import ContactLog
 from ..models.product_view import ProductView
 
@@ -25,14 +24,13 @@ async def get_stats(
     
     total_products = db.query(Product).filter(Product.is_active == True).count()
     total_shgs = db.query(SHG).filter(SHG.is_active == True).count()
-    total_vendors = db.query(Vendor).filter(Vendor.is_active == True).count()
     total_contacts = db.query(ContactLog).count()
     total_views = db.query(ProductView).count()
     
     return {
         "totalProducts": total_products,
         "totalSHGs": total_shgs,
-        "totalVendors": total_vendors,
+        "totalVendors": 0,  # Vendors removed
         "totalBuyers": 0,  # Not tracking buyers yet
         "totalContacts": total_contacts,
         "totalViews": total_views

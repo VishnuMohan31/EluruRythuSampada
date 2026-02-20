@@ -10,9 +10,8 @@ class SystemConfig(Base):
     """Store all configurable system settings"""
     __tablename__ = "system_config"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: CFG001
+    # Primary key with formatted ID (CFG001)
+    id = Column(String(20), primary_key=True, index=True, nullable=False)
     
     config_key = Column(String(100), unique=True, nullable=False, index=True)
     config_value = Column(Text, nullable=True)

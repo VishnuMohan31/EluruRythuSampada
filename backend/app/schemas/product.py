@@ -6,11 +6,28 @@ from typing import Optional
 from datetime import datetime
 
 
+class CategoryNested(BaseModel):
+    id: str
+    name: str
+    
+    class Config:
+        from_attributes = True
+
+
+class SHGNested(BaseModel):
+    id: str
+    name: str
+    mandal: str
+    village: str
+    
+    class Config:
+        from_attributes = True
+
+
 class ProductBase(BaseModel):
     name: str
     description: str
     category_id: str
-    subcategory_id: Optional[str] = None
     shg_id: str
     image_url: Optional[str] = None
     youtube_link: Optional[str] = None
@@ -25,7 +42,6 @@ class ProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     category_id: Optional[str] = None
-    subcategory_id: Optional[str] = None
     shg_id: Optional[str] = None
     image_url: Optional[str] = None
     youtube_link: Optional[str] = None
@@ -39,11 +55,8 @@ class ProductResponse(ProductBase):
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
-    # Nested relationships
-    category: Optional[dict] = None
-    subcategory: Optional[dict] = None
-    shg: Optional[dict] = None
+    category: Optional[CategoryNested] = None
+    shg: Optional[SHGNested] = None
 
     class Config:
         from_attributes = True

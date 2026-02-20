@@ -11,9 +11,8 @@ class Buyer(Base):
     """Light registration for buyers who want to contact vendors"""
     __tablename__ = "buyers"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: BYR001
+    # Primary key with formatted ID (BYR001)
+    id = Column(String(20), primary_key=True, index=True)
     
     name = Column(String(100), nullable=False)
     email = Column(String(255), nullable=False, index=True)
@@ -32,9 +31,8 @@ class ContactLog(Base):
     """Log of all SHG contacts by buyers"""
     __tablename__ = "contact_logs"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: CNT001
+    # Primary key with formatted ID (CNT001)
+    id = Column(String(20), primary_key=True, index=True)
     
     buyer_id = Column(String, ForeignKey("buyers.id"), nullable=False, index=True)
     product_id = Column(String, ForeignKey("products.id"), nullable=False, index=True)

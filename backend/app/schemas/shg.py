@@ -10,8 +10,8 @@ class SHGBase(BaseModel):
     name: str
     contact_person: str
     mobile_number: str
-    state: str
-    district: str
+    state: Optional[str] = None  # Auto-filled from super admin
+    district: Optional[str] = None  # Auto-filled from super admin
     mandal: str
     village: str
     description: Optional[str] = None

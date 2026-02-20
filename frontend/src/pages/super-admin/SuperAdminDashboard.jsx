@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { api, logger } from '@/utils/api'
 import '../admin/Dashboard.css'
 
 const SuperAdminDashboard = () => {
@@ -27,18 +28,25 @@ const SuperAdminDashboard = () => {
   const fetchStats = async () => {
     try {
       setStatsLoading(true)
-      // TODO: Replace with actual API call
-      // const response = await fetch('http://localhost:8000/api/analytics/stats')
-      // const data = await response.json()
-      // setStats(data)
+      logger.info('Fetching Dashboard Stats', 'analytics/stats')
+      
+      const data = await api.get('/api/analytics/stats')
+      logger.success('Fetched Dashboard Stats', data)
+      
+      setStats({
+        totalProducts: data.totalProducts,
+        totalSHGs: data.totalSHGs,
+        totalVendors: data.totalVendors,
+        totalContacts: data.totalContacts
+      })
+    } catch (error) {
+      logger.error('Fetch Dashboard Stats Failed', error.message)
       setStats({
         totalProducts: 0,
         totalSHGs: 0,
         totalVendors: 0,
         totalContacts: 0
       })
-    } catch (error) {
-      console.error('Error fetching stats:', error)
     } finally {
       setStatsLoading(false)
     }
@@ -52,21 +60,21 @@ const SuperAdminDashboard = () => {
   const fetchMetricsData = async () => {
     try {
       setLoading(true)
-      // TODO: Replace with actual API calls
-      // const response = await fetch(`http://localhost:8000/api/analytics/metrics?type=${metricType}&period=${shgTimePeriod}`)
-      // const data = await response.json()
-      // setTopSHGInquiries(data.topSHGs)
-      // setLeastSHGInquiries(data.leastSHGs)
-      // setTopProductInquiries(data.topProducts)
-      // setLeastProductInquiries(data.leastProducts)
+      logger.info('Fetching Dashboard Metrics', `type=${metricType}, period=${shgTimePeriod}`)
       
-      // Empty arrays until API is connected
+      const data = await api.get(`/api/analytics/metrics?type=${metricType}&period=${shgTimePeriod}`)
+      logger.success('Fetched Dashboard Metrics', data)
+      
+      setTopSHGInquiries(data.topSHGs || [])
+      setLeastSHGInquiries(data.leastSHGs || [])
+      setTopProductInquiries(data.topProducts || [])
+      setLeastProductInquiries(data.leastProducts || [])
+    } catch (error) {
+      logger.error('Fetch Dashboard Metrics Failed', error.message)
       setTopSHGInquiries([])
       setLeastSHGInquiries([])
       setTopProductInquiries([])
       setLeastProductInquiries([])
-    } catch (error) {
-      console.error('Error fetching metrics data:', error)
     } finally {
       setLoading(false)
     }

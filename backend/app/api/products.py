@@ -3,6 +3,7 @@ Product routes
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import List, Optional
 import uuid
 import os
@@ -72,7 +73,14 @@ async def create_product(
     current_user = Depends(get_current_admin)
 ):
     """Create new product"""
+    # Generate ID
+    result = db.execute(text("SELECT nextval('products_id_seq')"))
+    seq_num = result.scalar()
+    product_id = f"PRD{seq_num:03d}"
+    
+    # Create product
     db_product = Product(
+        id=product_id,
         **product.dict(),
         created_by=current_user.id
     )

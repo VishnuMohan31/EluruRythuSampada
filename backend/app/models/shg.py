@@ -10,17 +10,16 @@ from ..database import Base
 class SHG(Base):
     __tablename__ = "shgs"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: SHG001
+    # Primary key with formatted ID (SHG001)
+    id = Column(String(20), primary_key=True, index=True)
     
     name = Column(String(100), nullable=False, index=True)
     contact_person = Column(String(100), nullable=False)  # Contact person name
     mobile_number = Column(String(20), nullable=False)  # Contact mobile number
     
-    # Location hierarchy (required)
-    state = Column(String(100), nullable=False, index=True)
-    district = Column(String(100), nullable=False, index=True)
+    # Location hierarchy
+    state = Column(String(100), nullable=True, index=True)
+    district = Column(String(100), nullable=True, index=True)
     mandal = Column(String(100), nullable=False, index=True)
     village = Column(String(100), nullable=False, index=True)
     
@@ -40,5 +39,4 @@ class SHG(Base):
     
     # Relationships
     products = relationship("Product", back_populates="shg")
-    vendors = relationship("Vendor", back_populates="shg")
     contact_logs = relationship("ContactLog", back_populates="shg")

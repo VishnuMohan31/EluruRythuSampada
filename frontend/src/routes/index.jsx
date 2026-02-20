@@ -25,6 +25,7 @@ import AdminDashboard from '@pages/admin/AdminDashboard'
 import ManageSuperAdmins from '@pages/admin/ManageSuperAdmins'
 import SystemConfig from '@pages/admin/SystemConfig'
 import AdminReports from '@pages/admin/Reports'
+import AdminProfile from '@pages/admin/Profile'
 
 // Super Admin Pages
 import SuperAdminDashboard from '@pages/super-admin/SuperAdminDashboard'
@@ -32,6 +33,7 @@ import ManageSHGs from '@pages/super-admin/ManageSHGs'
 import ManageProducts from '@pages/super-admin/ManageProducts'
 import ManageCategories from '@pages/super-admin/ManageCategories'
 import SuperAdminReports from '@pages/super-admin/Reports'
+import SuperAdminProfile from '@pages/super-admin/Profile'
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -78,6 +80,7 @@ const AppRoutes = () => {
         <Route path="super-admins" element={<ManageSuperAdmins />} />
         <Route path="config" element={<SystemConfig />} />
         <Route path="reports" element={<AdminReports />} />
+        <Route path="profile" element={<AdminProfile />} />
       </Route>
 
       {/* Super Admin Auth */}
@@ -97,6 +100,7 @@ const AppRoutes = () => {
         <Route path="products" element={<ManageProducts />} />
         <Route path="categories" element={<ManageCategories />} />
         <Route path="reports" element={<SuperAdminReports />} />
+        <Route path="profile" element={<SuperAdminProfile />} />
       </Route>
 
       {/* 404 */}

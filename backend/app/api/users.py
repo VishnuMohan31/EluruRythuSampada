@@ -3,6 +3,7 @@ User management routes
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import List, Optional
 from datetime import datetime
 
@@ -32,6 +33,55 @@ async def get_users(
     return users
 
 
+@router.get("/me", response_model=UserResponse)
+async def get_current_user_profile(
+    current_user = Depends(get_current_user)
+):
+    """Get current user's profile"""
+    return current_user
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_current_user_profile(
+    update_data: dict,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Update current user's profile (name and mobile only)"""
+    if 'full_name' in update_data and update_data['full_name']:
+        current_user.full_name = update_data['full_name']
+    if 'mobile_number' in update_data and update_data['mobile_number']:
+        current_user.mobile_number = update_data['mobile_number']
+    
+    current_user.updated_at = datetime.utcnow()
+    current_user.updated_by = current_user.id
+    
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
+@router.put("/me/change-password")
+async def change_own_password(
+    password_data: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Change current user's password"""
+    from ..core.security import verify_password
+    
+    # Verify current password
+    if not verify_password(password_data.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    # Update password
+    current_user.hashed_password = get_password_hash(password_data.new_password)
+    current_user.updated_at = datetime.utcnow()
+    
+    db.commit()
+    return {"message": "Password changed successfully"}
+
+
 @router.get("/{user_id}", response_model=UserResponse)
 async def get_user(
     user_id: str,
@@ -57,10 +107,17 @@ async def create_user(
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Create user with auto-generated ID from database trigger
+    # Generate ID
+    result = db.execute(text("SELECT nextval('users_id_seq')"))
+    seq_num = result.scalar()
+    prefix = 'ADM' if user.role == 'admin' else 'SAD'
+    user_id = f"{prefix}{seq_num:03d}"
+    
+    # Create user
     db_user = User(
+        id=user_id,
         email=user.email,
-        name=user.name,
+        full_name=user.full_name,
         mobile_number=user.mobile_number,
         state=user.state,
         district=user.district,
@@ -145,27 +202,6 @@ async def reactivate_user(
     
     db.commit()
     return {"message": "User reactivated successfully"}
-
-
-@router.put("/me/change-password")
-async def change_own_password(
-    password_data: ChangePasswordRequest,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-):
-    """Change current user's password"""
-    from ..core.security import verify_password
-    
-    # Verify current password
-    if not verify_password(password_data.current_password, current_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Current password is incorrect")
-    
-    # Update password
-    current_user.hashed_password = get_password_hash(password_data.new_password)
-    current_user.updated_at = datetime.utcnow()
-    
-    db.commit()
-    return {"message": "Password changed successfully"}
 
 
 @router.delete("/{user_id}")

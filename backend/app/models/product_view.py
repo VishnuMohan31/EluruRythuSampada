@@ -11,9 +11,8 @@ class ProductView(Base):
     """Track individual product views for detailed analytics"""
     __tablename__ = "product_views"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: PVW001
+    # Primary key with formatted ID (VIW001)
+    id = Column(String(20), primary_key=True, index=True)
     
     product_id = Column(String, ForeignKey("products.id"), nullable=False, index=True)
     session_id = Column(String(100), nullable=True, index=True)  # For unique view tracking

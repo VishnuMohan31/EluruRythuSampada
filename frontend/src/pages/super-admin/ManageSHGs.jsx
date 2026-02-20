@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
+import { api, logger } from '@/utils/api'
 import '../admin/Dashboard.css'
 
 const ManageSHGs = () => {
@@ -28,14 +29,11 @@ const ManageSHGs = () => {
   const fetchSHGs = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('authToken')
-      const response = await fetch('http://localhost:8000/api/shgs?include_inactive=true', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      if (!response.ok) throw new Error('Failed to fetch SHGs')
-      const data = await response.json()
+      logger.info('Fetching SHGs', 'include_inactive=true')
+      
+      const data = await api.get('/api/shgs?include_inactive=true')
+      logger.success('Fetched SHGs', `${data.length} SHGs`)
+      
       // Map backend data to frontend format
       const mappedData = data.map(shg => ({
         id: shg.id,
@@ -49,7 +47,7 @@ const ManageSHGs = () => {
       }))
       setSHGs(mappedData)
     } catch (error) {
-      console.error('Error fetching SHGs:', error)
+      logger.error('Fetch SHGs Failed', error.message)
       alert('Failed to load SHGs')
     } finally {
       setLoading(false)
@@ -85,51 +83,29 @@ const ManageSHGs = () => {
     e.preventDefault()
 
     try {
-      const token = localStorage.getItem('authToken')
+      const shgData = {
+        name: formData.name,
+        contact_person: formData.contactPerson,
+        mobile_number: formData.mobileNumber,
+        mandal: formData.mandal,
+        village: formData.village,
+        description: formData.description
+        // state and district will be auto-filled by backend from logged-in super admin
+      }
       
       if (editingSHG) {
         // Update existing SHG
-        const response = await fetch(`http://localhost:8000/api/shgs/${editingSHG.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            contact_person: formData.contactPerson,
-            mobile_number: formData.mobileNumber,
-            state: 'Telangana',
-            district: 'West Godavari',
-            mandal: formData.mandal,
-            village: formData.village,
-            description: formData.description
-          })
-        })
-        if (!response.ok) throw new Error('Failed to update SHG')
+        logger.info('Updating SHG', editingSHG.id)
+        const updated = await api.put(`/api/shgs/${editingSHG.id}`, shgData)
+        logger.success('SHG Updated', updated)
         
         alert('SHG updated successfully!')
         fetchSHGs()
       } else {
         // Add new SHG
-        const response = await fetch('http://localhost:8000/api/shgs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            contact_person: formData.contactPerson,
-            mobile_number: formData.mobileNumber,
-            state: 'Telangana',
-            district: 'West Godavari',
-            mandal: formData.mandal,
-            village: formData.village,
-            description: formData.description
-          })
-        })
-        if (!response.ok) throw new Error('Failed to create SHG')
+        logger.info('Creating SHG', formData.name)
+        const created = await api.post('/api/shgs/', shgData)
+        logger.success('SHG Created', created)
         
         alert('SHG added successfully!')
         fetchSHGs()
@@ -137,7 +113,7 @@ const ManageSHGs = () => {
       
       closeModal()
     } catch (error) {
-      console.error('Error saving SHG:', error)
+      logger.error('Save SHG Failed', error.message)
       alert('Failed to save SHG')
     }
   }
@@ -174,21 +150,16 @@ const ManageSHGs = () => {
     if (!window.confirm('Are you sure you want to deactivate this SHG?')) return
     
     try {
-      const token = localStorage.getItem('authToken')
-      const response = await fetch(`http://localhost:8000/api/shgs/${shgId}/deactivate`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      if (!response.ok) throw new Error('Failed to deactivate SHG')
+      logger.info('Deactivating SHG', shgId)
+      await api.put(`/api/shgs/${shgId}/deactivate`)
+      logger.success('SHG Deactivated', shgId)
       
       setSHGs(prev => prev.map(shg => 
         shg.id === shgId ? { ...shg, status: 'Inactive' } : shg
       ))
       alert('SHG deactivated successfully!')
     } catch (error) {
-      console.error('Error deactivating SHG:', error)
+      logger.error('Deactivate SHG Failed', error.message)
       alert('Failed to deactivate SHG')
     }
   }
@@ -197,21 +168,16 @@ const ManageSHGs = () => {
     if (!window.confirm('Are you sure you want to reactivate this SHG?')) return
     
     try {
-      const token = localStorage.getItem('authToken')
-      const response = await fetch(`http://localhost:8000/api/shgs/${shgId}/reactivate`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      if (!response.ok) throw new Error('Failed to reactivate SHG')
+      logger.info('Reactivating SHG', shgId)
+      await api.put(`/api/shgs/${shgId}/reactivate`)
+      logger.success('SHG Reactivated', shgId)
       
       setSHGs(prev => prev.map(shg => 
         shg.id === shgId ? { ...shg, status: 'Active' } : shg
       ))
       alert('SHG reactivated successfully!')
     } catch (error) {
-      console.error('Error reactivating SHG:', error)
+      logger.error('Reactivate SHG Failed', error.message)
       alert('Failed to reactivate SHG')
     }
   }
@@ -284,12 +250,12 @@ const ManageSHGs = () => {
 
       <div className="dashboard-card">
         <div className="dashboard-table-wrapper">
-          <table className="data-table" style={{ minWidth: '1000px', width: '100%', tableLayout: 'fixed' }}>
+          <table className="data-table" style={{ minWidth: '1000px', width: '100%' }}>
             <thead>
               <tr>
                 <th style={{ width: '80px' }}>ID</th>
-                <th style={{ width: '160px' }}>SHG Name</th>
-                <th style={{ width: '140px' }}>Contact Person</th>
+                <th style={{ width: '180px' }}>SHG Name</th>
+                <th style={{ width: '150px' }}>Contact Person</th>
                 <th style={{ width: '130px' }}>Mobile Number</th>
                 <th style={{ width: '120px' }}>Mandal</th>
                 <th style={{ width: '120px' }}>Village</th>
@@ -301,12 +267,12 @@ const ManageSHGs = () => {
               {filteredSHGs.length > 0 ? (
                 filteredSHGs.map(shg => (
                   <tr key={shg.id}>
-                    <td>{shg.id}</td>
-                    <td>{shg.name || '-'}</td>
-                    <td>{shg.contactPerson || '-'}</td>
-                    <td>{shg.mobileNumber || '-'}</td>
-                    <td>{shg.mandal || '-'}</td>
-                    <td>{shg.village || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shg.id}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.name}>{shg.name || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.contactPerson}>{shg.contactPerson || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shg.mobileNumber || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.mandal}>{shg.mandal || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.village}>{shg.village || '-'}</td>
                     <td>
                       <span className={`status-badge ${(shg.status || 'Active').toLowerCase()}`}>
                         {shg.status || 'Active'}
@@ -423,7 +389,6 @@ const ManageSHGs = () => {
                     onChange={handleInputChange}
                     placeholder="+91 9876543210"
                     required
-                    pattern="[0-9+\s-]+"
                     style={{
                       width: '100%',
                       padding: '0.625rem',

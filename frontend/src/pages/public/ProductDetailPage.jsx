@@ -61,7 +61,7 @@ const ProductDetailPage = () => {
 
             <div className="product-meta">
               <span className="meta-item">
-                <strong>Category:</strong> {product.category.name} › {product.subcategory.name}
+                <strong>Category:</strong> {product.category.name}
               </span>
               <span className="meta-item">
                 <strong>Artisan:</strong> {product.vendor.name}

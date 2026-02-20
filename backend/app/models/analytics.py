@@ -10,9 +10,8 @@ class DailyAnalytics(Base):
     """Daily aggregated analytics for dashboard"""
     __tablename__ = "daily_analytics"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: DAN001
+    # Primary key with formatted ID (DAN001)
+    id = Column(String(20), primary_key=True, index=True, nullable=False)
     
     date = Column(Date, nullable=False, unique=True, index=True)
     

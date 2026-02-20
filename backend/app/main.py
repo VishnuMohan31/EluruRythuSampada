@@ -5,10 +5,12 @@ Main FastAPI application entry point.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from .config import settings
 from .database import engine, Base
 from .api import auth, products, categories, shgs, inquiries, users, analytics, reports
 import logging
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -134,6 +136,14 @@ app.include_router(inquiries.router, prefix="/api/inquiries", tags=["Inquiries"]
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
+
+# Mount static files for serving uploaded images
+storage_path = Path(settings.STORAGE_PATH)
+if storage_path.exists():
+    app.mount("/storage", StaticFiles(directory=str(storage_path)), name="storage")
+    logger.info(f"Static files mounted at /storage -> {storage_path.absolute()}")
+else:
+    logger.warning(f"Storage path does not exist: {storage_path.absolute()}")
 
 
 if __name__ == "__main__":

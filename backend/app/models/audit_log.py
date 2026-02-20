@@ -10,9 +10,8 @@ class AuditLog(Base):
     """Comprehensive audit trail for all administrative actions"""
     __tablename__ = "audit_logs"
 
-    # Primary key as auto-increment integer
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    id = Column(String, unique=True, index=True, nullable=False)  # Format: AUD001
+    # Primary key with formatted ID (AUD001)
+    id = Column(String(20), primary_key=True, index=True, nullable=False)
     
     user_id = Column(String, nullable=False, index=True)  # Admin or Super Admin ID
     action_type = Column(String(50), nullable=False, index=True)  # CREATE, UPDATE, DELETE, etc.
