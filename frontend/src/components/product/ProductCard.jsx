@@ -30,12 +30,6 @@ const ProductCard = ({ product }) => {
             {product.category.name}
           </span>
         </div>
-        
-        <div className="product-footer">
-          <span className="product-views">
-            👁 {product.viewCount.toLocaleString()} views
-          </span>
-        </div>
       </div>
     </Link>
   )

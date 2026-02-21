@@ -10,10 +10,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalSHGs: 0,
-    totalVendors: 0,
-    totalBuyers: 0,
-    totalContacts: 0,
-    totalViews: 0
+    totalContacts: 0
   })
   const [topSHGInquiries, setTopSHGInquiries] = useState([])
   const [leastSHGInquiries, setLeastSHGInquiries] = useState([])
@@ -40,10 +37,7 @@ const AdminDashboard = () => {
       setStats({
         totalProducts: 0,
         totalSHGs: 0,
-        totalVendors: 0,
-        totalBuyers: 0,
-        totalContacts: 0,
-        totalViews: 0
+        totalContacts: 0
       })
     } finally {
       setStatsLoading(false)
@@ -152,42 +146,12 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🏪</div>
-          <div className="stat-content">
-            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
-              {statsLoading ? '...' : stats.totalVendors}
-            </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>Active Vendors</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon">👥</div>
-          <div className="stat-content">
-            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
-              {statsLoading ? '...' : stats.totalBuyers}
-            </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>Registered Buyers</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
           <div className="stat-icon">📞</div>
           <div className="stat-content">
             <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
               {statsLoading ? '...' : stats.totalContacts}
             </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>Vendor Contacts</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon">👁</div>
-          <div className="stat-content">
-            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
-              {statsLoading ? '...' : stats.totalViews.toLocaleString()}
-            </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>Product Views</div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>No. of Inquiries</div>
           </div>
         </div>
       </div>

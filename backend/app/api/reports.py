@@ -41,9 +41,13 @@ async def export_inquiries(
         'Buyer Location',
         'Product Name',
         'Product ID',
+        'Product Description',
         'SHG Name',
         'SHG ID',
-        'IP Address'
+        'SHG Contact Person',
+        'SHG Mobile Number',
+        'SHG Mandal',
+        'SHG Village'
     ])
     
     # Write data rows
@@ -52,18 +56,26 @@ async def export_inquiries(
         product = db.query(Product).filter(Product.id == log.product_id).first()
         shg = db.query(SHG).filter(SHG.id == log.shg_id).first()
         
+        # Convert to IST (UTC+5:30)
+        from datetime import timedelta
+        ist_time = log.created_at + timedelta(hours=5, minutes=30) if log.created_at else None
+        
         writer.writerow([
             log.id,
-            log.created_at.strftime('%Y-%m-%d %H:%M:%S') if log.created_at else '',
+            ist_time.strftime('%Y-%m-%d %H:%M:%S') if ist_time else '',
             buyer.name if buyer else '',
             buyer.email if buyer else '',
             buyer.phone if buyer else '',
             buyer.location if buyer else '',
             product.name if product else '',
             product.id if product else '',
+            product.description if product else '',
             shg.name if shg else '',
             shg.id if shg else '',
-            log.ip_address or ''
+            shg.contact_person if shg else '',
+            shg.mobile_number if shg else '',
+            shg.mandal if shg else '',
+            shg.village if shg else ''
         ])
     
     # Prepare response
@@ -108,6 +120,10 @@ async def export_analytics(
         shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
         contact_count = db.query(ContactLog).filter(ContactLog.product_id == product.id).count()
         
+        # Convert to IST (UTC+5:30)
+        from datetime import timedelta
+        ist_time = product.created_at + timedelta(hours=5, minutes=30) if product.created_at else None
+        
         writer.writerow([
             product.id,
             product.name,
@@ -116,7 +132,7 @@ async def export_analytics(
             product.view_count,
             contact_count,
             'Active' if product.is_active else 'Inactive',
-            product.created_at.strftime('%Y-%m-%d') if product.created_at else ''
+            ist_time.strftime('%Y-%m-%d') if ist_time else ''
         ])
     
     # Prepare response
@@ -148,7 +164,6 @@ async def export_products(
         'Product Name',
         'Description',
         'Category',
-        'Subcategory',
         'SHG Name',
         'SHG Contact Person',
         'SHG Mobile',
@@ -167,12 +182,15 @@ async def export_products(
         category = db.query(Category).filter(Category.id == product.category_id).first()
         shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
         
+        # Convert to IST (UTC+5:30)
+        from datetime import timedelta
+        ist_time = product.created_at + timedelta(hours=5, minutes=30) if product.created_at else None
+        
         writer.writerow([
             product.id,
             product.name,
             product.description,
             category.name if category else '',
-            '',  # subcategory
             shg.name if shg else '',
             shg.contact_person if shg else '',
             shg.mobile_number if shg else '',
@@ -180,7 +198,7 @@ async def export_products(
             shg.village if shg else '',
             product.view_count,
             'Active' if product.is_active else 'Inactive',
-            product.created_at.strftime('%Y-%m-%d') if product.created_at else '',
+            ist_time.strftime('%Y-%m-%d') if ist_time else '',
             product.image_url or '',
             product.youtube_link or '',
             product.instagram_link or ''

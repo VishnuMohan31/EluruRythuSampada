@@ -3,7 +3,7 @@ import Button from '@components/common/Button'
 
 const SystemConfig = () => {
   const [appName, setAppName] = useState('Swayam Eluru Market Place')
-  const [theme, setTheme] = useState('Tribal Earth')
+  const [theme, setTheme] = useState('Earth Theme')
   const [language, setLanguage] = useState('en')
 
   const handleSave = (e) => {
@@ -63,7 +63,7 @@ const SystemConfig = () => {
                 backgroundColor: 'var(--color-surface)'
               }}
             >
-              <option value="Tribal Earth">Tribal Earth</option>
+              <option value="Earth Theme">Earth Theme</option>
               <option value="Government Heritage">Government Heritage</option>
               <option value="Modern Marketplace">Modern Marketplace</option>
             </select>

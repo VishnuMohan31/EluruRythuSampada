@@ -8,9 +8,9 @@ from datetime import datetime
 
 class InquiryBase(BaseModel):
     name: str
-    email: EmailStr
+    email: Optional[EmailStr] = None  # Optional
     location: str
-    phone: Optional[str] = None
+    phone: str  # Required
     product_id: str
     ip_address: Optional[str] = None  # Optional - backend will capture from request
 

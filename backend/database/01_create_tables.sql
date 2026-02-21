@@ -222,7 +222,7 @@ CREATE SEQUENCE IF NOT EXISTS daily_analytics_id_seq START 1;
 
 -- Default admin user (password: admin123)
 INSERT INTO users (id, email, full_name, hashed_password, role, is_active)
-VALUES ('ADM001', 'admin@shg.com', 'System Administrator', '$2b$12$DNHMGt4qtjJdCNhf9VDFaO3eaQtgKqPgCDOlt6uTpk1xKGP1FVrhK', 'admin', TRUE);
+VALUES ('ADM001', 'admin@datalegos.com', 'System Administrator', '$2b$12$DNHMGt4qtjJdCNhf9VDFaO3eaQtgKqPgCDOlt6uTpk1xKGP1FVrhK', 'admin', TRUE);
 
 -- Set sequence to start after default admin
 SELECT setval('users_id_seq', 1);

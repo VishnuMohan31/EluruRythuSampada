@@ -10,7 +10,6 @@ const SuperAdminDashboard = () => {
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalSHGs: 0,
-    totalVendors: 0,
     totalContacts: 0
   })
   const [topSHGInquiries, setTopSHGInquiries] = useState([])
@@ -36,7 +35,6 @@ const SuperAdminDashboard = () => {
       setStats({
         totalProducts: data.totalProducts,
         totalSHGs: data.totalSHGs,
-        totalVendors: data.totalVendors,
         totalContacts: data.totalContacts
       })
     } catch (error) {
@@ -44,7 +42,6 @@ const SuperAdminDashboard = () => {
       setStats({
         totalProducts: 0,
         totalSHGs: 0,
-        totalVendors: 0,
         totalContacts: 0
       })
     } finally {
@@ -153,22 +150,12 @@ const SuperAdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🏪</div>
-          <div className="stat-content">
-            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
-              {statsLoading ? '...' : stats.totalVendors}
-            </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>Vendors</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
           <div className="stat-icon">📞</div>
           <div className="stat-content">
             <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
               {statsLoading ? '...' : stats.totalContacts}
             </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>Contacts</div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>No. of Inquiries</div>
           </div>
         </div>
       </div>

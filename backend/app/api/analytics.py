@@ -30,10 +30,7 @@ async def get_stats(
     return {
         "totalProducts": total_products,
         "totalSHGs": total_shgs,
-        "totalVendors": 0,  # Vendors removed
-        "totalBuyers": 0,  # Not tracking buyers yet
-        "totalContacts": total_contacts,
-        "totalViews": total_views
+        "totalContacts": total_contacts
     }
 
 

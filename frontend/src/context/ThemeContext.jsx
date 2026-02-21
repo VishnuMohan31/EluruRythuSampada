@@ -25,7 +25,7 @@ const themes = {
     }
   },
   'tribal-earth': {
-    name: 'Tribal Earth',
+    name: 'Earth Theme',
     colors: {
       primary: '#8B4513',
       secondary: '#D2691E',

@@ -76,7 +76,7 @@ const Footer = () => {
             © 2026 Swayam Eluru Market Place. All rights reserved.
           </p>
           <p className="footer-credit">
-            Powered by DataLegos Tech Solutions Pvt. Ltd.
+            <strong>Powered by</strong> DataLegos Tech Solutions Pvt. Ltd.
           </p>
         </div>
       </div>

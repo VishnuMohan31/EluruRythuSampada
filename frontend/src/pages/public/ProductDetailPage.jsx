@@ -165,9 +165,6 @@ const ProductDetailPage = () => {
               <span className="meta-item">
                 <strong>SHG:</strong> {product.shg?.name || 'N/A'}
               </span>
-              <span className="meta-item">
-                <strong>Views:</strong> 👁 {product.view_count?.toLocaleString() || 0}
-              </span>
             </div>
 
             <div className="product-description">
@@ -256,13 +253,13 @@ const ProductDetailPage = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Email *</label>
+                <label>Phone Number *</label>
                 <input 
-                  type="email" 
-                  name="email"
-                  value={formData.email}
+                  type="tel" 
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleInputChange}
-                  placeholder="your@email.com" 
+                  placeholder="+91 9876543210" 
                   required 
                 />
               </div>
@@ -278,13 +275,13 @@ const ProductDetailPage = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Phone (Optional)</label>
+                <label>Email (Optional)</label>
                 <input 
-                  type="tel" 
-                  name="phone"
-                  value={formData.phone}
+                  type="email" 
+                  name="email"
+                  value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="+91 1234567890" 
+                  placeholder="your@email.com" 
                 />
               </div>
               <Button variant="primary" size="large" fullWidth type="submit" disabled={submitting}>

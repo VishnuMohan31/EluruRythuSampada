@@ -52,8 +52,8 @@ async def create_inquiry(
     # For now, we'll use the provided IP or default
     client_ip = inquiry.ip_address if inquiry.ip_address and inquiry.ip_address != '0.0.0.0' else '127.0.0.1'
     
-    # Create or get buyer
-    buyer = db.query(Buyer).filter(Buyer.email == inquiry.email).first()
+    # Create or get buyer (lookup by phone number)
+    buyer = db.query(Buyer).filter(Buyer.phone == inquiry.phone).first()
     if not buyer:
         # Generate buyer ID
         result = db.execute(text("SELECT nextval('buyers_id_seq')"))
@@ -63,7 +63,7 @@ async def create_inquiry(
         buyer = Buyer(
             id=buyer_id,
             name=inquiry.name,
-            email=inquiry.email,
+            email=inquiry.email or '',  # Email is optional now
             location=inquiry.location,
             phone=inquiry.phone
         )
