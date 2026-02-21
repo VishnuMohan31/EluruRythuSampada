@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
-import { api, logger } from '@/utils/api'
+import { api, logger, showToast } from '@/utils/api'
 import '../admin/Dashboard.css'
 
 const ManageSHGs = () => {
@@ -48,7 +48,7 @@ const ManageSHGs = () => {
       setSHGs(mappedData)
     } catch (error) {
       logger.error('Fetch SHGs Failed', error.message)
-      alert('Failed to load SHGs')
+      showToast('Failed to load SHGs', 'error')
     } finally {
       setLoading(false)
     }
@@ -99,7 +99,7 @@ const ManageSHGs = () => {
         const updated = await api.put(`/api/shgs/${editingSHG.id}`, shgData)
         logger.success('SHG Updated', updated)
         
-        alert('SHG updated successfully!')
+        showToast('SHG updated successfully!', 'success')
         fetchSHGs()
       } else {
         // Add new SHG
@@ -107,14 +107,14 @@ const ManageSHGs = () => {
         const created = await api.post('/api/shgs/', shgData)
         logger.success('SHG Created', created)
         
-        alert('SHG added successfully!')
+        showToast('SHG added successfully!', 'success')
         fetchSHGs()
       }
       
       closeModal()
     } catch (error) {
       logger.error('Save SHG Failed', error.message)
-      alert('Failed to save SHG')
+      showToast('Failed to save SHG', 'error')
     }
   }
 
@@ -157,10 +157,10 @@ const ManageSHGs = () => {
       setSHGs(prev => prev.map(shg => 
         shg.id === shgId ? { ...shg, status: 'Inactive' } : shg
       ))
-      alert('SHG deactivated successfully!')
+      showToast('SHG deactivated successfully!', 'success')
     } catch (error) {
       logger.error('Deactivate SHG Failed', error.message)
-      alert('Failed to deactivate SHG')
+      showToast('Failed to deactivate SHG', 'error')
     }
   }
 
@@ -175,10 +175,10 @@ const ManageSHGs = () => {
       setSHGs(prev => prev.map(shg => 
         shg.id === shgId ? { ...shg, status: 'Active' } : shg
       ))
-      alert('SHG reactivated successfully!')
+      showToast('SHG reactivated successfully!', 'success')
     } catch (error) {
       logger.error('Reactivate SHG Failed', error.message)
-      alert('Failed to reactivate SHG')
+      showToast('Failed to reactivate SHG', 'error')
     }
   }
 

@@ -45,10 +45,23 @@ async def create_inquiry(
     db: Session = Depends(get_db)
 ):
     """Create new contact log (public endpoint)"""
+    from sqlalchemy import text
+    from fastapi import Request
+    
+    # Note: IP address should be captured from request headers in production
+    # For now, we'll use the provided IP or default
+    client_ip = inquiry.ip_address if inquiry.ip_address and inquiry.ip_address != '0.0.0.0' else '127.0.0.1'
+    
     # Create or get buyer
     buyer = db.query(Buyer).filter(Buyer.email == inquiry.email).first()
     if not buyer:
+        # Generate buyer ID
+        result = db.execute(text("SELECT nextval('buyers_id_seq')"))
+        seq_num = result.scalar()
+        buyer_id = f"BYR{seq_num:03d}"
+        
         buyer = Buyer(
+            id=buyer_id,
             name=inquiry.name,
             email=inquiry.email,
             location=inquiry.location,
@@ -62,17 +75,20 @@ async def create_inquiry(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    # Generate contact log ID
+    result = db.execute(text("SELECT nextval('contact_logs_id_seq')"))
+    seq_num = result.scalar()
+    contact_id = f"CNT{seq_num:03d}"
+    
     # Create contact log
     contact_log = ContactLog(
+        id=contact_id,
         buyer_id=buyer.id,
         product_id=inquiry.product_id,
         shg_id=product.shg_id,
-        ip_address=inquiry.ip_address
+        ip_address=client_ip
     )
     db.add(contact_log)
-    
-    # Update product view count
-    product.view_count += 1
     
     db.commit()
     db.refresh(contact_log)

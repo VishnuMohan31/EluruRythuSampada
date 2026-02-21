@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
-import { api, logger } from '@/utils/api'
+import { api, logger, showToast } from '@/utils/api'
 import '../admin/Dashboard.css'
 
 const ManageProducts = () => {
@@ -62,7 +62,7 @@ const ManageProducts = () => {
       setProducts(mappedData)
     } catch (error) {
       logger.error('Fetch Products Failed', error.message)
-      alert('Failed to load products')
+      showToast('Failed to load products', 'error')
     } finally {
       setLoading(false)
     }
@@ -140,10 +140,10 @@ const ManageProducts = () => {
       setProducts(prev => prev.map(product => 
         product.id === productId ? { ...product, status: 'Inactive' } : product
       ))
-      alert('Product deactivated successfully!')
+      showToast('Product deactivated successfully!', 'success')
     } catch (error) {
       logger.error('Deactivate Product Failed', error.message)
-      alert('Failed to deactivate product')
+      showToast('Failed to deactivate product', 'error')
     }
   }
 
@@ -158,10 +158,10 @@ const ManageProducts = () => {
       setProducts(prev => prev.map(product => 
         product.id === productId ? { ...product, status: 'Active' } : product
       ))
-      alert('Product reactivated successfully!')
+      showToast('Product reactivated successfully!', 'success')
     } catch (error) {
       logger.error('Reactivate Product Failed', error.message)
-      alert('Failed to reactivate product')
+      showToast('Failed to reactivate product', 'error')
     }
   }
 
@@ -175,12 +175,12 @@ const ManageProducts = () => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file')
+        showToast('Please select an image file', 'error')
         return
       }
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB')
+        showToast('Image size should be less than 5MB', 'error')
         return
       }
       
@@ -218,7 +218,7 @@ const ManageProducts = () => {
       const shg = shgs.find(s => s.name === formData.shgName)
 
       if (!category || !shg) {
-        alert('Please select valid category and SHG')
+        showToast('Please select valid category and SHG', 'error')
         return
       }
 
@@ -238,21 +238,21 @@ const ManageProducts = () => {
         const updated = await api.put(`/api/products/${editingProduct.id}`, productData)
         logger.success('Product Updated', updated)
         
-        alert('Product updated successfully!')
+        showToast('Product updated successfully!', 'success')
       } else {
         // Create new product
         logger.info('Creating Product', formData.name)
         const created = await api.post('/api/products/', productData)
         logger.success('Product Created', created)
         
-        alert('Product added successfully!')
+        showToast('Product added successfully!', 'success')
       }
       
       fetchProducts()
       closeModal()
     } catch (error) {
       logger.error('Save Product Failed', error.message)
-      alert('Failed to save product')
+      showToast('Failed to save product', 'error')
     }
   }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Eye, EyeOff, User, Mail, Phone, Shield } from 'lucide-react'
 import Button from '../../components/common/Button'
-import { api, logger } from '../../utils/api'
+import { api, logger, showToast } from '../../utils/api'
 
 const Profile = () => {
   const [profile, setProfile] = useState(null)
@@ -51,12 +51,12 @@ const Profile = () => {
       })
       
       logger.success('Profile Updated', 'successfully')
-      alert('Profile updated successfully!')
+      showToast('Profile updated successfully!', 'success')
       setIsEditing(false)
       fetchProfile()
     } catch (error) {
       logger.error('Update Profile Failed', error.message)
-      alert(error.message || 'Failed to update profile')
+      showToast(error.message || 'Failed to update profile', 'error')
     }
   }
 
@@ -64,12 +64,12 @@ const Profile = () => {
     e.preventDefault()
     
     if (newPassword !== confirmPassword) {
-      alert('New passwords do not match!')
+      showToast('New passwords do not match!', 'error')
       return
     }
     
     if (newPassword.length < 6) {
-      alert('New password must be at least 6 characters long!')
+      showToast('New password must be at least 6 characters long!', 'error')
       return
     }
 
@@ -82,14 +82,14 @@ const Profile = () => {
       })
       
       logger.success('Password Changed', 'successfully')
-      alert('Password changed successfully!')
+      showToast('Password changed successfully!', 'success')
       
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
     } catch (error) {
       logger.error('Change Password Failed', error.message)
-      alert(error.message || 'Failed to change password')
+      showToast(error.message || 'Failed to change password', 'error')
     }
   }
 

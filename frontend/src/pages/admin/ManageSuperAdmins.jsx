@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw, Eye, EyeOff } from 'lucide-react'
 import Button from '@components/common/Button'
-import { api, logger } from '@/utils/api'
+import { api, logger, showToast } from '@/utils/api'
 import './Dashboard.css'
 
 const ManageSuperAdmins = () => {
@@ -117,7 +117,7 @@ const ManageSuperAdmins = () => {
     
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!')
+      showToast('Passwords do not match!', 'error')
       return
     }
 
@@ -141,7 +141,7 @@ const ManageSuperAdmins = () => {
         const updatedUser = await api.put(`/api/users/${editingAdmin.id}`, updateData)
         logger.success('Super Admin Updated', updatedUser)
         
-        alert('Super Admin updated successfully!')
+        showToast('Super Admin updated successfully!', 'success')
         fetchSuperAdmins()
       } else {
         // Add new admin
@@ -160,14 +160,14 @@ const ManageSuperAdmins = () => {
         const newUser = await api.post('/api/users/', createData)
         logger.success('Super Admin Created', newUser)
         
-        alert('Super Admin added successfully!')
+        showToast('Super Admin added successfully!', 'success')
         fetchSuperAdmins()
       }
       
       closeModal()
     } catch (error) {
       logger.error('Save Super Admin Failed', error.message)
-      alert(error.message || 'Failed to save super admin. Please try again.')
+      showToast(error.message || 'Failed to save super admin', 'error')
     }
   }
 
@@ -208,11 +208,11 @@ const ManageSuperAdmins = () => {
         await api.put(`/api/users/${adminId}/deactivate`)
         logger.success('Super Admin Deactivated', adminId)
         
-        alert('Super Admin deactivated successfully!')
+        showToast('Super Admin deactivated successfully!', 'success')
         fetchSuperAdmins()
       } catch (error) {
         logger.error('Deactivate Super Admin Failed', error.message)
-        alert('Failed to deactivate super admin. Please try again.')
+        showToast('Failed to deactivate super admin', 'error')
       }
     }
   }
@@ -224,11 +224,11 @@ const ManageSuperAdmins = () => {
         await api.put(`/api/users/${adminId}/reactivate`)
         logger.success('Super Admin Reactivated', adminId)
         
-        alert('Super Admin reactivated successfully!')
+        showToast('Super Admin reactivated successfully!', 'success')
         fetchSuperAdmins()
       } catch (error) {
         logger.error('Reactivate Super Admin Failed', error.message)
-        alert('Failed to reactivate super admin. Please try again.')
+        showToast('Failed to reactivate super admin', 'error')
       }
     }
   }

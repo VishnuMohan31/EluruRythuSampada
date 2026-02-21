@@ -4,6 +4,22 @@
 
 const API_BASE_URL = 'http://localhost:8000'
 
+// Toast notification system
+let toastCallback = null
+
+export const setToastCallback = (callback) => {
+  toastCallback = callback
+}
+
+export const showToast = (message, type = 'success') => {
+  if (toastCallback) {
+    toastCallback(message, type)
+  } else {
+    // Fallback to alert if toast not initialized
+    alert(message)
+  }
+}
+
 // Console logging utility with colors and timestamps
 const logger = {
   info: (action, details) => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
-import { api, logger } from '@/utils/api'
+import { api, logger, showToast } from '@/utils/api'
 import '../admin/Dashboard.css'
 
 const ManageCategories = () => {
@@ -39,7 +39,7 @@ const ManageCategories = () => {
       setCategories(mappedData)
     } catch (error) {
       logger.error('Fetch Categories Failed', error.message)
-      alert('Failed to load categories')
+      showToast('Failed to load categories', 'error')
     } finally {
       setLoading(false)
     }
@@ -64,21 +64,21 @@ const ManageCategories = () => {
         const updated = await api.put(`/api/categories/${editingCategory.id}`, categoryData)
         logger.success('Category Updated', updated)
         
-        alert('Category updated successfully!')
+        showToast('Category updated successfully!', 'success')
         fetchCategories()
       } else {
         logger.info('Creating Category', formData.name)
         const created = await api.post('/api/categories/', categoryData)
         logger.success('Category Created', created)
         
-        alert('Category added successfully!')
+        showToast('Category added successfully!', 'success')
         fetchCategories()
       }
       
       closeModal()
     } catch (error) {
       logger.error('Save Category Failed', error.message)
-      alert(error.message || 'Failed to save category')
+      showToast(error.message || 'Failed to save category', 'error')
     }
   }
 
@@ -111,10 +111,10 @@ const ManageCategories = () => {
       setCategories(categories.map(cat => 
         cat.id === categoryId ? { ...cat, status: 'Inactive' } : cat
       ))
-      alert('Category deactivated successfully!')
+      showToast('Category deactivated successfully!', 'success')
     } catch (error) {
       logger.error('Deactivate Category Failed', error.message)
-      alert('Failed to deactivate category')
+      showToast('Failed to deactivate category', 'error')
     }
   }
 
@@ -129,10 +129,10 @@ const ManageCategories = () => {
       setCategories(categories.map(cat => 
         cat.id === categoryId ? { ...cat, status: 'Active' } : cat
       ))
-      alert('Category reactivated successfully!')
+      showToast('Category reactivated successfully!', 'success')
     } catch (error) {
       logger.error('Reactivate Category Failed', error.message)
-      alert('Failed to reactivate category')
+      showToast('Failed to reactivate category', 'error')
     }
   }
 

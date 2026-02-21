@@ -12,7 +12,7 @@ class InquiryBase(BaseModel):
     location: str
     phone: Optional[str] = None
     product_id: str
-    ip_address: str
+    ip_address: Optional[str] = None  # Optional - backend will capture from request
 
 
 class InquiryCreate(InquiryBase):

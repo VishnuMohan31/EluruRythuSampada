@@ -17,6 +17,8 @@ class CategoryNested(BaseModel):
 class SHGNested(BaseModel):
     id: str
     name: str
+    contact_person: str
+    mobile_number: str
     mandal: str
     village: str
     

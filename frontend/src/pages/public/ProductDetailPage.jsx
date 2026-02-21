@@ -1,18 +1,115 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { mockProducts } from '@/data/mockData'
 import Button from '@components/common/Button'
+import { useToast } from '@components/common/ToastContainer'
 import './ProductDetailPage.css'
+
+const API_BASE_URL = 'http://localhost:8000'
 
 const ProductDetailPage = () => {
   const { id } = useParams()
-  const product = mockProducts.find(p => p.id === id) || mockProducts[0]
+  const { showToast } = useToast()
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [showContactModal, setShowContactModal] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [relatedProducts, setRelatedProducts] = useState([])
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    location: '',
+    phone: ''
+  })
+  const [submitting, setSubmitting] = useState(false)
 
-  const relatedProducts = mockProducts
-    .filter(p => p.category.id === product.category.id && p.id !== product.id)
-    .slice(0, 3)
+  useEffect(() => {
+    fetchProduct()
+  }, [id])
+
+  const fetchProduct = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${API_BASE_URL}/api/products/${id}`)
+      if (!response.ok) throw new Error('Product not found')
+      
+      const data = await response.json()
+      setProduct(data)
+      
+      // Fetch related products
+      if (data.category_id) {
+        fetchRelatedProducts(data.category_id, data.id)
+      }
+    } catch (error) {
+      console.error('Failed to fetch product:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchRelatedProducts = async (categoryId, currentProductId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/products?category_id=${categoryId}&limit=4`)
+      const data = await response.json()
+      setRelatedProducts(data.filter(p => p.id !== currentProductId).slice(0, 3))
+    } catch (error) {
+      console.error('Failed to fetch related products:', error)
+    }
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSubmitting(true)
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/inquiries/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: product.id,
+          name: formData.name,
+          email: formData.email,
+          location: formData.location,
+          phone: formData.phone || null
+          // ip_address removed - backend will capture it
+        })
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.detail || 'Failed to submit inquiry')
+      }
+
+      setShowContactModal(false)
+      setShowSuccessModal(true)
+      setFormData({ name: '', email: '', location: '', phone: '' })
+      showToast('Inquiry submitted successfully!', 'success')
+    } catch (error) {
+      console.error('Failed to submit inquiry:', error)
+      showToast(error.message || 'Failed to submit inquiry', 'error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (loading) {
+    return <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>Loading...</div>
+  }
+
+  if (!product) {
+    return <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>Product not found</div>
+  }
+
+  const productImages = product.image_url 
+    ? [`${API_BASE_URL}${product.image_url}`] 
+    : ['/placeholder-product.jpg']
 
   return (
     <div className="product-detail-page">
@@ -32,42 +129,44 @@ const ProductDetailPage = () => {
           <div className="product-gallery">
             <div className="main-image">
               <img
-                src={product.images[selectedImage]}
+                src={productImages[selectedImage]}
                 alt={product.name}
                 className="gallery-main-img"
               />
             </div>
-            <div className="thumbnail-list">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
-                  onClick={() => setSelectedImage(index)}
-                >
-                  <img src={image} alt={`${product.name} ${index + 1}`} />
-                </button>
-              ))}
-            </div>
+            {productImages.length > 1 && (
+              <div className="thumbnail-list">
+                {productImages.map((image, index) => (
+                  <button
+                    key={index}
+                    className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(index)}
+                  >
+                    <img src={image} alt={`${product.name} ${index + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
           <div className="product-info-section">
             <div className="product-shg-badge">
               <span className="shg-icon">🏛</span>
-              <span>{product.shg.name} • {product.shg.state}</span>
+              <span>{product.shg?.name || 'N/A'} • {product.shg?.village || ''}, {product.shg?.mandal || ''}</span>
             </div>
 
             <h1 className="product-title">{product.name}</h1>
 
             <div className="product-meta">
               <span className="meta-item">
-                <strong>Category:</strong> {product.category.name}
+                <strong>Category:</strong> {product.category?.name || 'N/A'}
               </span>
               <span className="meta-item">
-                <strong>Artisan:</strong> {product.vendor.name}
+                <strong>SHG:</strong> {product.shg?.name || 'N/A'}
               </span>
               <span className="meta-item">
-                <strong>Views:</strong> 👁 {product.viewCount.toLocaleString()}
+                <strong>Views:</strong> 👁 {product.view_count?.toLocaleString() || 0}
               </span>
             </div>
 
@@ -76,17 +175,17 @@ const ProductDetailPage = () => {
               <p>{product.description}</p>
             </div>
 
-            {(product.youtubeLink || product.instagramLink) && (
+            {(product.youtube_link || product.instagram_link) && (
               <div className="product-social">
                 <h4>See More</h4>
                 <div className="social-links">
-                  {product.youtubeLink && (
-                    <a href={product.youtubeLink} target="_blank" rel="noopener noreferrer" className="social-link">
+                  {product.youtube_link && (
+                    <a href={product.youtube_link} target="_blank" rel="noopener noreferrer" className="social-link">
                       📺 Watch Video
                     </a>
                   )}
-                  {product.instagramLink && (
-                    <a href={product.instagramLink} target="_blank" rel="noopener noreferrer" className="social-link">
+                  {product.instagram_link && (
+                    <a href={product.instagram_link} target="_blank" rel="noopener noreferrer" className="social-link">
                       📷 Instagram
                     </a>
                   )}
@@ -121,9 +220,12 @@ const ProductDetailPage = () => {
                   to={`/products/${relatedProduct.id}`}
                   className="related-card"
                 >
-                  <img src={relatedProduct.images[0]} alt={relatedProduct.name} />
+                  <img 
+                    src={relatedProduct.image_url ? `${API_BASE_URL}${relatedProduct.image_url}` : '/placeholder-product.jpg'} 
+                    alt={relatedProduct.name} 
+                  />
                   <h4>{relatedProduct.name}</h4>
-                  <p>{relatedProduct.shg.name}</p>
+                  <p>{relatedProduct.shg?.name || 'N/A'}</p>
                 </Link>
               ))}
             </div>
@@ -141,33 +243,86 @@ const ProductDetailPage = () => {
             <h2>Contact Vendor</h2>
             <p>To contact the vendor, please provide your details:</p>
             
-            <form className="contact-form">
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Name *</label>
-                <input type="text" placeholder="Your name" required />
+                <input 
+                  type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Your name" 
+                  required 
+                />
               </div>
               <div className="form-group">
                 <label>Email *</label>
-                <input type="email" placeholder="your@email.com" required />
+                <input 
+                  type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="your@email.com" 
+                  required 
+                />
               </div>
               <div className="form-group">
                 <label>Location *</label>
-                <input type="text" placeholder="Your city/state" required />
+                <input 
+                  type="text" 
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  placeholder="Your city/state" 
+                  required 
+                />
               </div>
               <div className="form-group">
                 <label>Phone (Optional)</label>
-                <input type="tel" placeholder="+91 1234567890" />
+                <input 
+                  type="tel" 
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="+91 1234567890" 
+                />
               </div>
-              <div className="form-group">
-                <label>CAPTCHA *</label>
-                <div className="captcha-placeholder">
-                  [CAPTCHA will be integrated]
-                </div>
-              </div>
-              <Button variant="primary" size="large" fullWidth type="submit">
-                Submit & Get Vendor Details
+              <Button variant="primary" size="large" fullWidth type="submit" disabled={submitting}>
+                {submitting ? 'Submitting...' : 'Submit & Get Vendor Details'}
               </Button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay" onClick={() => setShowSuccessModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowSuccessModal(false)}>
+              ✕
+            </button>
+            <h2>✅ Inquiry Submitted!</h2>
+            <p>Thank you for your interest. Here are the vendor details:</p>
+            
+            <div className="vendor-details">
+              <div className="detail-item">
+                <strong>SHG Name:</strong> {product.shg?.name || 'N/A'}
+              </div>
+              <div className="detail-item">
+                <strong>Contact Person:</strong> {product.shg?.contact_person || 'N/A'}
+              </div>
+              <div className="detail-item">
+                <strong>Mobile:</strong> <a href={`tel:${product.shg?.mobile_number}`}>{product.shg?.mobile_number || 'N/A'}</a>
+              </div>
+              <div className="detail-item">
+                <strong>Location:</strong> {product.shg?.village}, {product.shg?.mandal}
+              </div>
+            </div>
+            
+            <Button variant="primary" size="large" fullWidth onClick={() => setShowSuccessModal(false)}>
+              Close
+            </Button>
           </div>
         </div>
       )}
