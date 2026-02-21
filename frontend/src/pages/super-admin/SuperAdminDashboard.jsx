@@ -34,10 +34,10 @@ const SuperAdminDashboard = () => {
       logger.success('Fetched Dashboard Stats', data)
       
       setStats({
-        totalProducts: data.totalProducts,
-        totalSHGs: data.totalSHGs,
-        totalContacts: data.totalContacts,
-        totalCategories: data.totalCategories
+        totalProducts: data.totalProducts || 0,
+        totalSHGs: data.totalSHGs || 0,
+        totalContacts: data.totalContacts || 0,
+        totalCategories: data.totalCategories || 0
       })
     } catch (error) {
       logger.error('Fetch Dashboard Stats Failed', error.message)

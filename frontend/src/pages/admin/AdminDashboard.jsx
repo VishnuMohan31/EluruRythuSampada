@@ -32,7 +32,13 @@ const AdminDashboard = () => {
       
       const data = await api.get('/api/analytics/stats')
       logger.success('Fetched Dashboard Stats', data)
-      setStats(data)
+      
+      setStats({
+        totalProducts: data.totalProducts || 0,
+        totalSHGs: data.totalSHGs || 0,
+        totalContacts: data.totalContacts || 0,
+        totalSuperAdmins: data.totalSuperAdmins || 0
+      })
     } catch (error) {
       logger.error('Fetch Dashboard Stats Failed', error.message)
       setStats({
@@ -153,7 +159,7 @@ const AdminDashboard = () => {
             <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
               {statsLoading ? '...' : stats.totalSuperAdmins}
             </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>No. of Active Super Admins</div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>Active Super Admins</div>
           </div>
         </div>
 
