@@ -10,7 +10,8 @@ const SuperAdminDashboard = () => {
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalSHGs: 0,
-    totalContacts: 0
+    totalContacts: 0,
+    totalCategories: 0
   })
   const [topSHGInquiries, setTopSHGInquiries] = useState([])
   const [leastSHGInquiries, setLeastSHGInquiries] = useState([])
@@ -35,14 +36,16 @@ const SuperAdminDashboard = () => {
       setStats({
         totalProducts: data.totalProducts,
         totalSHGs: data.totalSHGs,
-        totalContacts: data.totalContacts
+        totalContacts: data.totalContacts,
+        totalCategories: data.totalCategories
       })
     } catch (error) {
       logger.error('Fetch Dashboard Stats Failed', error.message)
       setStats({
         totalProducts: 0,
         totalSHGs: 0,
-        totalContacts: 0
+        totalContacts: 0,
+        totalCategories: 0
       })
     } finally {
       setStatsLoading(false)
@@ -146,6 +149,16 @@ const SuperAdminDashboard = () => {
               {statsLoading ? '...' : stats.totalSHGs}
             </div>
             <div className="stat-label" style={{ color: '#ffffff' }}>SHGs</div>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon">📂</div>
+          <div className="stat-content">
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalCategories}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>No. of Categories</div>
           </div>
         </div>
 

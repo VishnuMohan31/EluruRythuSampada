@@ -11,6 +11,8 @@ from ..models.product import Product
 from ..models.shg import SHG
 from ..models.inquiry import ContactLog
 from ..models.product_view import ProductView
+from ..models.category import Category
+from ..models.user import User
 
 router = APIRouter()
 
@@ -25,12 +27,15 @@ async def get_stats(
     total_products = db.query(Product).filter(Product.is_active == True).count()
     total_shgs = db.query(SHG).filter(SHG.is_active == True).count()
     total_contacts = db.query(ContactLog).count()
-    total_views = db.query(ProductView).count()
+    total_categories = db.query(Category).filter(Category.is_active == True).count()
+    total_super_admins = db.query(User).filter(User.role == 'super_admin', User.is_active == True).count()
     
     return {
         "totalProducts": total_products,
         "totalSHGs": total_shgs,
-        "totalContacts": total_contacts
+        "totalContacts": total_contacts,
+        "totalCategories": total_categories,
+        "totalSuperAdmins": total_super_admins
     }
 
 

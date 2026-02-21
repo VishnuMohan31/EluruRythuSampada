@@ -23,7 +23,9 @@ const Reports = () => {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `inquiries_export_${new Date().toISOString().split('T')[0]}.csv`
+      const today = new Date()
+      const dateStr = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`
+      a.download = `inquiries_export_${dateStr}.csv`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
@@ -56,7 +58,9 @@ const Reports = () => {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `analytics_export_${new Date().toISOString().split('T')[0]}.csv`
+      const today = new Date()
+      const dateStr = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`
+      a.download = `analytics_export_${dateStr}.csv`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)

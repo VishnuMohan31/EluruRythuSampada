@@ -10,7 +10,8 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalSHGs: 0,
-    totalContacts: 0
+    totalContacts: 0,
+    totalSuperAdmins: 0
   })
   const [topSHGInquiries, setTopSHGInquiries] = useState([])
   const [leastSHGInquiries, setLeastSHGInquiries] = useState([])
@@ -37,7 +38,8 @@ const AdminDashboard = () => {
       setStats({
         totalProducts: 0,
         totalSHGs: 0,
-        totalContacts: 0
+        totalContacts: 0,
+        totalSuperAdmins: 0
       })
     } finally {
       setStatsLoading(false)
@@ -142,6 +144,16 @@ const AdminDashboard = () => {
               {statsLoading ? '...' : stats.totalSHGs}
             </div>
             <div className="stat-label" style={{ color: '#ffffff' }}>SHG Communities</div>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon">👤</div>
+          <div className="stat-content">
+            <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
+              {statsLoading ? '...' : stats.totalSuperAdmins}
+            </div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>No. of Active Super Admins</div>
           </div>
         </div>
 

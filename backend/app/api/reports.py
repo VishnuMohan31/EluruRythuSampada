@@ -62,7 +62,7 @@ async def export_inquiries(
         
         writer.writerow([
             log.id,
-            ist_time.strftime('%Y-%m-%d %H:%M:%S') if ist_time else '',
+            ist_time.strftime('%d/%m/%Y %H:%M:%S') if ist_time else '',
             buyer.name if buyer else '',
             buyer.email if buyer else '',
             buyer.phone if buyer else '',
@@ -132,7 +132,7 @@ async def export_analytics(
             product.view_count,
             contact_count,
             'Active' if product.is_active else 'Inactive',
-            ist_time.strftime('%Y-%m-%d') if ist_time else ''
+            ist_time.strftime('%d/%m/%Y') if ist_time else ''
         ])
     
     # Prepare response
@@ -198,7 +198,7 @@ async def export_products(
             shg.village if shg else '',
             product.view_count,
             'Active' if product.is_active else 'Inactive',
-            ist_time.strftime('%Y-%m-%d') if ist_time else '',
+            ist_time.strftime('%d/%m/%Y') if ist_time else '',
             product.image_url or '',
             product.youtube_link or '',
             product.instagram_link or ''
