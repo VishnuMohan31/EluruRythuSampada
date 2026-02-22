@@ -76,11 +76,30 @@ const ManageSHGs = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    // Mobile number validation
+    if (name === 'mobileNumber') {
+      const cleanedValue = value.replace(/[^\d+\s-]/g, '')
+      setFormData(prev => ({ ...prev, [name]: cleanedValue }))
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
+  }
+
+  const validatePhoneNumber = (phone) => {
+    // Extract only digits
+    const digits = phone.replace(/\D/g, '')
+    // Check if it's exactly 10 digits
+    return digits.length === 10
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // Validate phone number has exactly 10 digits
+    if (!validatePhoneNumber(formData.mobileNumber)) {
+      showToast('Mobile number must be 10 digits', 'error')
+      return
+    }
 
     try {
       const shgData = {
@@ -355,50 +374,6 @@ const ManageSHGs = () => {
                   />
                 </div>
 
-                {/* Contact Person */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Contact Person <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleInputChange}
-                    placeholder="Enter contact person name"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                {/* Mobile Number */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Mobile Number <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="mobileNumber"
-                    value={formData.mobileNumber}
-                    onChange={handleInputChange}
-                    placeholder="+91 9876543210"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
                 {/* Mandal */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
@@ -441,6 +416,58 @@ const ManageSHGs = () => {
                       fontSize: '0.875rem'
                     }}
                   />
+                </div>
+
+                {/* Contact Person */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Contact Person <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="contactPerson"
+                    value={formData.contactPerson}
+                    onChange={handleInputChange}
+                    placeholder="Enter contact person name"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem',
+                      border: '2px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                </div>
+
+                {/* Mobile Number */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Mobile Number <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="mobileNumber"
+                    value={formData.mobileNumber}
+                    onChange={handleInputChange}
+                    placeholder="Enter mobile number"
+                    minLength="10"
+                    maxLength="10"
+                    title="Mobile number must be 10 digits"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem',
+                      border: '2px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                  {formData.mobileNumber && !validatePhoneNumber(formData.mobileNumber) && (
+                    <small style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                      Mobile number must be 10 digits
+                    </small>
+                  )}
                 </div>
 
                 {/* Description */}

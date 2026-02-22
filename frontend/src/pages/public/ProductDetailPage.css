@@ -249,6 +249,9 @@
   justify-content: center;
   z-index: var(--z-modal);
   padding: var(--spacing-lg);
+  padding-top: 100px;
+  padding-bottom: 50px;
+  overflow-y: auto;
   animation: fadeIn 0.3s ease;
 }
 

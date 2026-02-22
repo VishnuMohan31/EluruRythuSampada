@@ -531,6 +531,50 @@ const ManageProducts = () => {
                   />
                 </div>
 
+                {/* Mandal */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Mandal <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="mandal"
+                    value={formData.mandal}
+                    onChange={handleInputChange}
+                    placeholder="Enter mandal"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem',
+                      border: '2px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                </div>
+
+                {/* Village */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Village <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="village"
+                    value={formData.village}
+                    onChange={handleInputChange}
+                    placeholder="Enter village"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem',
+                      border: '2px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                </div>
+
                 {/* Category */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
@@ -581,50 +625,6 @@ const ManageProducts = () => {
                       <option key={shg} value={shg}>{shg}</option>
                     ))}
                   </select>
-                </div>
-
-                {/* Mandal */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Mandal <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="mandal"
-                    value={formData.mandal}
-                    onChange={handleInputChange}
-                    placeholder="Enter mandal"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                {/* Village */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Village <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="village"
-                    value={formData.village}
-                    onChange={handleInputChange}
-                    placeholder="Enter village"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
                 </div>
 
                 {/* Product Image */}

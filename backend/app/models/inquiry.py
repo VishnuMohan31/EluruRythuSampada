@@ -15,9 +15,9 @@ class Buyer(Base):
     id = Column(String(20), primary_key=True, index=True)
     
     name = Column(String(100), nullable=False)
-    email = Column(String(255), nullable=False, index=True)
+    email = Column(String(255), nullable=True, index=True)  # Email is optional
     location = Column(String(200), nullable=False)
-    phone = Column(String(20), nullable=True)
+    phone = Column(String(20), nullable=False)  # Phone is required
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

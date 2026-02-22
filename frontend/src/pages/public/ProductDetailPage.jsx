@@ -61,11 +61,32 @@ const ProductDetailPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    
+    // Mobile number validation - only allow digits, +, spaces, and hyphens
+    if (name === 'phone') {
+      const cleanedValue = value.replace(/[^\d+\s-]/g, '')
+      setFormData(prev => ({ ...prev, [name]: cleanedValue }))
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
+  }
+
+  const validatePhoneNumber = (phone) => {
+    // Extract only digits
+    const digits = phone.replace(/\D/g, '')
+    // Check if it's exactly 10 digits
+    return digits.length === 10
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    // Validate phone number has exactly 10 digits
+    if (!validatePhoneNumber(formData.phone)) {
+      showToast('Mobile number must be 10 digits', 'error')
+      return
+    }
+    
     setSubmitting(true)
 
     try {
@@ -75,10 +96,9 @@ const ProductDetailPage = () => {
         body: JSON.stringify({
           product_id: product.id,
           name: formData.name,
-          email: formData.email,
+          email: formData.email || null,
           location: formData.location,
-          phone: formData.phone || null
-          // ip_address removed - backend will capture it
+          phone: formData.phone
         })
       })
 
@@ -259,9 +279,17 @@ const ProductDetailPage = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  placeholder="+91 9876543210" 
+                  placeholder="Enter phone number"
+                  minLength="10"
+                  maxLength="10"
+                  title="Mobile number must be 10 digits"
                   required 
                 />
+                {formData.phone && !validatePhoneNumber(formData.phone) && (
+                  <small style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                    Mobile number must be 10 digits
+                  </small>
+                )}
               </div>
               <div className="form-group">
                 <label>Location *</label>

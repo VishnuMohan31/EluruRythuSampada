@@ -104,6 +104,11 @@ const ManageSuperAdmins = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => {
+      // Mobile number validation
+      if (name === 'mobile') {
+        const cleanedValue = value.replace(/[^\d+\s-]/g, '')
+        return { ...prev, [name]: cleanedValue }
+      }
       // If state changes, reset district
       if (name === 'state') {
         return { ...prev, [name]: value, district: '' }
@@ -112,12 +117,25 @@ const ManageSuperAdmins = () => {
     })
   }
 
+  const validatePhoneNumber = (phone) => {
+    // Extract only digits
+    const digits = phone.replace(/\D/g, '')
+    // Check if it's exactly 10 digits
+    return digits.length === 10
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       showToast('Passwords do not match!', 'error')
+      return
+    }
+
+    // Validate phone number has exactly 10 digits
+    if (!validatePhoneNumber(formData.mobile)) {
+      showToast('Mobile number must be 10 digits', 'error')
       return
     }
 
@@ -464,50 +482,6 @@ const ManageSuperAdmins = () => {
                   />
                 </div>
 
-                {/* Email */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Email <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="admin@example.com"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
-                {/* Mobile */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Mobile Number <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={handleInputChange}
-                    placeholder="+91 9876543210"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
-
                 {/* State */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
@@ -560,6 +534,58 @@ const ManageSuperAdmins = () => {
                       <option key={district} value={district}>{district}</option>
                     ))}
                   </select>
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Email <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="admin@example.com"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem',
+                      border: '2px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                </div>
+
+                {/* Mobile */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Mobile Number <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="mobile"
+                    value={formData.mobile}
+                    onChange={handleInputChange}
+                    placeholder="Enter mobile number"
+                    minLength="10"
+                    maxLength="10"
+                    title="Mobile number must be 10 digits"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem',
+                      border: '2px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem'
+                    }}
+                  />
+                  {formData.mobile && !validatePhoneNumber(formData.mobile) && (
+                    <small style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                      Mobile number must be 10 digits
+                    </small>
+                  )}
                 </div>
 
                 {/* Password */}

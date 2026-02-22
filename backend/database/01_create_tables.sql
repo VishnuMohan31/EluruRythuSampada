@@ -117,9 +117,9 @@ CREATE INDEX idx_products_name ON products USING gin(name gin_trgm_ops);
 CREATE TABLE buyers (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255),
     location VARCHAR(200) NOT NULL,
-    phone VARCHAR(20),
+    phone VARCHAR(20) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_contact_at TIMESTAMP
 );

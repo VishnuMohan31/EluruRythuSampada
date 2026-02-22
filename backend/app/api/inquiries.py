@@ -63,7 +63,7 @@ async def create_inquiry(
         buyer = Buyer(
             id=buyer_id,
             name=inquiry.name,
-            email=inquiry.email or '',  # Email is optional now
+            email=inquiry.email if inquiry.email else None,  # Store None if email is empty
             location=inquiry.location,
             phone=inquiry.phone
         )
