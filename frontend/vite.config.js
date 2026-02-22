@@ -20,6 +20,13 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    host: '0.0.0.0',
+    allowedHosts: [
+      'swayameluruconnect.in',
+      'www.swayameluruconnect.in',
+      'localhost',
+      '62.171.191.132'
+    ],
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
