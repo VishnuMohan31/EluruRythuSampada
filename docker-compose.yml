@@ -93,7 +93,7 @@ services:
       - ./storage:/app/storage
       - ./backend/logs:/app/logs
     ports:
-      - "${BACKEND_PORT:-8000}:8000"
+      - "0.0.0.0:${BACKEND_PORT:-8000}:8000"
     networks:
       - shg_network
     depends_on:
