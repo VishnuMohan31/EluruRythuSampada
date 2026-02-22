@@ -2,13 +2,15 @@ import React from 'react'
 import Button from '@components/common/Button'
 import { logger } from '@/utils/api'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
 const Reports = () => {
   const handleExportInquiries = async () => {
     try {
       logger.info('Exporting Inquiries Report', 'CSV download')
       const token = localStorage.getItem('authToken')
       
-      const response = await fetch('http://localhost:8000/api/reports/inquiries/export', {
+      const response = await fetch(`${API_BASE_URL}/api/reports/inquiries/export`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -43,7 +45,7 @@ const Reports = () => {
       logger.info('Exporting Analytics Report', 'CSV download')
       const token = localStorage.getItem('authToken')
       
-      const response = await fetch('http://localhost:8000/api/reports/analytics/export', {
+      const response = await fetch(`${API_BASE_URL}/api/reports/analytics/export`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

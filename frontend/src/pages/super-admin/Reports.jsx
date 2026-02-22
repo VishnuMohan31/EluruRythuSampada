@@ -3,13 +3,15 @@ import Button from '@components/common/Button'
 import { logger } from '@/utils/api'
 import '../admin/Dashboard.css'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
 const Reports = () => {
   const handleExportInquiries = async () => {
     try {
       logger.info('Exporting Inquiries Report', 'CSV download')
       const token = localStorage.getItem('authToken')
       
-      const response = await fetch('http://localhost:8000/api/reports/inquiries/export', {
+      const response = await fetch(`${API_BASE_URL}/api/reports/inquiries/export`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -44,7 +46,7 @@ const Reports = () => {
       logger.info('Exporting Products Report', 'CSV download')
       const token = localStorage.getItem('authToken')
       
-      const response = await fetch('http://localhost:8000/api/reports/products/export', {
+      const response = await fetch(`${API_BASE_URL}/api/reports/products/export`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

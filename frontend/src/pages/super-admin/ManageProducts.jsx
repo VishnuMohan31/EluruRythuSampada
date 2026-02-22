@@ -4,6 +4,8 @@ import Button from '@components/common/Button'
 import { api, logger, showToast } from '@/utils/api'
 import '../admin/Dashboard.css'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
 const ManageProducts = () => {
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -54,7 +56,7 @@ const ManageProducts = () => {
         shgId: product.shg_id,
         mandal: product.shg?.mandal || '',
         village: product.shg?.village || '',
-        image: product.image_url ? `http://localhost:8000${product.image_url}` : null,
+        image: product.image_url ? `${API_BASE_URL}${product.image_url}` : null,
         youtubeLink: product.youtube_link || '',
         instagramLink: product.instagram_link || '',
         status: product.is_active ? 'Active' : 'Inactive'
