@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
 import './HomePage.css'
+import BannerImage from '../../../Images/Banner.png'
+import TribalPic1 from '../../../Images/TribalPic1.png'
+import TibePic3 from '../../../Images/TibePic3.png'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -59,7 +62,7 @@ const HomePage = () => {
   return (
     <div className="home-page">
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section" style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${BannerImage})` }}>
         <div className="hero-pattern"></div>
         <div className="container">
           <div className="hero-content">
@@ -213,8 +216,8 @@ const HomePage = () => {
             </Link>
           </div>
           <div className="heritage-images">
-            <img src="/src/Images/TribalPic1.png" alt="SHG bamboo weaving craftsmanship" loading="lazy" />
-            <img src="/src/Images/TibePic3.png" alt="Traditional SHG handicraft artisan" loading="lazy" />
+            <img src={TribalPic1} alt="SHG bamboo weaving craftsmanship" loading="lazy" />
+            <img src={TibePic3} alt="Traditional SHG handicraft artisan" loading="lazy" />
           </div>
         </div>
       </section>
