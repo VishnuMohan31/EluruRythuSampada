@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
 import './HomePage.css'
-import BannerImage from '../../../Images/Banner.png'
-import TribalPic1 from '../../../Images/TribalPic1.png'
-import TibePic3 from '../../../Images/TibePic3.png'
+import BannerImage from '../../Images/Banner.png'
+import TribalPic1 from '../../Images/TribalPic1.png'
+import TibePic3 from '../../Images/TibePic3.png'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
