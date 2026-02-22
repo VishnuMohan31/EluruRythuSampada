@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
-import { mockProducts, mockCategories, mockSHGs } from '@/data/mockData'
 import productsHeaderBg from '@/Images/Products.png'
 import './ProductsPage.css'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const PRODUCTS_PER_PAGE = 15
 
 const ProductsPage = () => {
   const { t } = useTranslation()
@@ -16,12 +18,52 @@ const ProductsPage = () => {
   const [selectedVillage, setSelectedVillage] = useState('')
   const [selectedSHG, setSelectedSHG] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  
+  // Data from API
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Get unique values for filters
-  const uniqueDistricts = [...new Set(mockProducts.map(p => p.shg?.district).filter(Boolean))].sort()
-  const uniqueMandals = [...new Set(mockProducts.map(p => p.shg?.mandal).filter(Boolean))].sort()
-  const uniqueVillages = [...new Set(mockProducts.map(p => p.shg?.village).filter(Boolean))].sort()
-  const uniqueSHGs = [...new Set(mockProducts.map(p => p.shg?.name).filter(Boolean))].sort()
+  // Fetch products and categories from API
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      // Fetch products and categories in parallel
+      const [productsRes, categoriesRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/products`),
+        fetch(`${API_BASE_URL}/api/categories`)
+      ])
+      
+      if (!productsRes.ok || !categoriesRes.ok) {
+        throw new Error('Failed to fetch data')
+      }
+      
+      const productsData = await productsRes.json()
+      const categoriesData = await categoriesRes.json()
+      
+      setProducts(productsData)
+      setCategories(categoriesData.filter(cat => cat.is_active))
+    } catch (err) {
+      console.error('Error fetching data:', err)
+      setError('Failed to load products. Please try again later.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Get unique values for filters from real data
+  const uniqueDistricts = [...new Set(products.map(p => p.shg?.district).filter(Boolean))].sort()
+  const uniqueMandals = [...new Set(products.map(p => p.shg?.mandal).filter(Boolean))].sort()
+  const uniqueVillages = [...new Set(products.map(p => p.shg?.village).filter(Boolean))].sort()
+  const uniqueSHGs = [...new Set(products.map(p => p.shg?.name).filter(Boolean))].sort()
 
   // Read category from URL on component mount
   useEffect(() => {
@@ -31,10 +73,10 @@ const ProductsPage = () => {
     }
   }, [searchParams])
 
-  const filteredProducts = mockProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = !selectedCategory || product.category.id === selectedCategory
+    const matchesCategory = !selectedCategory || product.category?.id === selectedCategory
     const matchesDistrict = !selectedDistrict || product.shg?.district === selectedDistrict
     const matchesMandal = !selectedMandal || product.shg?.mandal === selectedMandal
     const matchesVillage = !selectedVillage || product.shg?.village === selectedVillage
@@ -43,6 +85,17 @@ const ProductsPage = () => {
     return matchesSearch && matchesCategory && matchesDistrict && matchesMandal && matchesVillage && matchesSHG
   })
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE)
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
+  const endIndex = startIndex + PRODUCTS_PER_PAGE
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex)
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, selectedCategory, selectedDistrict, selectedMandal, selectedVillage, selectedSHG])
+
   const clearFilters = () => {
     setSearchQuery('')
     setSelectedCategory('')
@@ -50,6 +103,41 @@ const ProductsPage = () => {
     setSelectedMandal('')
     setSelectedVillage('')
     setSelectedSHG('')
+    setCurrentPage(1)
+  }
+
+  // Count products per category
+  const getCategoryCount = (categoryId) => {
+    return products.filter(p => p.category?.id === categoryId).length
+  }
+
+  if (loading) {
+    return (
+      <div className="products-page">
+        <div className="container">
+          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
+            <p>Loading products...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="products-page">
+        <div className="container">
+          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+            <p style={{ color: '#dc2626', marginBottom: '1rem' }}>{error}</p>
+            <button className="btn btn-primary" onClick={fetchData}>
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -64,7 +152,7 @@ const ProductsPage = () => {
         >
           <h1 className="page-title">Discover SHG Products</h1>
           <p className="page-description">
-            Browse our collection of {mockProducts.length} authentic handcrafted products
+            Browse our collection of {products.length} authentic handcrafted products
           </p>
         </div>
 
@@ -178,7 +266,7 @@ const ProductsPage = () => {
                   />
                   <span>All Categories</span>
                 </label>
-                {mockCategories.map(category => (
+                {categories.map(category => (
                   <label key={category.id} className="filter-option">
                     <input
                       type="radio"
@@ -188,7 +276,7 @@ const ProductsPage = () => {
                       onChange={(e) => setSelectedCategory(e.target.value)}
                     />
                     <span>{category.name}</span>
-                    <span className="filter-count">({category.productCount})</span>
+                    <span className="filter-count">({getCategoryCount(category.id)})</span>
                   </label>
                 ))}
               </div>
@@ -204,11 +292,59 @@ const ProductsPage = () => {
             </div>
 
             {filteredProducts.length > 0 ? (
-              <div className="products-grid">
-                {filteredProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="products-grid">
+                  {paginatedProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      className="pagination-btn"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      ← Previous
+                    </button>
+                    
+                    <div className="pagination-numbers">
+                      {[...Array(totalPages)].map((_, index) => {
+                        const pageNum = index + 1
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          pageNum === 1 ||
+                          pageNum === totalPages ||
+                          (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={pageNum}
+                              className={`pagination-number ${currentPage === pageNum ? 'active' : ''}`}
+                              onClick={() => setCurrentPage(pageNum)}
+                            >
+                              {pageNum}
+                            </button>
+                          )
+                        } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                          return <span key={pageNum} className="pagination-ellipsis">...</span>
+                        }
+                        return null
+                      })}
+                    </div>
+
+                    <button
+                      className="pagination-btn"
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next →
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="no-products">
                 <div className="no-products-icon">🔍</div>

@@ -4,7 +4,7 @@ import Button from '@components/common/Button'
 import { useToast } from '@components/common/ToastContainer'
 import './ProductDetailPage.css'
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const ProductDetailPage = () => {
   const { id } = useParams()

@@ -1,15 +1,60 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
-import { mockProducts, mockCategories } from '@/data/mockData'
 import './HomePage.css'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const HomePage = () => {
   const { t } = useTranslation()
-  const topProducts = mockProducts.slice(0, 4)
-  const recentProducts = mockProducts.slice(4, 8)
-  const contactedProducts = mockProducts.slice(8, 12)
+  const [categories, setCategories] = useState([])
+  const [recentProducts, setRecentProducts] = useState([])
+  const [contactedProducts, setContactedProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchHomeData()
+  }, [])
+
+  const fetchHomeData = async () => {
+    try {
+      setLoading(true)
+      
+      // Fetch categories and products
+      const [categoriesRes, productsRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/categories`),
+        fetch(`${API_BASE_URL}/api/products`)
+      ])
+      
+      if (categoriesRes.ok && productsRes.ok) {
+        const categoriesData = await categoriesRes.json()
+        const productsData = await productsRes.json()
+        
+        // Filter active categories
+        setCategories(categoriesData.filter(cat => cat.is_active))
+        
+        // Get recently added products (last 4)
+        const sortedByDate = [...productsData].sort((a, b) => 
+          new Date(b.created_at) - new Date(a.created_at)
+        )
+        setRecentProducts(sortedByDate.slice(0, 4))
+        
+        // Get most contacted products (we'll use recent for now since we don't track contact count yet)
+        setContactedProducts(sortedByDate.slice(4, 8))
+      }
+    } catch (error) {
+      console.error('Error fetching home data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Count products per category
+  const getCategoryProductCount = (categoryId) => {
+    // This will be calculated from products in real implementation
+    return 0 // Placeholder
+  }
 
   return (
     <div className="home-page">
@@ -51,55 +96,38 @@ const HomePage = () => {
           </div>
           
           <div className="categories-grid">
-            {mockCategories.map(category => (
-              <Link
-                key={category.id}
-                to={`/products?category=${category.id}`}
-                className="category-card"
-              >
-                <div className="category-image">
-                  <img src={category.image} alt={category.name} loading="lazy" />
-                  <div className="category-overlay"></div>
-                </div>
-                <div className="category-info">
-                  <h3 className="category-name">{category.name}</h3>
-                  <p className="category-description">{category.description}</p>
-                  <span className="category-count">
-                    {category.productCount} products
-                  </span>
-                </div>
-              </Link>
-            ))}
+            {loading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem' }}>
+                Loading categories...
+              </div>
+            ) : categories.length > 0 ? (
+              categories.map(category => (
+                <Link
+                  key={category.id}
+                  to={`/products?category=${category.id}`}
+                  className="category-card"
+                >
+                  <div className="category-image">
+                    <img src={category.image} alt={category.name} loading="lazy" />
+                    <div className="category-overlay"></div>
+                  </div>
+                  <div className="category-info">
+                    <h3 className="category-name">{category.name}</h3>
+                    <p className="category-description">{category.description || 'Explore this category'}</p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem' }}>
+                No categories available
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Featured Products Section */}
+      {/* Most Contacted Products Section - WHITE BACKGROUND */}
       <section className="featured-section">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Top Viewed Products</h2>
-            <p className="section-description">
-              Discover what others are loving
-            </p>
-          </div>
-          
-          <div className="products-grid">
-            {topProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          
-          <div className="section-footer">
-            <Link to="/products" className="btn btn-outline btn-large">
-              View More Products
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Most Contacted Products Section */}
-      <section className="featured-section alternate-bg">
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Most Contacted Products</h2>
@@ -108,22 +136,30 @@ const HomePage = () => {
             </p>
           </div>
           
-          <div className="products-grid">
-            {contactedProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          
-          <div className="section-footer">
-            <Link to="/products" className="btn btn-outline btn-large">
-              Explore More Products
-            </Link>
-          </div>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>Loading products...</div>
+          ) : contactedProducts.length > 0 ? (
+            <>
+              <div className="products-grid">
+                {contactedProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              
+              <div className="section-footer">
+                <Link to="/products" className="btn btn-outline btn-large">
+                  Explore More Products
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>No products available</div>
+          )}
         </div>
       </section>
 
-      {/* Recently Added Products Section */}
-      <section className="featured-section">
+      {/* Recently Added Products Section - BEIGE BACKGROUND */}
+      <section className="featured-section alternate-bg">
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Recently Added Products</h2>
@@ -132,22 +168,30 @@ const HomePage = () => {
             </p>
           </div>
           
-          <div className="products-grid">
-            {recentProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          
-          <div className="section-footer">
-            <Link to="/products" className="btn btn-outline btn-large">
-              See All New Arrivals
-            </Link>
-          </div>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>Loading products...</div>
+          ) : recentProducts.length > 0 ? (
+            <>
+              <div className="products-grid">
+                {recentProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              
+              <div className="section-footer">
+                <Link to="/products" className="btn btn-outline btn-large">
+                  See All New Arrivals
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>No products available</div>
+          )}
         </div>
       </section>
 
-      {/* About / SHG Heritage Section */}
-      <section className="featured-section alternate-bg heritage-section">
+      {/* About / SHG Heritage Section - WHITE BACKGROUND */}
+      <section className="featured-section heritage-section">
         <div className="container">
           <div className="section-header heritage-header">
             <h2 className="section-title">Celebrating Andhra Pradesh's SHG Heritage</h2>
