@@ -10,11 +10,14 @@ from ..database import Base
 class SHG(Base):
     __tablename__ = "shgs"
 
-    # Primary key with formatted ID (SHG001)
+    # Primary key with formatted ID (SHG001 or FRM001)
     id = Column(String(20), primary_key=True, index=True)
     
+    # Type: 'SHG' or 'Farmer'
+    type = Column(String(20), nullable=False, default='SHG', index=True)
+    
     name = Column(String(100), nullable=False, index=True)
-    contact_person = Column(String(100), nullable=False)  # Contact person name
+    contact_person = Column(String(100), nullable=False)  # Contact person name (or Farmer name for type='Farmer')
     mobile_number = Column(String(20), nullable=False)  # Contact mobile number
     
     # Location hierarchy

@@ -59,12 +59,12 @@ async def export_inquiries(
         'Product Name',
         'Product ID',
         'Product Description',
-        'SHG Name',
-        'SHG ID',
-        'SHG Contact Person',
-        'SHG Mobile Number',
-        'SHG Mandal',
-        'SHG Village'
+        'SHG / Farmer Name',
+        'SHG / Farmer ID',
+        'SHG / Farmer Contact Person',
+        'SHG / Farmer Mobile Number',
+        'SHG / Farmer Mandal',
+        'SHG / Farmer Village'
     ])
     
     # Write data rows
@@ -142,7 +142,7 @@ async def export_analytics(
         'Product ID',
         'Product Name',
         'Category',
-        'SHG Name',
+        'SHG / Farmer Name',
         'View Count',
         'Contact Count',
         'Status',
@@ -218,9 +218,9 @@ async def export_products(
         'Product Name',
         'Description',
         'Category',
-        'SHG Name',
-        'SHG Contact Person',
-        'SHG Mobile',
+        'SHG / Farmer Name',
+        'SHG / Farmer Contact Person',
+        'SHG / Farmer Mobile',
         'Mandal',
         'Village',
         'View Count',

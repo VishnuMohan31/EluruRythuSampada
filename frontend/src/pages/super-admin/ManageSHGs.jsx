@@ -6,14 +6,17 @@ import '../admin/Dashboard.css'
 
 const ManageSHGs = () => {
   const [showModal, setShowModal] = useState(false)
+  const [modalType, setModalType] = useState('SHG') // 'SHG' or 'Farmer'
   const [editingSHG, setEditingSHG] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [typeFilter, setTypeFilter] = useState('') // New: Type filter
   const [shgs, setSHGs] = useState([])
   const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
-    name: '', // SHG Group Name (text input)
-    contactPerson: '',
+    type: 'SHG',
+    name: '', // SHG Group Name or Farmer Name
+    contactPerson: '', // Only for SHG
     mobileNumber: '',
     mandal: '',
     village: '',
@@ -29,14 +32,15 @@ const ManageSHGs = () => {
   const fetchSHGs = async () => {
     try {
       setLoading(true)
-      logger.info('Fetching SHGs', 'include_inactive=true')
+      logger.info('Fetching SHGs/Farmers', 'include_inactive=true')
       
       const data = await api.get('/api/shgs?include_inactive=true')
-      logger.success('Fetched SHGs', `${data.length} SHGs`)
+      logger.success('Fetched SHGs/Farmers', `${data.length} records`)
       
       // Map backend data to frontend format
       const mappedData = data.map(shg => ({
         id: shg.id,
+        type: shg.type || 'SHG',
         name: shg.name,
         contactPerson: shg.contact_person,
         mobileNumber: shg.mobile_number,
@@ -47,8 +51,8 @@ const ManageSHGs = () => {
       }))
       setSHGs(mappedData)
     } catch (error) {
-      logger.error('Fetch SHGs Failed', error.message)
-      showToast('Failed to load SHGs', 'error')
+      logger.error('Fetch SHGs/Farmers Failed', error.message)
+      showToast('Failed to load SHGs/Farmers', 'error')
     } finally {
       setLoading(false)
     }
@@ -63,15 +67,18 @@ const ManageSHGs = () => {
       (shg.contactPerson && shg.contactPerson.toLowerCase().includes(search)) ||
       (shg.mobileNumber && shg.mobileNumber.includes(search)) ||
       (shg.mandal && shg.mandal.toLowerCase().includes(search)) ||
-      (shg.village && shg.village.toLowerCase().includes(search))
+      (shg.village && shg.village.toLowerCase().includes(search)) ||
+      (shg.type && shg.type.toLowerCase().includes(search))
     const effectiveStatus = shg.status || 'Active'
     const matchesStatus = !statusFilter || effectiveStatus === statusFilter
-    return matchesSearch && matchesStatus
+    const matchesType = !typeFilter || shg.type === typeFilter
+    return matchesSearch && matchesStatus && matchesType
   })
 
   const clearFilters = () => {
     setSearchQuery('')
     setStatusFilter('')
+    setTypeFilter('')
   }
 
   const handleInputChange = (e) => {
@@ -103,8 +110,9 @@ const ManageSHGs = () => {
 
     try {
       const shgData = {
+        type: formData.type,
         name: formData.name,
-        contact_person: formData.contactPerson,
+        contact_person: formData.type === 'Farmer' ? formData.name : formData.contactPerson, // For Farmer, use name as contact_person
         mobile_number: formData.mobileNumber,
         mandal: formData.mandal,
         village: formData.village,
@@ -113,34 +121,36 @@ const ManageSHGs = () => {
       }
       
       if (editingSHG) {
-        // Update existing SHG
-        logger.info('Updating SHG', editingSHG.id)
+        // Update existing SHG/Farmer
+        logger.info(`Updating ${formData.type}`, editingSHG.id)
         const updated = await api.put(`/api/shgs/${editingSHG.id}`, shgData)
-        logger.success('SHG Updated', updated)
+        logger.success(`${formData.type} Updated`, updated)
         
-        showToast('SHG updated successfully!', 'success')
+        showToast(`${formData.type} updated successfully!`, 'success')
         fetchSHGs()
       } else {
-        // Add new SHG
-        logger.info('Creating SHG', formData.name)
+        // Add new SHG/Farmer
+        logger.info(`Creating ${formData.type}`, formData.name)
         const created = await api.post('/api/shgs/', shgData)
-        logger.success('SHG Created', created)
+        logger.success(`${formData.type} Created`, created)
         
-        showToast('SHG added successfully!', 'success')
+        showToast(`${formData.type} added successfully!`, 'success')
         fetchSHGs()
       }
       
       closeModal()
     } catch (error) {
-      logger.error('Save SHG Failed', error.message)
-      showToast('Failed to save SHG', 'error')
+      logger.error(`Save ${formData.type} Failed`, error.message)
+      showToast(`Failed to save ${formData.type}`, 'error')
     }
   }
 
   const closeModal = () => {
     setShowModal(false)
     setEditingSHG(null)
+    setModalType('SHG')
     setFormData({
+      type: 'SHG',
       name: '',
       contactPerson: '',
       mobileNumber: '',
@@ -153,7 +163,9 @@ const ManageSHGs = () => {
 
   const handleEdit = (shg) => {
     setEditingSHG(shg)
+    setModalType(shg.type || 'SHG')
     setFormData({
+      type: shg.type || 'SHG',
       name: shg.name || '',
       contactPerson: shg.contactPerson || '',
       mobileNumber: shg.mobileNumber || '',
@@ -165,54 +177,71 @@ const ManageSHGs = () => {
     setShowModal(true)
   }
 
-  const handleDeactivate = async (shgId) => {
-    if (!window.confirm('Are you sure you want to deactivate this SHG?')) return
+  const handleAddSHG = () => {
+    setModalType('SHG')
+    setFormData(prev => ({ ...prev, type: 'SHG' }))
+    setShowModal(true)
+  }
+
+  const handleAddFarmer = () => {
+    setModalType('Farmer')
+    setFormData(prev => ({ ...prev, type: 'Farmer' }))
+    setShowModal(true)
+  }
+
+  const handleDeactivate = async (shgId, type) => {
+    if (!window.confirm(`Are you sure you want to deactivate this ${type}?`)) return
     
     try {
-      logger.info('Deactivating SHG', shgId)
+      logger.info(`Deactivating ${type}`, shgId)
       await api.put(`/api/shgs/${shgId}/deactivate`)
-      logger.success('SHG Deactivated', shgId)
+      logger.success(`${type} Deactivated`, shgId)
       
       setSHGs(prev => prev.map(shg => 
         shg.id === shgId ? { ...shg, status: 'Inactive' } : shg
       ))
-      showToast('SHG deactivated successfully!', 'success')
+      showToast(`${type} deactivated successfully!`, 'success')
     } catch (error) {
-      logger.error('Deactivate SHG Failed', error.message)
-      showToast('Failed to deactivate SHG', 'error')
+      logger.error(`Deactivate ${type} Failed`, error.message)
+      showToast(`Failed to deactivate ${type}`, 'error')
     }
   }
 
-  const handleReactivate = async (shgId) => {
-    if (!window.confirm('Are you sure you want to reactivate this SHG?')) return
+  const handleReactivate = async (shgId, type) => {
+    if (!window.confirm(`Are you sure you want to reactivate this ${type}?`)) return
     
     try {
-      logger.info('Reactivating SHG', shgId)
+      logger.info(`Reactivating ${type}`, shgId)
       await api.put(`/api/shgs/${shgId}/reactivate`)
-      logger.success('SHG Reactivated', shgId)
+      logger.success(`${type} Reactivated`, shgId)
       
       setSHGs(prev => prev.map(shg => 
         shg.id === shgId ? { ...shg, status: 'Active' } : shg
       ))
-      showToast('SHG reactivated successfully!', 'success')
+      showToast(`${type} reactivated successfully!`, 'success')
     } catch (error) {
-      logger.error('Reactivate SHG Failed', error.message)
-      showToast('Failed to reactivate SHG', 'error')
+      logger.error(`Reactivate ${type} Failed`, error.message)
+      showToast(`Failed to reactivate ${type}`, 'error')
     }
   }
 
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
-        <h1>Manage SHGs</h1>
-        <Button variant="primary" onClick={() => setShowModal(true)}>
-          + Add SHG
-        </Button>
+        <h1>Manage SHGs / Farmers</h1>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <Button variant="primary" onClick={handleAddSHG}>
+            + Add SHG
+          </Button>
+          <Button variant="primary" onClick={handleAddFarmer}>
+            + Add Farmer
+          </Button>
+        </div>
       </div>
 
       {/* Filters Section */}
       <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '1rem', alignItems: 'end' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', gap: '1rem', alignItems: 'end' }}>
           {/* Search - Takes remaining space */}
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
@@ -220,7 +249,7 @@ const ManageSHGs = () => {
             </label>
             <input
               type="text"
-              placeholder="Search by ID, SHG Name, Contact Person, Mobile, Mandal, or Village..."
+              placeholder="Search by ID, Name, Contact Person, Mobile, Mandal, Village, or Type..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -231,6 +260,29 @@ const ManageSHGs = () => {
                 fontSize: '0.875rem'
               }}
             />
+          </div>
+
+          {/* Type Filter - Fixed width */}
+          <div style={{ minWidth: '150px' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+              Type
+            </label>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.625rem',
+                border: '2px solid var(--color-border)',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                backgroundColor: 'var(--color-surface)'
+              }}
+            >
+              <option value="">All Types</option>
+              <option value="SHG">SHG</option>
+              <option value="Farmer">Farmer</option>
+            </select>
           </div>
 
           {/* Status Filter - Fixed width */}
@@ -269,16 +321,17 @@ const ManageSHGs = () => {
 
       <div className="dashboard-card">
         <div className="dashboard-table-wrapper">
-          <table className="data-table" style={{ minWidth: '1000px', width: '100%' }}>
+          <table className="data-table" style={{ minWidth: '1100px', width: '100%' }}>
             <thead>
               <tr>
                 <th style={{ width: '80px' }}>ID</th>
-                <th style={{ width: '180px' }}>SHG Name</th>
-                <th style={{ width: '150px' }}>Contact Person</th>
-                <th style={{ width: '130px' }}>Mobile Number</th>
-                <th style={{ width: '120px' }}>Mandal</th>
-                <th style={{ width: '120px' }}>Village</th>
-                <th style={{ width: '100px' }}>Status</th>
+                <th style={{ width: '90px' }}>Type</th>
+                <th style={{ width: '160px' }}>Name</th>
+                <th style={{ width: '140px' }}>Contact Person</th>
+                <th style={{ width: '120px' }}>Mobile Number</th>
+                <th style={{ width: '110px' }}>Mandal</th>
+                <th style={{ width: '110px' }}>Village</th>
+                <th style={{ width: '90px' }}>Status</th>
                 <th style={{ width: '100px' }}>Actions</th>
               </tr>
             </thead>
@@ -287,6 +340,11 @@ const ManageSHGs = () => {
                 filteredSHGs.map(shg => (
                   <tr key={shg.id}>
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shg.id}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span className={`status-badge ${shg.type === 'SHG' ? 'active' : 'pending'}`}>
+                        {shg.type || 'SHG'}
+                      </span>
+                    </td>
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.name}>{shg.name || '-'}</td>
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.contactPerson}>{shg.contactPerson || '-'}</td>
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shg.mobileNumber || '-'}</td>
@@ -310,7 +368,7 @@ const ManageSHGs = () => {
                           <button 
                             className="action-icon-btn delete" 
                             title="Deactivate"
-                            onClick={() => handleDeactivate(shg.id)}
+                            onClick={() => handleDeactivate(shg.id, shg.type)}
                           >
                             <Trash2 size={18} />
                           </button>
@@ -318,7 +376,7 @@ const ManageSHGs = () => {
                           <button 
                             className="action-icon-btn reactivate" 
                             title="Reactivate"
-                            onClick={() => handleReactivate(shg.id)}
+                            onClick={() => handleReactivate(shg.id, shg.type)}
                           >
                             <RotateCcw size={18} />
                           </button>
@@ -329,8 +387,8 @@ const ManageSHGs = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
-                    No SHGs found matching your filters
+                  <td colSpan="9" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                    No SHGs/Farmers found matching your filters
                   </td>
                 </tr>
               )}
@@ -339,30 +397,30 @@ const ManageSHGs = () => {
         </div>
       </div>
 
-      {/* Add/Edit SHG Modal */}
+      {/* Add/Edit SHG/Farmer Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={closeModal} style={{ paddingTop: '6rem', paddingBottom: '3rem', alignItems: 'flex-start', overflowY: 'auto' }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px', margin: '2rem auto' }}>
             <div className="modal-header" style={{ padding: '1.25rem 1.5rem' }}>
               <h2 style={{ fontSize: '1.25rem' }}>
-                {editingSHG ? 'Edit SHG' : 'Add New SHG'}
+                {editingSHG ? `Edit ${modalType}` : `Add New ${modalType}`}
               </h2>
               <button className="modal-close" onClick={closeModal}>✕</button>
             </div>
 
             <form onSubmit={handleSubmit} className="modal-body" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                {/* SHG Name */}
+                {/* Name Field - Label changes based on type */}
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    SHG Name <span style={{ color: 'red' }}>*</span>
+                    {modalType === 'Farmer' ? 'Farmer Name' : 'SHG Name'} <span style={{ color: 'red' }}>*</span>
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Enter SHG name"
+                    placeholder={modalType === 'Farmer' ? 'Enter farmer name' : 'Enter SHG name'}
                     required
                     style={{
                       width: '100%',
@@ -418,30 +476,32 @@ const ManageSHGs = () => {
                   />
                 </div>
 
-                {/* Contact Person */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Contact Person <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleInputChange}
-                    placeholder="Enter contact person name"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                </div>
+                {/* Contact Person - Only show for SHG type */}
+                {modalType === 'SHG' && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                      Contact Person <span style={{ color: 'red' }}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="contactPerson"
+                      value={formData.contactPerson}
+                      onChange={handleInputChange}
+                      placeholder="Enter contact person name"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '0.625rem',
+                        border: '2px solid var(--color-border)',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem'
+                      }}
+                    />
+                  </div>
+                )}
 
                 {/* Mobile Number */}
-                <div>
+                <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     Mobile Number <span style={{ color: 'red' }}>*</span>
                   </label>
@@ -479,7 +539,7 @@ const ManageSHGs = () => {
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    placeholder="Enter SHG description"
+                    placeholder={`Enter ${modalType.toLowerCase()} description`}
                     rows="3"
                     style={{
                       width: '100%',
@@ -498,7 +558,7 @@ const ManageSHGs = () => {
                   Cancel
                 </Button>
                 <Button type="submit" variant="primary">
-                  {editingSHG ? 'Update SHG' : 'Add SHG'}
+                  {editingSHG ? `Update ${modalType}` : `Add ${modalType}`}
                 </Button>
               </div>
             </form>

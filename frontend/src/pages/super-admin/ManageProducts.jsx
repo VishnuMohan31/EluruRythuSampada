@@ -93,13 +93,13 @@ const ManageProducts = () => {
   }
 
   // Get unique values for filters
-  const uniqueCategories = categories.map(c => c.name).sort()
-  const uniqueSHGs = shgs.map(s => s.name).sort()
+  const uniqueCategories = categories.map(c => c.name).filter(Boolean).sort()
+  const uniqueSHGs = shgs.map(s => s.name).filter(Boolean).sort()
 
   // Filter logic
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = !categoryFilter || product.category.name === categoryFilter
+    const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false
+    const matchesCategory = !categoryFilter || product.category?.name === categoryFilter
     const matchesSHG = !shgFilter || product.shgName === shgFilter
     const matchesStatus = !statusFilter || product.status === statusFilter
     
@@ -332,10 +332,10 @@ const ManageProducts = () => {
             </select>
           </div>
 
-          {/* SHG Filter */}
+          {/* SHG/Farmer Filter */}
           <div style={{ minWidth: '180px' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-              SHG
+              SHG / Farmer
             </label>
             <select
               value={shgFilter}
@@ -349,7 +349,7 @@ const ManageProducts = () => {
                 backgroundColor: 'var(--color-surface)'
               }}
             >
-              <option value="">All SHGs</option>
+              <option value="">All SHGs / Farmers</option>
               {uniqueSHGs.map(shg => (
                 <option key={shg} value={shg}>{shg}</option>
               ))}
@@ -399,7 +399,7 @@ const ManageProducts = () => {
                 <th style={{ width: '100px' }}>Image</th>
                 <th style={{ width: '200px' }}>Name</th>
                 <th style={{ width: '140px' }}>Category</th>
-                <th style={{ width: '160px' }}>SHG Name</th>
+                <th style={{ width: '160px' }}>SHG / Farmer Name</th>
                 <th style={{ width: '120px' }}>Mandal</th>
                 <th style={{ width: '120px' }}>Village</th>
                 <th style={{ width: '100px' }}>Status</th>
@@ -603,10 +603,10 @@ const ManageProducts = () => {
                   </select>
                 </div>
 
-                {/* SHG Name */}
+                {/* SHG/Farmer Name */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    SHG Name <span style={{ color: 'red' }}>*</span>
+                    SHG / Farmer Name <span style={{ color: 'red' }}>*</span>
                   </label>
                   <select
                     name="shgName"
@@ -622,7 +622,7 @@ const ManageProducts = () => {
                       backgroundColor: 'var(--color-surface)'
                     }}
                   >
-                    <option value="">Select SHG</option>
+                    <option value="">Select SHG / Farmer</option>
                     {uniqueSHGs.map(shg => (
                       <option key={shg} value={shg}>{shg}</option>
                     ))}

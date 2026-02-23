@@ -149,7 +149,7 @@ const AdminDashboard = () => {
             <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
               {statsLoading ? '...' : stats.totalSHGs}
             </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>SHG Communities</div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>SHG / Farmer Communities</div>
           </div>
         </div>
 
@@ -195,7 +195,7 @@ const AdminDashboard = () => {
                   transition: 'all 0.2s'
                 }}
               >
-                🏛 SHG Inquiries
+                🏛 SHG / Farmer Inquiries
               </button>
               <button
                 onClick={() => setMetricType('product')}
@@ -253,38 +253,6 @@ const AdminDashboard = () => {
                 <option value="all">All Time</option>
               </select>
             )}
-
-            {/* Download PDF Button */}
-            <button
-              onClick={() => {
-                alert('PDF download will be implemented with backend integration')
-                console.log('Downloading PDF for:', metricType, metricType === 'shg' ? shgTimePeriod : 'all')
-              }}
-              style={{
-                padding: '0.5rem 1rem',
-                border: '2px solid var(--color-primary)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                backgroundColor: 'white',
-                color: 'var(--color-primary)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--color-primary)'
-                e.currentTarget.style.color = 'white'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'white'
-                e.currentTarget.style.color = 'var(--color-primary)'
-              }}
-            >
-              📄 Download PDF
-            </button>
           </div>
         </div>
 
@@ -293,7 +261,7 @@ const AdminDashboard = () => {
           {/* Top 10 Column */}
           <div>
             <h4 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              🔥 Top 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
+              🔥 Top 10 {metricType === 'shg' ? 'SHGs / Farmers' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {loading ? (
@@ -315,7 +283,7 @@ const AdminDashboard = () => {
           {/* Least 10 Column */}
           <div>
             <h4 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              📉 Least 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
+              📉 Least 10 {metricType === 'shg' ? 'SHGs / Farmers' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {loading ? (

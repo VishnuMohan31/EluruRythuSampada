@@ -27,11 +27,12 @@ async def get_most_contacted_products(
 ):
     """Get products with most inquiries"""
     from sqlalchemy import func
+    from sqlalchemy.orm import joinedload
     from ..models.inquiry import ContactLog
 
-    # Query to get products ordered by contact count
-    query = db.query(
-        Product,
+    # First get product IDs with contact counts
+    subquery = db.query(
+        Product.id,
         func.count(ContactLog.id).label('contact_count')
     ).join(
         ContactLog, Product.id == ContactLog.product_id, isouter=True
@@ -41,10 +42,16 @@ async def get_most_contacted_products(
         Product.id
     ).order_by(
         func.count(ContactLog.id).desc()
-    ).limit(limit)
+    ).limit(limit).subquery()
 
-    # Extract just the Product objects
-    products = [row[0] for row in query.all()]
+    # Then fetch full products with relationships
+    products = db.query(Product).options(
+        joinedload(Product.category),
+        joinedload(Product.shg)
+    ).join(
+        subquery, Product.id == subquery.c.id
+    ).all()
+
     return products
 
 
@@ -54,7 +61,12 @@ async def get_recent_products(
     db: Session = Depends(get_db)
 ):
     """Get recently added products"""
-    products = db.query(Product).filter(
+    from sqlalchemy.orm import joinedload
+    
+    products = db.query(Product).options(
+        joinedload(Product.category),
+        joinedload(Product.shg)
+    ).filter(
         Product.is_active == True
     ).order_by(
         Product.created_at.desc()
@@ -75,7 +87,12 @@ async def get_products(
     db: Session = Depends(get_db)
 ):
     """Get all products with filters"""
-    query = db.query(Product)
+    from sqlalchemy.orm import joinedload
+    
+    query = db.query(Product).options(
+        joinedload(Product.category),
+        joinedload(Product.shg)
+    )
     
     if not include_inactive:
         query = query.filter(Product.is_active == True)
@@ -99,7 +116,13 @@ async def get_product(
     db: Session = Depends(get_db)
 ):
     """Get product by ID"""
-    product = db.query(Product).filter(Product.id == product_id).first()
+    from sqlalchemy.orm import joinedload
+    
+    product = db.query(Product).options(
+        joinedload(Product.category),
+        joinedload(Product.shg)
+    ).filter(Product.id == product_id).first()
+    
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     

@@ -66,12 +66,13 @@ CREATE TABLE categories (
 CREATE INDEX idx_categories_name ON categories(name);
 CREATE INDEX idx_categories_state ON categories(state);
 
--- 3. SHGS
+-- 3. SHGS (includes both SHGs and Farmers)
 CREATE TABLE shgs (
     id VARCHAR(20) PRIMARY KEY,
+    type VARCHAR(20) NOT NULL DEFAULT 'SHG' CHECK (type IN ('SHG', 'Farmer')),
     name VARCHAR(200) NOT NULL,
     contact_person VARCHAR(100) NOT NULL,
-    mobile_number VARCHAR(20) NOT NULL,
+    mobile_number VARCHAR(20) NOT NULL UNIQUE, -- Prevent duplicate mobile numbers
     state VARCHAR(100),
     district VARCHAR(100),
     mandal VARCHAR(100) NOT NULL,
@@ -87,8 +88,10 @@ CREATE TABLE shgs (
     deleted_by VARCHAR(20)
 );
 
+CREATE INDEX idx_shgs_type ON shgs(type);
 CREATE INDEX idx_shgs_state ON shgs(state);
 CREATE INDEX idx_shgs_district ON shgs(district);
+CREATE INDEX idx_shgs_mobile ON shgs(mobile_number);
 
 -- 4. PRODUCTS
 CREATE TABLE products (
@@ -209,6 +212,7 @@ CREATE INDEX idx_daily_analytics_date ON daily_analytics(date);
 CREATE SEQUENCE IF NOT EXISTS users_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS categories_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS shgs_id_seq START 1;
+CREATE SEQUENCE IF NOT EXISTS farmers_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS products_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS buyers_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS contact_logs_id_seq START 1;

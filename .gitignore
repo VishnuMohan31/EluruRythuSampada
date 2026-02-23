@@ -36,8 +36,12 @@ venv.bak/
 
 # Environment Variables
 .env
+.env.*
 .env.local
 .env.*.local
+.env.production
+frontend/.env.production
+backend/.env.production
 .envrc
 
 # IDEs

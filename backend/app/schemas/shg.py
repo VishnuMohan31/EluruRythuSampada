@@ -1,12 +1,13 @@
 """
 SHG (Self Help Group) schemas for validation
 """
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, validator
+from typing import Optional, Literal
 from datetime import datetime
 
 
 class SHGBase(BaseModel):
+    type: Literal['SHG', 'Farmer'] = 'SHG'
     name: str
     contact_person: str
     mobile_number: str
@@ -23,6 +24,7 @@ class SHGCreate(SHGBase):
 
 
 class SHGUpdate(BaseModel):
+    type: Optional[Literal['SHG', 'Farmer']] = None
     name: Optional[str] = None
     contact_person: Optional[str] = None
     mobile_number: Optional[str] = None
@@ -37,6 +39,7 @@ class SHGUpdate(BaseModel):
 
 class SHGResponse(SHGBase):
     id: str
+    type: str
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
