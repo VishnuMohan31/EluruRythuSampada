@@ -47,17 +47,25 @@ async def update_current_user_profile(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Update current user's profile (name and mobile only)"""
+    """Update current user's profile (name and mobile only) - State/District locked for super_admin"""
+    # Only allow updating name and mobile
     if 'full_name' in update_data and update_data['full_name']:
         current_user.full_name = update_data['full_name']
     if 'mobile_number' in update_data and update_data['mobile_number']:
         current_user.mobile_number = update_data['mobile_number']
+    
+    # LOCK state and district for super_admin users
+    if current_user.role == 'super_admin':
+        if 'state' in update_data or 'district' in update_data:
+            print(f"⚠️  Blocked attempt by super_admin {current_user.id} to update their own state/district")
     
     current_user.updated_at = datetime.utcnow()
     current_user.updated_by = current_user.id
     
     db.commit()
     db.refresh(current_user)
+    
+    print(f"✅ User {current_user.id} profile updated")
     return current_user
 
 
@@ -128,6 +136,8 @@ async def create_user(
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    
+    print(f"✅ User created: {user_id} ({user.role}) - State: {user.state}, District: {user.district}")
     return db_user
 
 
@@ -138,12 +148,21 @@ async def update_user(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Update user (admin only)"""
+    """Update user (admin only) - State and District are locked for super_admin role"""
     db_user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     
     update_data = user_update.dict(exclude_unset=True)
+    
+    # LOCK state and district for super_admin users
+    if db_user.role == 'super_admin':
+        if 'state' in update_data:
+            update_data.pop('state')
+            print(f"⚠️  Blocked attempt to update state for super_admin {user_id}")
+        if 'district' in update_data:
+            update_data.pop('district')
+            print(f"⚠️  Blocked attempt to update district for super_admin {user_id}")
     
     # Handle password update separately
     if "password" in update_data and update_data["password"]:
@@ -161,6 +180,8 @@ async def update_user(
     
     db.commit()
     db.refresh(db_user)
+    
+    print(f"✅ User {user_id} updated successfully")
     return db_user
 
 

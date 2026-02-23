@@ -24,27 +24,41 @@ const HomePage = () => {
     try {
       setLoading(true)
       
-      // Fetch categories and products
-      const [categoriesRes, productsRes] = await Promise.all([
+      // Fetch categories, all products, recent products, and most contacted products
+      const [categoriesRes, allProductsRes, recentRes, contactedRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/categories`),
-        fetch(`${API_BASE_URL}/api/products`)
+        fetch(`${API_BASE_URL}/api/products`),
+        fetch(`${API_BASE_URL}/api/products/recent?limit=4`),
+        fetch(`${API_BASE_URL}/api/products/most-contacted?limit=4`)
       ])
       
-      if (categoriesRes.ok && productsRes.ok) {
+      if (categoriesRes.ok && allProductsRes.ok) {
         const categoriesData = await categoriesRes.json()
-        const productsData = await productsRes.json()
+        const allProducts = await allProductsRes.json()
         
-        // Filter active categories
-        setCategories(categoriesData.filter(cat => cat.is_active))
+        // Add first product image to each category
+        const categoriesWithImages = categoriesData
+          .filter(cat => cat.is_active)
+          .map(category => {
+            // Find first product in this category
+            const firstProduct = allProducts.find(p => p.category_id === category.id && p.is_active)
+            return {
+              ...category,
+              sampleImage: firstProduct?.image_url || null
+            }
+          })
         
-        // Get recently added products (last 4)
-        const sortedByDate = [...productsData].sort((a, b) => 
-          new Date(b.created_at) - new Date(a.created_at)
-        )
-        setRecentProducts(sortedByDate.slice(0, 4))
-        
-        // Get most contacted products (we'll use recent for now since we don't track contact count yet)
-        setContactedProducts(sortedByDate.slice(4, 8))
+        setCategories(categoriesWithImages)
+      }
+      
+      if (recentRes.ok) {
+        const recentData = await recentRes.json()
+        setRecentProducts(recentData)
+      }
+      
+      if (contactedRes.ok) {
+        const contactedData = await contactedRes.json()
+        setContactedProducts(contactedData)
       }
     } catch (error) {
       console.error('Error fetching home data:', error)
@@ -111,7 +125,25 @@ const HomePage = () => {
                   className="category-card"
                 >
                   <div className="category-image">
-                    <img src={category.image} alt={category.name} loading="lazy" />
+                    {category.sampleImage ? (
+                      <img 
+                        src={`${API_BASE_URL}${category.sampleImage}`} 
+                        alt={category.name} 
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '3rem'
+                      }}>
+                        {category.icon || '📦'}
+                      </div>
+                    )}
                     <div className="category-overlay"></div>
                   </div>
                   <div className="category-info">

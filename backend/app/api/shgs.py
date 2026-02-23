@@ -62,6 +62,8 @@ async def create_shg(
     db.add(db_shg)
     db.commit()
     db.refresh(db_shg)
+    
+    print(f"✅ SHG created: {shg_id} - {shg.name}")
     return db_shg
 
 

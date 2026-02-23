@@ -20,6 +20,49 @@ from ..config import settings
 router = APIRouter()
 
 
+@router.get("/most-contacted", response_model=List[ProductResponse])
+async def get_most_contacted_products(
+    limit: int = 4,
+    db: Session = Depends(get_db)
+):
+    """Get products with most inquiries"""
+    from sqlalchemy import func
+    from ..models.inquiry import ContactLog
+
+    # Query to get products ordered by contact count
+    query = db.query(
+        Product,
+        func.count(ContactLog.id).label('contact_count')
+    ).join(
+        ContactLog, Product.id == ContactLog.product_id, isouter=True
+    ).filter(
+        Product.is_active == True
+    ).group_by(
+        Product.id
+    ).order_by(
+        func.count(ContactLog.id).desc()
+    ).limit(limit)
+
+    # Extract just the Product objects
+    products = [row[0] for row in query.all()]
+    return products
+
+
+@router.get("/recent", response_model=List[ProductResponse])
+async def get_recent_products(
+    limit: int = 4,
+    db: Session = Depends(get_db)
+):
+    """Get recently added products"""
+    products = db.query(Product).filter(
+        Product.is_active == True
+    ).order_by(
+        Product.created_at.desc()
+    ).limit(limit).all()
+
+    return products
+
+
 @router.get("/", response_model=List[ProductResponse])
 async def get_products(
     skip: int = 0,
@@ -47,6 +90,7 @@ async def get_products(
     
     products = query.offset(skip).limit(limit).all()
     return products
+
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
@@ -87,6 +131,8 @@ async def create_product(
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
+    
+    print(f"✅ Product created: {product_id} - {product.name}")
     return db_product
 
 
@@ -154,16 +200,20 @@ async def upload_product_image(
     current_user = Depends(get_current_admin)
 ):
     """Upload product image"""
+    print(f"📤 Image upload started: {file.filename} by {current_user.id}")
+    
     # Validate file type
     if not file.content_type.startswith('image/'):
+        print(f"❌ Invalid file type: {file.content_type}")
         raise HTTPException(status_code=400, detail="File must be an image")
     
-    # Validate file size (max 5MB)
+    # Validate file size (max 2MB)
     file.file.seek(0, 2)
     file_size = file.file.tell()
     file.file.seek(0)
-    if file_size > 5 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="File size must be less than 5MB")
+    if file_size > 2 * 1024 * 1024:
+        print(f"❌ File too large: {file_size / (1024*1024):.2f}MB")
+        raise HTTPException(status_code=400, detail="File size must be less than 2MB")
     
     # Generate unique filename
     file_extension = os.path.splitext(file.filename)[1]
@@ -179,4 +229,5 @@ async def upload_product_image(
     
     # Return relative URL
     image_url = f"/storage/products/{unique_filename}"
+    print(f"✅ Image uploaded successfully: {image_url} ({file_size / 1024:.2f}KB)")
     return {"image_url": image_url, "filename": unique_filename}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext'
 import Button from '@components/common/Button'
 import Input from '@components/common/Input'
+import { showToast } from '@/utils/api'
 import './AuthPage.css'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -54,10 +55,13 @@ const AdminLogin = () => {
       }
 
       login(data.user, data.access_token)
+      console.log('✅ Admin login successful:', data.user.email)
+      showToast('Login successful! Welcome back.', 'success')
       navigate('/admin')
     } catch (err) {
-      console.error('Login error:', err)
+      console.error('❌ Login error:', err)
       setError('Unable to connect to server. Please check your connection and try again.')
+      showToast('Login failed. Please try again.', 'error')
     } finally {
       setLoading(false)
     }

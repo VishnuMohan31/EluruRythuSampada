@@ -20,12 +20,29 @@ router = APIRouter()
 
 @router.get("/inquiries/export")
 async def export_inquiries(
+    start_date: str = None,
+    end_date: str = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Export all inquiries to CSV"""
-    # Fetch all contact logs with related data
-    contact_logs = db.query(ContactLog).all()
+    """Export all inquiries to CSV with optional date filtering"""
+    # Build query
+    query = db.query(ContactLog)
+    
+    # Apply date filters if provided
+    if start_date:
+        from datetime import datetime
+        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        query = query.filter(ContactLog.created_at >= start_dt)
+    
+    if end_date:
+        from datetime import datetime, timedelta
+        end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)  # Include entire end date
+        query = query.filter(ContactLog.created_at < end_dt)
+    
+    contact_logs = query.all()
+    
+    print(f"📊 Exporting {len(contact_logs)} inquiries (start_date={start_date}, end_date={end_date})")
     
     # Create CSV in memory
     output = io.StringIO()
@@ -80,7 +97,8 @@ async def export_inquiries(
     
     # Prepare response
     output.seek(0)
-    filename = f"inquiries_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    date_range = f"_{start_date}_to_{end_date}" if start_date and end_date else ""
+    filename = f"inquiries_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
     
     return StreamingResponse(
         iter([output.getvalue()]),
@@ -91,12 +109,29 @@ async def export_inquiries(
 
 @router.get("/analytics/export")
 async def export_analytics(
+    start_date: str = None,
+    end_date: str = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Export analytics data to CSV"""
-    # Fetch all products with analytics
-    products = db.query(Product).all()
+    """Export analytics data to CSV with optional date filtering"""
+    # Build query
+    query = db.query(Product)
+    
+    # Apply date filters if provided
+    if start_date:
+        from datetime import datetime
+        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        query = query.filter(Product.created_at >= start_dt)
+    
+    if end_date:
+        from datetime import datetime, timedelta
+        end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+        query = query.filter(Product.created_at < end_dt)
+    
+    products = query.all()
+    
+    print(f"📊 Exporting analytics for {len(products)} products (start_date={start_date}, end_date={end_date})")
     
     # Create CSV in memory
     output = io.StringIO()
@@ -137,7 +172,8 @@ async def export_analytics(
     
     # Prepare response
     output.seek(0)
-    filename = f"analytics_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    date_range = f"_{start_date}_to_{end_date}" if start_date and end_date else ""
+    filename = f"analytics_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
     
     return StreamingResponse(
         iter([output.getvalue()]),
@@ -148,11 +184,29 @@ async def export_analytics(
 
 @router.get("/products/export")
 async def export_products(
+    start_date: str = None,
+    end_date: str = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
-    """Export all products to CSV"""
-    products = db.query(Product).all()
+    """Export all products to CSV with optional date filtering"""
+    # Build query
+    query = db.query(Product)
+    
+    # Apply date filters if provided
+    if start_date:
+        from datetime import datetime
+        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        query = query.filter(Product.created_at >= start_dt)
+    
+    if end_date:
+        from datetime import datetime, timedelta
+        end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+        query = query.filter(Product.created_at < end_dt)
+    
+    products = query.all()
+    
+    print(f"📊 Exporting {len(products)} products (start_date={start_date}, end_date={end_date})")
     
     # Create CSV in memory
     output = io.StringIO()
@@ -206,7 +260,8 @@ async def export_products(
     
     # Prepare response
     output.seek(0)
-    filename = f"products_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    date_range = f"_{start_date}_to_{end_date}" if start_date and end_date else ""
+    filename = f"products_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
     
     return StreamingResponse(
         iter([output.getvalue()]),

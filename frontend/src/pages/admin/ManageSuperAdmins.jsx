@@ -486,37 +486,47 @@ const ManageSuperAdmins = () => {
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     State <span style={{ color: 'red' }}>*</span>
+                    {editingAdmin && <span style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginLeft: '0.5rem' }}>(Locked)</span>}
                   </label>
                   <select
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
                     required
+                    disabled={editingAdmin}
                     style={{
                       width: '100%',
                       padding: '0.625rem',
                       border: '2px solid var(--color-border)',
                       borderRadius: '8px',
                       fontSize: '0.875rem',
-                      backgroundColor: 'var(--color-surface)'
+                      backgroundColor: editingAdmin ? '#f3f4f6' : 'var(--color-surface)',
+                      cursor: editingAdmin ? 'not-allowed' : 'pointer',
+                      opacity: editingAdmin ? 0.7 : 1
                     }}
                   >
                     <option value="">Select State</option>
                     <option value="Andhra Pradesh">Andhra Pradesh</option>
                     <option value="Telangana">Telangana</option>
                   </select>
+                  {editingAdmin && (
+                    <small style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                      State cannot be changed after creation
+                    </small>
+                  )}
                 </div>
 
                 {/* District */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     District <span style={{ color: 'red' }}>*</span>
+                    {editingAdmin && <span style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginLeft: '0.5rem' }}>(Locked)</span>}
                   </label>
                   <select
                     name="district"
                     value={formData.district}
                     onChange={handleInputChange}
-                    disabled={!formData.state}
+                    disabled={!formData.state || editingAdmin}
                     required
                     style={{
                       width: '100%',
@@ -524,9 +534,9 @@ const ManageSuperAdmins = () => {
                       border: '2px solid var(--color-border)',
                       borderRadius: '8px',
                       fontSize: '0.875rem',
-                      backgroundColor: 'var(--color-surface)',
-                      opacity: !formData.state ? 0.6 : 1,
-                      cursor: !formData.state ? 'not-allowed' : 'pointer'
+                      backgroundColor: editingAdmin ? '#f3f4f6' : 'var(--color-surface)',
+                      opacity: (!formData.state || editingAdmin) ? 0.7 : 1,
+                      cursor: (!formData.state || editingAdmin) ? 'not-allowed' : 'pointer'
                     }}
                   >
                     <option value="">Select District</option>
@@ -534,6 +544,11 @@ const ManageSuperAdmins = () => {
                       <option key={district} value={district}>{district}</option>
                     ))}
                   </select>
+                  {editingAdmin && (
+                    <small style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                      District cannot be changed after creation
+                    </small>
+                  )}
                 </div>
 
                 {/* Email */}

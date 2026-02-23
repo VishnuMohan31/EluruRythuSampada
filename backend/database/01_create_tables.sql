@@ -51,6 +51,7 @@ CREATE TABLE categories (
     name VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
     icon VARCHAR(255),
+    image VARCHAR(500),
     state VARCHAR(100),
     district VARCHAR(100),
     is_active BOOLEAN NOT NULL DEFAULT TRUE,

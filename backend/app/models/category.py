@@ -16,6 +16,7 @@ class Category(Base):
     name = Column(String(200), nullable=False, index=True)
     description = Column(Text, nullable=True)
     icon = Column(String(50), nullable=True)  # Emoji or icon identifier
+    image = Column(String(500), nullable=True)  # Category image URL
     
     # Location (auto-filled from super admin who creates it)
     state = Column(String(100), nullable=True, index=True)

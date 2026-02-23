@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext'
+import { showToast } from '@/utils/api'
 import { LayoutDashboard, UserCog, Settings, BarChart3, Home, User } from 'lucide-react'
 import './AdminLayout.css'
 
@@ -10,7 +11,9 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   const handleLogout = () => {
+    console.log('🚪 Admin logging out')
     logout()
+    showToast('Logged out successfully', 'success')
     navigate('/admin/login')
   }
 

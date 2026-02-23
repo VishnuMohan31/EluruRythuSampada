@@ -10,6 +10,7 @@ class CategoryBase(BaseModel):
     name: str
     description: Optional[str] = None
     icon: Optional[str] = None
+    image: Optional[str] = None
     state: Optional[str] = None  # Auto-filled from super admin
     district: Optional[str] = None  # Auto-filled from super admin
 
@@ -22,6 +23,7 @@ class CategoryUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     icon: Optional[str] = None
+    image: Optional[str] = None
     state: Optional[str] = None
     district: Optional[str] = None
     is_active: Optional[bool] = None

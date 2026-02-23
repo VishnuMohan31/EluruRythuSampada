@@ -69,6 +69,8 @@ async def create_category(
     db.add(db_category)
     db.commit()
     db.refresh(db_category)
+    
+    print(f"✅ Category created: {category_id} - {category.name}")
     return db_category
 
 
