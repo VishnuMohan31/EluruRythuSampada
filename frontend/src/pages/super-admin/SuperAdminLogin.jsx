@@ -6,7 +6,7 @@ import Input from '@components/common/Input'
 import { showToast } from '@/utils/api'
 import '../admin/AuthPage.css'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const SuperAdminLogin = () => {
   const navigate = useNavigate()

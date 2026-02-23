@@ -2,7 +2,7 @@
  * Centralized API utility with token management and logging
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 // Toast notification system
 let toastCallback = null
