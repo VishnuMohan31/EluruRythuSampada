@@ -34,7 +34,6 @@ app = FastAPI(
     description="A government-supported platform for promoting tribal products",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
-    redirect_slashes=False,  # Disable automatic trailing slash redirects
 )
 
 # Configure CORS
@@ -56,6 +55,30 @@ else:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+
+# Middleware to fix redirect URLs to use HTTPS
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import RedirectResponse
+
+class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        
+        # If it's a redirect response, ensure it uses HTTPS
+        if response.status_code in (301, 302, 303, 307, 308):
+            location = response.headers.get("location", "")
+            if location.startswith("http://"):
+                # Get the forwarded proto from nginx
+                forwarded_proto = request.headers.get("x-forwarded-proto", "https")
+                if forwarded_proto == "https":
+                    # Replace http:// with https://
+                    new_location = location.replace("http://", "https://", 1)
+                    response.headers["location"] = new_location
+        
+        return response
+
+app.add_middleware(HTTPSRedirectMiddleware)
 
 
 @app.on_event("startup")
