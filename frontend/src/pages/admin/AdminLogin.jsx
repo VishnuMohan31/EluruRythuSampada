@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext'
 import Button from '@components/common/Button'
 import Input from '@components/common/Input'
-import { showToast } from '@/utils/api'
+import { showToast, API_BASE_URL } from '@/utils/api'
 import './AuthPage.css'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const AdminLogin = () => {
   const navigate = useNavigate()

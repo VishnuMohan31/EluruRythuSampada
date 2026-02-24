@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import Button from '@components/common/Button'
-import { logger, showToast } from '@/utils/api'
+import { logger, showToast, API_BASE_URL } from '@/utils/api'
 import '../admin/Dashboard.css'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const Reports = () => {
   const [inquiryDateRange, setInquiryDateRange] = useState({ startDate: '', endDate: '' })

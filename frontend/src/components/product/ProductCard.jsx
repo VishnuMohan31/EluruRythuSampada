@@ -1,8 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { API_BASE_URL } from '@utils/api'
 import './ProductCard.css'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const ProductCard = ({ product }) => {
   // Handle image URL - use backend storage or placeholder

@@ -5,7 +5,7 @@ import ProductCard from '@components/product/ProductCard'
 import productsHeaderBg from '@/Images/Products.png'
 import './ProductsPage.css'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+import { API_BASE_URL } from '@utils/api'
 const PRODUCTS_PER_PAGE = 15
 
 const ProductsPage = () => {

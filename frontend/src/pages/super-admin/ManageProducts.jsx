@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
-import { api, logger, showToast } from '@/utils/api'
+import { api, logger, showToast, API_BASE_URL } from '@/utils/api'
 import '../admin/Dashboard.css'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const ManageProducts = () => {
   const [showModal, setShowModal] = useState(false)

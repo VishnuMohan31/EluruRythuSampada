@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Button from '@components/common/Button'
 import { useToast } from '@components/common/ToastContainer'
+import { API_BASE_URL } from '@utils/api'
 import './ProductDetailPage.css'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const ProductDetailPage = () => {
   const { id } = useParams()
