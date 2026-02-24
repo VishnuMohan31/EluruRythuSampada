@@ -34,6 +34,7 @@ app = FastAPI(
     description="A government-supported platform for promoting tribal products",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
+    redirect_slashes=False,  # Disable automatic trailing slash redirects
 )
 
 # Configure CORS
