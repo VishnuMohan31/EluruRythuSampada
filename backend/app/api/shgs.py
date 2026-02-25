@@ -28,6 +28,10 @@ async def get_shgs(
         query = query.filter(SHG.is_active == True)
     if type and type in ['SHG', 'Farmer']:
         query = query.filter(SHG.type == type)
+    
+    # Sort by: Recently updated first, then by name
+    query = query.order_by(SHG.updated_at.desc().nullslast(), SHG.name.asc())
+    
     shgs = query.offset(skip).limit(limit).all()
     return shgs
 

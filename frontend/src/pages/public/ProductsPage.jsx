@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
+import CustomSelect from '@components/common/CustomSelect'
 import productsHeaderBg from '@/Images/Products.png'
 import './ProductsPage.css'
 
@@ -38,8 +39,8 @@ const ProductsPage = () => {
       
       // Fetch products and categories in parallel
       const [productsRes, categoriesRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/products`),
-        fetch(`${API_BASE_URL}/api/categories`)
+        fetch(`${API_BASE_URL}/api/products/`),
+        fetch(`${API_BASE_URL}/api/categories/`)
       ])
       
       if (!productsRes.ok || !categoriesRes.ok) {
@@ -181,52 +182,48 @@ const ProductsPage = () => {
             </div>
 
             {/* District Filter */}
-            <select
+            <CustomSelect
               value={selectedDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
-              className="filter-select"
-            >
-              <option value="">All Districts</option>
-              {uniqueDistricts.map(district => (
-                <option key={district} value={district}>{district}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All Districts' },
+                ...uniqueDistricts.map(district => ({ value: district, label: district }))
+              ]}
+              placeholder="All Districts"
+            />
 
             {/* Mandal Filter */}
-            <select
+            <CustomSelect
               value={selectedMandal}
               onChange={(e) => setSelectedMandal(e.target.value)}
-              className="filter-select"
-            >
-              <option value="">All Mandals</option>
-              {uniqueMandals.map(mandal => (
-                <option key={mandal} value={mandal}>{mandal}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All Mandals' },
+                ...uniqueMandals.map(mandal => ({ value: mandal, label: mandal }))
+              ]}
+              placeholder="All Mandals"
+            />
 
             {/* Village Filter */}
-            <select
+            <CustomSelect
               value={selectedVillage}
               onChange={(e) => setSelectedVillage(e.target.value)}
-              className="filter-select"
-            >
-              <option value="">All Villages</option>
-              {uniqueVillages.map(village => (
-                <option key={village} value={village}>{village}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All Villages' },
+                ...uniqueVillages.map(village => ({ value: village, label: village }))
+              ]}
+              placeholder="All Villages"
+            />
 
             {/* SHG Filter */}
-            <select
+            <CustomSelect
               value={selectedSHG}
               onChange={(e) => setSelectedSHG(e.target.value)}
-              className="filter-select"
-            >
-              <option value="">All SHGs</option>
-              {uniqueSHGs.map(shg => (
-                <option key={shg} value={shg}>{shg}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All SHGs' },
+                ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
+              ]}
+              placeholder="All SHGs"
+            />
           </div>
           
           <button

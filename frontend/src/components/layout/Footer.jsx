@@ -6,6 +6,10 @@ import './Footer.css'
 const Footer = () => {
   const { t } = useTranslation()
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <footer className="footer">
       <div className="footer-pattern"></div>
@@ -37,21 +41,21 @@ const Footer = () => {
           <div className="footer-section">
             <h4 className="footer-heading">Quick Links</h4>
             <ul className="footer-links">
-              <li><Link to="/">{t('home')}</Link></li>
-              <li><Link to="/products">{t('products')}</Link></li>
-              <li><Link to="/about">{t('about')}</Link></li>
-              <li><Link to="/terms">Terms & Conditions</Link></li>
-              <li><Link to="/privacy">Privacy Policy</Link></li>
+              <li><Link to="/" onClick={scrollToTop}>{t('home')}</Link></li>
+              <li><Link to="/products" onClick={scrollToTop}>{t('products')}</Link></li>
+              <li><Link to="/about" onClick={scrollToTop}>{t('about')}</Link></li>
+              <li><Link to="/terms" onClick={scrollToTop}>Terms & Conditions</Link></li>
+              <li><Link to="/privacy" onClick={scrollToTop}>Privacy Policy</Link></li>
             </ul>
           </div>
 
           <div className="footer-section">
             <h4 className="footer-heading">Categories</h4>
             <ul className="footer-links">
-              <li><Link to="/products?category=handicrafts">Handicrafts</Link></li>
-              <li><Link to="/products?category=textiles">Textiles</Link></li>
-              <li><Link to="/products?category=jewelry">Jewelry</Link></li>
-              <li><Link to="/products?category=pottery">Pottery</Link></li>
+              <li><Link to="/products?category=handicrafts" onClick={scrollToTop}>Handicrafts</Link></li>
+              <li><Link to="/products?category=textiles" onClick={scrollToTop}>Textiles</Link></li>
+              <li><Link to="/products?category=jewelry" onClick={scrollToTop}>Jewelry</Link></li>
+              <li><Link to="/products?category=pottery" onClick={scrollToTop}>Pottery</Link></li>
             </ul>
           </div>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
+import CustomSelect from '@components/common/CustomSelect'
 import { api, logger, showToast, API_BASE_URL } from '@/utils/api'
 import '../admin/Dashboard.css'
 
@@ -41,7 +42,7 @@ const ManageProducts = () => {
       setLoading(true)
       logger.info('Fetching Products', 'include_inactive=true')
       
-      const data = await api.get('/api/products?include_inactive=true')
+      const data = await api.get('/api/products/?include_inactive=true')
       logger.success('Fetched Products', `${data.length} products`)
       
       // Map backend data to frontend format
@@ -311,23 +312,15 @@ const ManageProducts = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Category
             </label>
-            <select
+            <CustomSelect
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All Categories</option>
-              {uniqueCategories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All Categories' },
+                ...uniqueCategories.map(cat => ({ value: cat, label: cat }))
+              ]}
+              placeholder="All Categories"
+            />
           </div>
 
           {/* SHG/Farmer Filter */}
@@ -335,23 +328,15 @@ const ManageProducts = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               SHG / Farmer
             </label>
-            <select
+            <CustomSelect
               value={shgFilter}
               onChange={(e) => setShgFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All SHGs / Farmers</option>
-              {uniqueSHGs.map(shg => (
-                <option key={shg} value={shg}>{shg}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All SHGs / Farmers' },
+                ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
+              ]}
+              placeholder="All SHGs / Farmers"
+            />
           </div>
 
           {/* Status Filter */}
@@ -359,22 +344,16 @@ const ManageProducts = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Status
             </label>
-            <select
+            <CustomSelect
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+              options={[
+                { value: '', label: 'All Status' },
+                { value: 'Active', label: 'Active' },
+                { value: 'Inactive', label: 'Inactive' }
+              ]}
+              placeholder="All Status"
+            />
           </div>
 
           {/* Clear Filters Button */}
@@ -585,14 +564,7 @@ const ManageProducts = () => {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      backgroundColor: 'var(--color-surface)'
-                    }}
+                    className="filter-select"
                   >
                     <option value="">Select Category</option>
                     {uniqueCategories.map(cat => (
@@ -611,14 +583,7 @@ const ManageProducts = () => {
                     value={formData.shgName}
                     onChange={handleInputChange}
                     required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      backgroundColor: 'var(--color-surface)'
-                    }}
+                    className="filter-select"
                   >
                     <option value="">Select SHG / Farmer</option>
                     {uniqueSHGs.map(shg => (

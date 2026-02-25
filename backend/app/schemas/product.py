@@ -1,9 +1,10 @@
 """
 Product schemas for validation
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from typing import Optional
 from datetime import datetime
+from ..utils.timezone import format_ist_datetime
 
 
 class CategoryNested(BaseModel):
@@ -59,6 +60,13 @@ class ProductResponse(ProductBase):
     updated_at: Optional[datetime] = None
     category: Optional[CategoryNested] = None
     shg: Optional[SHGNested] = None
+
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, dt: Optional[datetime], _info) -> Optional[str]:
+        """Convert UTC datetime to IST and format as dd/mm/yyyy hh:mm:ss AM/PM"""
+        if dt is None:
+            return None
+        return format_ist_datetime(dt)
 
     class Config:
         from_attributes = True

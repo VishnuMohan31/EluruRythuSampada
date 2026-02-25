@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw, Eye, EyeOff } from 'lucide-react'
 import Button from '@components/common/Button'
+import CustomSelect from '@components/common/CustomSelect'
 import { api, logger, showToast } from '@/utils/api'
 import './Dashboard.css'
 
@@ -26,7 +27,7 @@ const ManageSuperAdmins = () => {
       setLoading(true)
       logger.info('Fetching Super Admins', 'role=super_admin')
       
-      const data = await api.get('/api/users?role=super_admin')
+      const data = await api.get('/api/users/?role=super_admin')
       logger.success('Fetched Super Admins', `${data.length} users`)
       
       setSuperAdmins(data)
@@ -288,22 +289,16 @@ const ManageSuperAdmins = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               State
             </label>
-            <select
+            <CustomSelect
               value={stateFilter}
               onChange={(e) => handleStateFilterChange(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All States</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
-              <option value="Telangana">Telangana</option>
-            </select>
+              options={[
+                { value: '', label: 'All States' },
+                { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
+                { value: 'Telangana', label: 'Telangana' }
+              ]}
+              placeholder="All States"
+            />
           </div>
 
           {/* District Filter */}
@@ -311,26 +306,16 @@ const ManageSuperAdmins = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               District
             </label>
-            <select
+            <CustomSelect
               value={districtFilter}
               onChange={(e) => setDistrictFilter(e.target.value)}
-              disabled={!stateFilter}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)',
-                opacity: !stateFilter ? 0.6 : 1,
-                cursor: !stateFilter ? 'not-allowed' : 'pointer'
-              }}
-            >
-              <option value="">All Districts</option>
-              {filterAvailableDistricts.map(district => (
-                <option key={district} value={district}>{district}</option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: 'All Districts' },
+                ...filterAvailableDistricts.map(district => ({ value: district, label: district }))
+              ]}
+              placeholder="All Districts"
+              className={!stateFilter ? 'disabled' : ''}
+            />
           </div>
 
           {/* Status Filter */}
@@ -338,22 +323,16 @@ const ManageSuperAdmins = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Status
             </label>
-            <select
+            <CustomSelect
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+              options={[
+                { value: '', label: 'All Status' },
+                { value: 'Active', label: 'Active' },
+                { value: 'Inactive', label: 'Inactive' }
+              ]}
+              placeholder="All Status"
+            />
           </div>
 
           {/* Clear Filters Button - Always visible */}

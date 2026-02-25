@@ -131,7 +131,7 @@ const Reports = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                Start Date
+                Start Date <span style={{ color: 'var(--color-text-light)', fontWeight: '400' }}>(Optional)</span>
               </label>
               <input
                 type="date"
@@ -148,7 +148,7 @@ const Reports = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                End Date
+                End Date <span style={{ color: 'var(--color-text-light)', fontWeight: '400' }}>(Optional)</span>
               </label>
               <input
                 type="date"
@@ -165,7 +165,15 @@ const Reports = () => {
             </div>
           </div>
           
-          <Button variant="primary" onClick={handleExportInquiries}>Export CSV</Button>
+          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', marginBottom: '1rem' }}>
+            💡 Leave dates empty to export all records
+          </p>
+          
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button variant="primary" onClick={handleExportInquiries}>
+              {inquiryDateRange.startDate || inquiryDateRange.endDate ? 'Export Selected Range' : 'Export All Records'}
+            </Button>
+          </div>
         </div>
 
         <div className="dashboard-card">
@@ -177,7 +185,7 @@ const Reports = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                Start Date
+                Start Date <span style={{ color: 'var(--color-text-light)', fontWeight: '400' }}>(Optional)</span>
               </label>
               <input
                 type="date"
@@ -194,7 +202,7 @@ const Reports = () => {
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                End Date
+                End Date <span style={{ color: 'var(--color-text-light)', fontWeight: '400' }}>(Optional)</span>
               </label>
               <input
                 type="date"
@@ -211,7 +219,15 @@ const Reports = () => {
             </div>
           </div>
           
-          <Button variant="primary" onClick={handleExportAnalytics}>Export CSV</Button>
+          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', marginBottom: '1rem' }}>
+            💡 Leave dates empty to export all records
+          </p>
+          
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button variant="primary" onClick={handleExportAnalytics}>
+              {analyticsDateRange.startDate || analyticsDateRange.endDate ? 'Export Selected Range' : 'Export All Records'}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

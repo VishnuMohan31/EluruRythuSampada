@@ -14,6 +14,7 @@ from ..models.inquiry import ContactLog, Buyer
 from ..models.product import Product
 from ..models.shg import SHG
 from ..models.category import Category
+from ..utils.timezone import format_ist_datetime
 
 router = APIRouter()
 
@@ -26,18 +27,18 @@ async def export_inquiries(
     current_user = Depends(get_current_admin)
 ):
     """Export all inquiries to CSV with optional date filtering"""
+    from datetime import datetime as dt, timedelta
+    
     # Build query
     query = db.query(ContactLog)
     
     # Apply date filters if provided
     if start_date:
-        from datetime import datetime
-        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        start_dt = dt.strptime(start_date, '%Y-%m-%d')
         query = query.filter(ContactLog.created_at >= start_dt)
     
     if end_date:
-        from datetime import datetime, timedelta
-        end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)  # Include entire end date
+        end_dt = dt.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)  # Include entire end date
         query = query.filter(ContactLog.created_at < end_dt)
     
     contact_logs = query.all()
@@ -60,6 +61,7 @@ async def export_inquiries(
         'Product ID',
         'Product Description',
         'SHG / Farmer Name',
+        'SHG / Farmer Type',
         'SHG / Farmer ID',
         'SHG / Farmer Contact Person',
         'SHG / Farmer Mobile Number',
@@ -73,13 +75,9 @@ async def export_inquiries(
         product = db.query(Product).filter(Product.id == log.product_id).first()
         shg = db.query(SHG).filter(SHG.id == log.shg_id).first()
         
-        # Convert to IST (UTC+5:30)
-        from datetime import timedelta
-        ist_time = log.created_at + timedelta(hours=5, minutes=30) if log.created_at else None
-        
         writer.writerow([
             log.id,
-            ist_time.strftime('%d/%m/%Y %H:%M:%S') if ist_time else '',
+            format_ist_datetime(log.created_at),
             buyer.name if buyer else '',
             buyer.email if buyer else '',
             buyer.phone if buyer else '',
@@ -88,6 +86,7 @@ async def export_inquiries(
             product.id if product else '',
             product.description if product else '',
             shg.name if shg else '',
+            shg.type if shg else '',
             shg.id if shg else '',
             shg.contact_person if shg else '',
             shg.mobile_number if shg else '',
@@ -98,7 +97,7 @@ async def export_inquiries(
     # Prepare response
     output.seek(0)
     date_range = f"_{start_date}_to_{end_date}" if start_date and end_date else ""
-    filename = f"inquiries_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
+    filename = f"inquiries_export_{dt.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
     
     return StreamingResponse(
         iter([output.getvalue()]),
@@ -115,18 +114,18 @@ async def export_analytics(
     current_user = Depends(get_current_admin)
 ):
     """Export analytics data to CSV with optional date filtering"""
+    from datetime import datetime as dt, timedelta
+    
     # Build query
     query = db.query(Product)
     
     # Apply date filters if provided
     if start_date:
-        from datetime import datetime
-        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        start_dt = dt.strptime(start_date, '%Y-%m-%d')
         query = query.filter(Product.created_at >= start_dt)
     
     if end_date:
-        from datetime import datetime, timedelta
-        end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+        end_dt = dt.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
         query = query.filter(Product.created_at < end_dt)
     
     products = query.all()
@@ -143,6 +142,7 @@ async def export_analytics(
         'Product Name',
         'Category',
         'SHG / Farmer Name',
+        'SHG / Farmer Type',
         'View Count',
         'Contact Count',
         'Status',
@@ -155,25 +155,22 @@ async def export_analytics(
         shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
         contact_count = db.query(ContactLog).filter(ContactLog.product_id == product.id).count()
         
-        # Convert to IST (UTC+5:30)
-        from datetime import timedelta
-        ist_time = product.created_at + timedelta(hours=5, minutes=30) if product.created_at else None
-        
         writer.writerow([
             product.id,
             product.name,
             category.name if category else '',
             shg.name if shg else '',
+            shg.type if shg else '',
             product.view_count,
             contact_count,
             'Active' if product.is_active else 'Inactive',
-            ist_time.strftime('%d/%m/%Y') if ist_time else ''
+            format_ist_datetime(product.created_at)
         ])
     
     # Prepare response
     output.seek(0)
     date_range = f"_{start_date}_to_{end_date}" if start_date and end_date else ""
-    filename = f"analytics_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
+    filename = f"analytics_export_{dt.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
     
     return StreamingResponse(
         iter([output.getvalue()]),
@@ -190,18 +187,18 @@ async def export_products(
     current_user = Depends(get_current_admin)
 ):
     """Export all products to CSV with optional date filtering"""
+    from datetime import datetime as dt, timedelta
+    
     # Build query
     query = db.query(Product)
     
     # Apply date filters if provided
     if start_date:
-        from datetime import datetime
-        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        start_dt = dt.strptime(start_date, '%Y-%m-%d')
         query = query.filter(Product.created_at >= start_dt)
     
     if end_date:
-        from datetime import datetime, timedelta
-        end_dt = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+        end_dt = dt.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
         query = query.filter(Product.created_at < end_dt)
     
     products = query.all()
@@ -219,6 +216,7 @@ async def export_products(
         'Description',
         'Category',
         'SHG / Farmer Name',
+        'SHG / Farmer Type',
         'SHG / Farmer Contact Person',
         'SHG / Farmer Mobile',
         'Mandal',
@@ -236,23 +234,20 @@ async def export_products(
         category = db.query(Category).filter(Category.id == product.category_id).first()
         shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
         
-        # Convert to IST (UTC+5:30)
-        from datetime import timedelta
-        ist_time = product.created_at + timedelta(hours=5, minutes=30) if product.created_at else None
-        
         writer.writerow([
             product.id,
             product.name,
             product.description,
             category.name if category else '',
             shg.name if shg else '',
+            shg.type if shg else '',
             shg.contact_person if shg else '',
             shg.mobile_number if shg else '',
             shg.mandal if shg else '',
             shg.village if shg else '',
             product.view_count,
             'Active' if product.is_active else 'Inactive',
-            ist_time.strftime('%d/%m/%Y') if ist_time else '',
+            format_ist_datetime(product.created_at),
             product.image_url or '',
             product.youtube_link or '',
             product.instagram_link or ''
@@ -261,7 +256,7 @@ async def export_products(
     # Prepare response
     output.seek(0)
     date_range = f"_{start_date}_to_{end_date}" if start_date and end_date else ""
-    filename = f"products_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
+    filename = f"products_export_{dt.now().strftime('%Y%m%d_%H%M%S')}{date_range}.csv"
     
     return StreamingResponse(
         iter([output.getvalue()]),

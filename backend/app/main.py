@@ -57,7 +57,7 @@ else:
     )
 
 
-# Middleware to fix redirect URLs to use HTTPS
+# Middleware to fix redirect URLs to use HTTPS (PRODUCTION ONLY)
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import RedirectResponse
 
@@ -78,7 +78,9 @@ class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
         
         return response
 
-app.add_middleware(HTTPSRedirectMiddleware)
+# Only add HTTPS redirect middleware in production
+if not settings.DEBUG:
+    app.add_middleware(HTTPSRedirectMiddleware)
 
 
 @app.on_event("startup")

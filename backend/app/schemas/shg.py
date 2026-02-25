@@ -1,9 +1,10 @@
 """
 SHG (Self Help Group) schemas for validation
 """
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, field_serializer
 from typing import Optional, Literal
 from datetime import datetime
+from ..utils.timezone import format_ist_datetime
 
 
 class SHGBase(BaseModel):
@@ -43,6 +44,13 @@ class SHGResponse(SHGBase):
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
+
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, dt: Optional[datetime], _info) -> Optional[str]:
+        """Convert UTC datetime to IST and format as dd/mm/yyyy hh:mm:ss AM/PM"""
+        if dt is None:
+            return None
+        return format_ist_datetime(dt)
 
     class Config:
         from_attributes = True

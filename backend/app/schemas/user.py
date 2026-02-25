@@ -1,9 +1,10 @@
 """
 User schemas for validation
 """
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, field_serializer
 from typing import Optional
 from datetime import datetime
+from ..utils.timezone import format_ist_datetime
 
 
 class UserBase(BaseModel):
@@ -40,6 +41,13 @@ class UserResponse(UserBase):
     is_active: bool
     created_at: datetime
     last_login: Optional[datetime] = None
+
+    @field_serializer('created_at', 'last_login')
+    def serialize_datetime(self, dt: Optional[datetime], _info) -> Optional[str]:
+        """Convert UTC datetime to IST and format as dd/mm/yyyy hh:mm:ss AM/PM"""
+        if dt is None:
+            return None
+        return format_ist_datetime(dt)
 
     class Config:
         from_attributes = True

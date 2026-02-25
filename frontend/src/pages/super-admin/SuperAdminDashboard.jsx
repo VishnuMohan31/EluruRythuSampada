@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import CustomSelect from '@components/common/CustomSelect'
 import { api, logger } from '@/utils/api'
 import '../admin/Dashboard.css'
 
@@ -62,7 +63,7 @@ const SuperAdminDashboard = () => {
       setLoading(true)
       logger.info('Fetching Dashboard Metrics', `type=${metricType}, period=${shgTimePeriod}`)
       
-      const data = await api.get(`/api/analytics/metrics?type=${metricType}&period=${shgTimePeriod}`)
+      const data = await api.get(`/api/analytics/metrics/?type=${metricType}&period=${shgTimePeriod}`)
       logger.success('Fetched Dashboard Metrics', data)
       
       setTopSHGInquiries(data.topSHGs || [])
@@ -81,7 +82,9 @@ const SuperAdminDashboard = () => {
   }
 
   const renderListItem = (item, index, isProduct = false, isLeast = false) => {
-    const label = metricType === 'product' ? 'products' : 'inquiries'
+    // For product metrics, show product count; for SHG metrics, show inquiry count
+    const count = item.inquiries || 0
+    const label = metricType === 'product' ? (count === 1 ? 'product' : 'products') : (count === 1 ? 'inquiry' : 'inquiries')
     
     return (
       <div
@@ -107,7 +110,7 @@ const SuperAdminDashboard = () => {
           <div>
             <div style={{ fontWeight: '500', fontSize: '0.875rem' }}>{item.name}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-light)' }}>
-              {isProduct ? item.shg : item.state}
+              {item.district && item.state ? `${item.district}, ${item.state}` : (item.state || item.district || 'N/A')}
             </div>
           </div>
         </div>
@@ -117,7 +120,7 @@ const SuperAdminDashboard = () => {
             fontSize: '0.875rem',
             color: isLeast ? '#DC2626' : 'inherit'
           }}>
-            {item.inquiries} {label}
+            {count} {label}
           </span>
         </div>
       </div>
@@ -177,7 +180,7 @@ const SuperAdminDashboard = () => {
       <div className="dashboard-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <h3 style={{ margin: 0 }}>📊 Performance Metrics</h3>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             {/* Metric Type Toggle - SHG or Product */}
             <div style={{ display: 'flex', gap: '0.5rem', backgroundColor: 'var(--color-background)', padding: '0.25rem', borderRadius: '8px' }}>
               <button
@@ -191,7 +194,8 @@ const SuperAdminDashboard = () => {
                   cursor: 'pointer',
                   backgroundColor: metricType === 'shg' ? 'var(--color-primary)' : 'transparent',
                   color: metricType === 'shg' ? 'white' : 'var(--color-text)',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 🏛 SHG / Farmer Inquiries
@@ -207,7 +211,8 @@ const SuperAdminDashboard = () => {
                   cursor: 'pointer',
                   backgroundColor: metricType === 'product' ? 'var(--color-primary)' : 'transparent',
                   color: metricType === 'product' ? 'white' : 'var(--color-text)',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 📦 Number of Products
@@ -215,43 +220,31 @@ const SuperAdminDashboard = () => {
             </div>
 
             {/* Time Period Filter - Changes based on metric type */}
-            {metricType === 'shg' ? (
-              <select
-                value={shgTimePeriod}
-                onChange={(e) => setShgTimePeriod(e.target.value)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  border: '2px solid var(--color-border)',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  backgroundColor: 'var(--color-surface)'
-                }}
-              >
-                <option value="7">Last 7 Days</option>
-                <option value="30">Last 30 Days</option>
-                <option value="90">Last 90 Days</option>
-                <option value="all">All Time</option>
-              </select>
-            ) : (
-              <select
-                value="all"
-                disabled
-                style={{
-                  padding: '0.5rem 1rem',
-                  border: '2px solid var(--color-border)',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  backgroundColor: 'var(--color-surface)',
-                  opacity: 0.6,
-                  cursor: 'not-allowed'
-                }}
-              >
-                <option value="7" disabled style={{ color: '#999' }}>Last 7 Days</option>
-                <option value="30" disabled style={{ color: '#999' }}>Last 30 Days</option>
-                <option value="90" disabled style={{ color: '#999' }}>Last 90 Days</option>
-                <option value="all">All Time</option>
-              </select>
-            )}
+            <div style={{ minWidth: '160px' }}>
+              {metricType === 'shg' ? (
+                <CustomSelect
+                  value={shgTimePeriod}
+                  onChange={(e) => setShgTimePeriod(e.target.value)}
+                  options={[
+                    { value: '7', label: 'Last 7 Days' },
+                    { value: '30', label: 'Last 30 Days' },
+                    { value: '90', label: 'Last 90 Days' },
+                    { value: 'all', label: 'All Time' }
+                  ]}
+                  placeholder="Select Period"
+                />
+              ) : (
+                <CustomSelect
+                  value="all"
+                  onChange={() => {}}
+                  options={[
+                    { value: 'all', label: 'All Time' }
+                  ]}
+                  placeholder="All Time"
+                  className="disabled"
+                />
+              )}
+            </div>
           </div>
         </div>
 

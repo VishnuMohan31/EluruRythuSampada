@@ -50,7 +50,7 @@ const ProductDetailPage = () => {
 
   const fetchRelatedProducts = async (categoryId, currentProductId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/products?category_id=${categoryId}&limit=4`)
+      const response = await fetch(`${API_BASE_URL}/api/products/?category_id=${categoryId}&limit=4`)
       const data = await response.json()
       setRelatedProducts(data.filter(p => p.id !== currentProductId).slice(0, 3))
     } catch (error) {

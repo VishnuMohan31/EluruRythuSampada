@@ -39,8 +39,32 @@ const Profile = () => {
     }
   }
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    
+    // Mobile number validation - only allow digits
+    if (name === 'mobileNumber') {
+      const cleanedValue = value.replace(/[^\d]/g, '')
+      setMobileNumber(cleanedValue.slice(0, 10)) // Limit to 10 digits
+      return
+    }
+  }
+
+  const validatePhoneNumber = (phone) => {
+    // Extract only digits
+    const digits = phone.replace(/\D/g, '')
+    // Check if it's exactly 10 digits
+    return digits.length === 10
+  }
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault()
+    
+    // Validate mobile number if provided
+    if (mobileNumber && !validatePhoneNumber(mobileNumber)) {
+      showToast('Mobile number must be exactly 10 digits', 'error')
+      return
+    }
     
     try {
       logger.info('Updating Profile', 'name and mobile')
@@ -233,10 +257,13 @@ const Profile = () => {
               </label>
               <input
                 type="tel"
+                name="mobileNumber"
                 value={mobileNumber}
-                onChange={(e) => setMobileNumber(e.target.value)}
+                onChange={handleInputChange}
                 disabled={!isEditing}
-                placeholder="Enter mobile number"
+                placeholder="Enter 10-digit mobile number"
+                maxLength={10}
+                pattern="[0-9]{10}"
                 style={{
                   width: '100%',
                   padding: '0.625rem',
@@ -247,6 +274,11 @@ const Profile = () => {
                   cursor: isEditing ? 'text' : 'not-allowed'
                 }}
               />
+              {isEditing && mobileNumber && !validatePhoneNumber(mobileNumber) && (
+                <small style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                  Mobile number must be exactly 10 digits
+                </small>
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '1rem' }}>

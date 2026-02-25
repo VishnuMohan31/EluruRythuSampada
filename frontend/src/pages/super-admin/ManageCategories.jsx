@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
+import CustomSelect from '@components/common/CustomSelect'
 import { api, logger, showToast } from '@/utils/api'
 import '../admin/Dashboard.css'
 
@@ -26,7 +27,7 @@ const ManageCategories = () => {
       setLoading(true)
       logger.info('Fetching Categories', 'include_inactive=true')
       
-      const data = await api.get('/api/categories?include_inactive=true')
+      const data = await api.get('/api/categories/?include_inactive=true')
       logger.success('Fetched Categories', `${data.length} categories`)
       
       // Map backend data to frontend format
@@ -188,22 +189,16 @@ const ManageCategories = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Status
             </label>
-            <select
+            <CustomSelect
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+              options={[
+                { value: '', label: 'All Status' },
+                { value: 'Active', label: 'Active' },
+                { value: 'Inactive', label: 'Inactive' }
+              ]}
+              placeholder="All Status"
+            />
           </div>
 
           {/* Clear Filters Button */}
@@ -234,8 +229,21 @@ const ManageCategories = () => {
               filteredCategories.map(category => (
                 <tr key={category.id}>
                   <td>{category.id}</td>
-                  <td>{category.name}</td>
-                  <td>{category.description}</td>
+                  <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '200px' }} title={category.name}>
+                    {category.name}
+                  </td>
+                  <td 
+                    style={{ 
+                      overflow: 'hidden', 
+                      textOverflow: 'ellipsis', 
+                      whiteSpace: 'nowrap',
+                      maxWidth: '400px',
+                      cursor: category.description && category.description.length > 100 ? 'help' : 'default'
+                    }} 
+                    title={category.description}
+                  >
+                    {category.description || '-'}
+                  </td>
                   <td>
                     <span className={`status-badge ${category.status.toLowerCase()}`}>
                       {category.status}

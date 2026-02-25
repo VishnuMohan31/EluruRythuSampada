@@ -25,10 +25,10 @@ const HomePage = () => {
       
       // Fetch categories, all products, recent products, and most contacted products
       const [categoriesRes, allProductsRes, recentRes, contactedRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/categories`),
-        fetch(`${API_BASE_URL}/api/products`),
-        fetch(`${API_BASE_URL}/api/products/recent?limit=4`),
-        fetch(`${API_BASE_URL}/api/products/most-contacted?limit=4`)
+        fetch(`${API_BASE_URL}/api/categories/`),
+        fetch(`${API_BASE_URL}/api/products/`),
+        fetch(`${API_BASE_URL}/api/products/recent/?limit=4`),
+        fetch(`${API_BASE_URL}/api/products/most-contacted/?limit=4`)
       ])
       
       if (categoriesRes.ok && allProductsRes.ok) {
@@ -147,7 +147,7 @@ const HomePage = () => {
                   </div>
                   <div className="category-info">
                     <h3 className="category-name">{category.name}</h3>
-                    <p className="category-description">{category.description || 'Explore this category'}</p>
+                    <p className="category-description">Explore this category</p>
                   </div>
                 </Link>
               ))

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
+import CustomSelect from '@components/common/CustomSelect'
 import { api, logger, showToast } from '@/utils/api'
 import '../admin/Dashboard.css'
 
@@ -34,7 +35,7 @@ const ManageSHGs = () => {
       setLoading(true)
       logger.info('Fetching SHGs/Farmers', 'include_inactive=true')
       
-      const data = await api.get('/api/shgs?include_inactive=true')
+      const data = await api.get('/api/shgs/?include_inactive=true')
       logger.success('Fetched SHGs/Farmers', `${data.length} records`)
       
       // Map backend data to frontend format
@@ -267,22 +268,16 @@ const ManageSHGs = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Type
             </label>
-            <select
+            <CustomSelect
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All Types</option>
-              <option value="SHG">SHG</option>
-              <option value="Farmer">Farmer</option>
-            </select>
+              options={[
+                { value: '', label: 'All Types' },
+                { value: 'SHG', label: 'SHG' },
+                { value: 'Farmer', label: 'Farmer' }
+              ]}
+              placeholder="All Types"
+            />
           </div>
 
           {/* Status Filter - Fixed width */}
@@ -290,22 +285,16 @@ const ManageSHGs = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
               Status
             </label>
-            <select
+            <CustomSelect
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '2px solid var(--color-border)',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--color-surface)'
-              }}
-            >
-              <option value="">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+              options={[
+                { value: '', label: 'All Status' },
+                { value: 'Active', label: 'Active' },
+                { value: 'Inactive', label: 'Inactive' }
+              ]}
+              placeholder="All Status"
+            />
           </div>
 
           {/* Clear Filters Button - Auto width */}

@@ -1,8 +1,7 @@
 /**
  * Centralized API utility with token management and logging
- * Production: always use relative URLs so API follows page protocol (HTTPS). No env dependency.
  */
-const API_BASE_URL = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || '')
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export { API_BASE_URL }
 

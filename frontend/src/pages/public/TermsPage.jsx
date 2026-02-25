@@ -7,7 +7,6 @@ const TermsPage = () => {
       <div className="container">
         <div className="content-header">
           <h1>Terms & Conditions</h1>
-          <p className="last-updated">Last updated: February 15, 2026</p>
         </div>
 
         <div className="content-body">

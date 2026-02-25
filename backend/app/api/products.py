@@ -105,6 +105,9 @@ async def get_products(
     if is_featured is not None:
         query = query.filter(Product.is_featured == is_featured)
     
+    # Sort by: Recently updated first, then by name
+    query = query.order_by(Product.updated_at.desc().nullslast(), Product.name.asc())
+    
     products = query.offset(skip).limit(limit).all()
     return products
 

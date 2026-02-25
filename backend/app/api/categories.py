@@ -25,6 +25,10 @@ async def get_categories(
     query = db.query(Category)
     if not include_inactive:
         query = query.filter(Category.is_active == True)
+    
+    # Sort by: Recently updated first, then by name
+    query = query.order_by(Category.updated_at.desc().nullslast(), Category.name.asc())
+    
     categories = query.offset(skip).limit(limit).all()
     return categories
 
