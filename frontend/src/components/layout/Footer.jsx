@@ -15,7 +15,7 @@ const Footer = () => {
       <div className="footer-pattern"></div>
       <div className="container">
         <div className="footer-content">
-          <div className="footer-section">
+          <div className="footer-section footer-about">
             <div className="footer-logo">
               <div className="logo-icon">
                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,7 +38,7 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="footer-section">
+          <div className="footer-section footer-links-section">
             <h4 className="footer-heading">Quick Links</h4>
             <ul className="footer-links">
               <li><Link to="/" onClick={scrollToTop}>{t('home')}</Link></li>
@@ -50,17 +50,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="footer-section">
-            <h4 className="footer-heading">Categories</h4>
-            <ul className="footer-links">
-              <li><Link to="/products?category=handicrafts" onClick={scrollToTop}>Handicrafts</Link></li>
-              <li><Link to="/products?category=textiles" onClick={scrollToTop}>Textiles</Link></li>
-              <li><Link to="/products?category=jewelry" onClick={scrollToTop}>Jewelry</Link></li>
-              <li><Link to="/products?category=pottery" onClick={scrollToTop}>Pottery</Link></li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
+          <div className="footer-section footer-contact-section">
             <h4 className="footer-heading">Contact</h4>
             <ul className="footer-contact">
               <li>📧 info@swayameluru.com</li>

@@ -160,7 +160,7 @@ const ProductsPage = () => {
         {/* Search and Filters Bar */}
         <div className="search-section">
           <div className="search-filters-row">
-            {/* Search Bar */}
+            {/* Search Bar - full width on mobile */}
             <div className="search-bar">
               <span className="search-icon">🔍</span>
               <input
@@ -181,51 +181,47 @@ const ProductsPage = () => {
               )}
             </div>
 
-            {/* District Filter */}
-            <CustomSelect
-              value={selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-              options={[
-                { value: '', label: 'All Districts' },
-                ...uniqueDistricts.map(district => ({ value: district, label: district }))
-              ]}
-              placeholder="All Districts"
-            />
-
-            {/* Mandal Filter */}
-            <CustomSelect
-              value={selectedMandal}
-              onChange={(e) => setSelectedMandal(e.target.value)}
-              options={[
-                { value: '', label: 'All Mandals' },
-                ...uniqueMandals.map(mandal => ({ value: mandal, label: mandal }))
-              ]}
-              placeholder="All Mandals"
-            />
-
-            {/* Village Filter */}
-            <CustomSelect
-              value={selectedVillage}
-              onChange={(e) => setSelectedVillage(e.target.value)}
-              options={[
-                { value: '', label: 'All Villages' },
-                ...uniqueVillages.map(village => ({ value: village, label: village }))
-              ]}
-              placeholder="All Villages"
-            />
-
-            {/* SHG Filter */}
-            <CustomSelect
-              value={selectedSHG}
-              onChange={(e) => setSelectedSHG(e.target.value)}
-              options={[
-                { value: '', label: 'All SHGs' },
-                ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
-              ]}
-              placeholder="All SHGs"
-            />
+            {/* Filter dropdowns - visible in row on desktop, grid below search on mobile */}
+            <div className="filter-buttons-row">
+              <CustomSelect
+                value={selectedDistrict}
+                onChange={(e) => setSelectedDistrict(e.target.value)}
+                options={[
+                  { value: '', label: 'All Districts' },
+                  ...uniqueDistricts.map(district => ({ value: district, label: district }))
+                ]}
+                placeholder="All Districts"
+              />
+              <CustomSelect
+                value={selectedMandal}
+                onChange={(e) => setSelectedMandal(e.target.value)}
+                options={[
+                  { value: '', label: 'All Mandals' },
+                  ...uniqueMandals.map(mandal => ({ value: mandal, label: mandal }))
+                ]}
+                placeholder="All Mandals"
+              />
+              <CustomSelect
+                value={selectedVillage}
+                onChange={(e) => setSelectedVillage(e.target.value)}
+                options={[
+                  { value: '', label: 'All Villages' },
+                  ...uniqueVillages.map(village => ({ value: village, label: village }))
+                ]}
+                placeholder="All Villages"
+              />
+              <CustomSelect
+                value={selectedSHG}
+                onChange={(e) => setSelectedSHG(e.target.value)}
+                options={[
+                  { value: '', label: 'All SHGs' },
+                  ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
+                ]}
+                placeholder="All SHGs"
+              />
+            </div>
           </div>
-          
+
           <button
             className="filter-toggle-btn"
             onClick={() => setFiltersOpen(!filtersOpen)}
@@ -238,15 +234,32 @@ const ProductsPage = () => {
         </div>
 
         <div className="products-layout">
+          {/* Backdrop overlay for mobile filters */}
+          {filtersOpen && (
+            <div 
+              className="filters-backdrop" 
+              onClick={() => setFiltersOpen(false)}
+            />
+          )}
+
           {/* Filters Sidebar */}
           <aside className={`filters-sidebar ${filtersOpen ? 'open' : ''}`}>
             <div className="filters-header">
               <h3>Filters</h3>
-              {selectedCategory && (
-                <button className="clear-filters-btn" onClick={clearFilters}>
-                  Clear All
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                {(selectedCategory || selectedDistrict || selectedMandal || selectedVillage || selectedSHG) && (
+                  <button className="clear-filters-btn" onClick={clearFilters}>
+                    Clear All
+                  </button>
+                )}
+                <button 
+                  className="close-filters-btn" 
+                  onClick={() => setFiltersOpen(false)}
+                  aria-label="Close filters"
+                >
+                  ✕
                 </button>
-              )}
+              </div>
             </div>
 
             {/* Category Filter */}
@@ -278,6 +291,7 @@ const ProductsPage = () => {
                 ))}
               </div>
             </div>
+
           </aside>
 
           {/* Products Grid */}

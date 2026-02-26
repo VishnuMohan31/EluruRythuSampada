@@ -128,7 +128,7 @@ const Profile = () => {
         <p>Manage your account information and security</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+      <div className="profile-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
         {/* Profile Information */}
         <div className="dashboard-card">
           <h3>Profile Information</h3>

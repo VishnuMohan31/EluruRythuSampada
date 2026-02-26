@@ -159,7 +159,11 @@ const Header = () => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              <span className="hamburger"></span>
+              {mobileMenuOpen ? (
+                <span className="close-icon">✕</span>
+              ) : (
+                <span className="hamburger"></span>
+              )}
             </button>
           </div>
         </div>

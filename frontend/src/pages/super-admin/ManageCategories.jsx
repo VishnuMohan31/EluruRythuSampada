@@ -293,7 +293,7 @@ const ManageCategories = () => {
 
       {/* Add/Edit Category Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={closeModal}>
+        <div className="modal-overlay" onClick={closeModal} style={{ paddingTop: '7rem', paddingBottom: '2rem' }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
             <div className="modal-header">
               <h2>{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>

@@ -179,11 +179,11 @@ const AdminDashboard = () => {
 
       {/* Performance Metrics Section */}
       <div className="dashboard-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="metrics-header">
           <h3 style={{ margin: 0 }}>📊 Performance Metrics</h3>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div className="metrics-controls">
             {/* Metric Type Toggle - SHG or Product */}
-            <div style={{ display: 'flex', gap: '0.5rem', backgroundColor: 'var(--color-background)', padding: '0.25rem', borderRadius: '8px' }}>
+            <div className="metrics-toggle" style={{ display: 'flex', gap: '0.5rem', backgroundColor: 'var(--color-background)', padding: '0.25rem', borderRadius: '8px' }}>
               <button
                 onClick={() => setMetricType('shg')}
                 style={{
@@ -220,8 +220,8 @@ const AdminDashboard = () => {
               </button>
             </div>
 
-            {/* Time Period Filter - Changes based on metric type */}
-            <div style={{ minWidth: '160px' }}>
+            {/* Time Period Filter - below toggle */}
+            <div className="metrics-dropdown">
               {metricType === 'shg' ? (
                 <CustomSelect
                   value={shgTimePeriod}

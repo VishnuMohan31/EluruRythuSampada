@@ -477,7 +477,7 @@ const ManageProducts = () => {
 
       {/* Add/Edit Product Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={closeModal} style={{ paddingTop: '4rem', paddingBottom: '3rem', alignItems: 'flex-start', overflowY: 'auto' }}>
+        <div className="modal-overlay" onClick={closeModal} style={{ paddingTop: '7rem', paddingBottom: '2rem' }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '700px', margin: '2rem auto' }}>
             <div className="modal-header" style={{ padding: '1.25rem 1.5rem' }}>
               <h2 style={{ fontSize: '1.25rem' }}>

@@ -1,3 +1,5 @@
+/* Dashboard Styles - v2.0 - Responsive Performance Metrics */
+
 .dashboard-page {
   width: 100%;
   max-width: 1400px;
@@ -177,15 +179,83 @@
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .stat-card {
+    padding: var(--spacing-md);
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
   }
 
   .quick-actions {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .dashboard-card {
+    padding: var(--spacing-md);
+  }
+
+  .dashboard-card h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .stat-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stat-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.75rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
   }
 }
 
@@ -334,7 +404,7 @@
   color: #991B1B;
 }
 
-/* Modal Styles */
+/* Modal Styles - top/bottom padding so popup doesn't sit under header */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -343,10 +413,11 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  z-index: 1000;
-  padding: var(--spacing-lg);
+  z-index: 1100;
+  padding: 7rem var(--spacing-lg) 2rem;
+  overflow-y: auto;
   animation: fadeIn 0.3s ease;
 }
 
@@ -537,4 +608,503 @@ textarea:focus {
   outline: none;
   border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.15);
+}
+
+/* Additional Modal and Table Responsive Styles */
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 100%;
+    max-height: 95vh;
+    margin: var(--spacing-sm);
+  }
+
+  .modal-header {
+    padding: var(--spacing-lg);
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .modal-body {
+    padding: var(--spacing-lg);
+  }
+
+  .modal-footer {
+    padding: var(--spacing-lg);
+    flex-direction: column-reverse;
+    gap: var(--spacing-sm);
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+
+  .data-table {
+    font-size: 0.85rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 5rem 0 1rem 0;
+  }
+
+  .modal-content {
+    border-radius: 0;
+    max-height: 100vh;
+    margin: 0;
+  }
+
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .data-table {
+    font-size: 0.8rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+}
+
+/* Performance Metrics Header Styles */
+.metrics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.metrics-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.metrics-dropdown {
+  min-width: 160px;
+}
+
+/* Small screen: filter below toggle */
+@media (max-width: 768px) {
+  .metrics-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .metrics-dropdown {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Responsive Styles for Admin Management Pages */
+
+/* Tablet (1024px and below) */
+@media (max-width: 1024px) {
+  /* Filter grid adjustments */
+  .dashboard-card > div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-card > div[style*="gridTemplateColumns"] > div {
+    min-width: 100% !important;
+  }
+
+  /* Table wrapper improvements */
+  .dashboard-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Modal adjustments */
+  .modal-overlay {
+    padding: 1rem !important;
+  }
+
+  .modal-content {
+    max-width: 95% !important;
+    margin: 1rem auto !important;
+  }
+
+  .modal-content form > div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .modal-content form > div[style*="gridTemplateColumns"] > div[style*="gridColumn"] {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* Performance Metrics - Keep toggle buttons in row, time period below */
+  .dashboard-card .metrics-header {
+    flex-wrap: wrap;
+  }
+
+  .dashboard-card .metrics-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-card .metrics-toggle {
+    flex: 1 1 auto;
+  }
+
+  .dashboard-card .metrics-dropdown {
+    flex: 1 1 auto;
+    min-width: 160px;
+  }
+
+  /* Performance Metrics - Stack Top 10 and Least 10 columns */
+  .dashboard-card > div > div[style*="gridTemplateColumns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Profile Page - Stack Profile Information and Change Password */
+  .dashboard-page > div[style*="gridTemplateColumns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mobile (768px and below) */
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-header > div[style*="display: flex"] {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .dashboard-header > div[style*="display: flex"] button {
+    width: 100%;
+  }
+
+  /* Filter section - Force all filter grids to stack */
+  .dashboard-card {
+    padding: 1rem;
+  }
+
+  .dashboard-card > div[style*="grid"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .dashboard-card > div[style*="grid"] > div {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .dashboard-card label {
+    font-size: 0.8125rem !important;
+  }
+
+  .dashboard-card input,
+  .dashboard-card select {
+    font-size: 0.8125rem !important;
+    padding: 0.5rem !important;
+  }
+
+  /* Performance Metrics - Stack everything */
+  .dashboard-card .metrics-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-card .metrics-header h3 {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .dashboard-card .metrics-controls {
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .dashboard-card .metrics-toggle {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .dashboard-card .metrics-toggle button {
+    flex: 1;
+  }
+
+  .dashboard-card .metrics-dropdown {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  /* Performance Metrics - Stack Top 10 and Least 10 */
+  .dashboard-card > div > div[style*="gridTemplateColumns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Profile Page - Stack Profile Information and Change Password */
+  .dashboard-page > div[style*="gridTemplateColumns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  .profile-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Table improvements */
+  .data-table {
+    font-size: 0.8125rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.625rem 0.5rem;
+  }
+
+  .action-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Modal improvements */
+  .modal-header h2 {
+    font-size: 1.125rem !important;
+  }
+
+  .modal-body {
+    padding: 1rem !important;
+  }
+
+  .modal-body input,
+  .modal-body select,
+  .modal-body textarea {
+    font-size: 0.8125rem !important;
+    padding: 0.5rem !important;
+  }
+
+  .modal-body label {
+    font-size: 0.8125rem !important;
+  }
+
+  /* Button adjustments */
+  .modal-body > div[style*="marginTop"] {
+    flex-direction: column;
+  }
+
+  .modal-body > div[style*="marginTop"] button {
+    width: 100%;
+  }
+
+  /* Status badges */
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  /* Image preview in products */
+  .modal-body img[style*="width: 150px"] {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+  .dashboard-page {
+    padding: 0.75rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-card {
+    padding: 0.75rem;
+  }
+
+  /* Ensure all filters stack properly */
+  .dashboard-card > div[style*="grid"],
+  .dashboard-card > div[style*="flex"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .dashboard-card > div > div {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* Performance Metrics - Smaller spacing */
+  .dashboard-card h3 {
+    font-size: 1rem !important;
+  }
+
+  .dashboard-card h4 {
+    font-size: 0.9rem !important;
+  }
+
+  /* Performance Metrics toggle buttons */
+  .dashboard-card button[style*="padding: 0.5rem 1rem"] {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  .data-table {
+    font-size: 0.75rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem 0.375rem;
+  }
+
+  .action-icon-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .modal-content {
+    padding: 0.75rem !important;
+  }
+
+  .modal-header {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .modal-body {
+    padding: 0.75rem !important;
+  }
+
+  /* Smaller buttons */
+  button {
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.875rem;
+  }
+}
+
+/* Extra Small Mobile (375px and below) */
+@media (max-width: 375px) {
+  .dashboard-page {
+    padding: 0.5rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.125rem;
+  }
+
+  .dashboard-card {
+    padding: 0.625rem;
+  }
+
+  .dashboard-card h3 {
+    font-size: 0.95rem !important;
+  }
+
+  .dashboard-card h4 {
+    font-size: 0.85rem !important;
+  }
+
+  /* Performance Metrics - Even smaller on very small screens */
+  .dashboard-card .metrics-header {
+    gap: 0.5rem;
+  }
+
+  .dashboard-card .metrics-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-card .metrics-toggle {
+    flex-direction: column;
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .dashboard-card .metrics-toggle button {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .dashboard-card .metrics-dropdown {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .dashboard-card button[style*="padding"] {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.75rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Profile Page - Stack Profile Information and Change Password */
+  .dashboard-page > div[style*="gridTemplateColumns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  .profile-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  .data-table {
+    font-size: 0.7rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.4rem 0.3rem;
+  }
+
+  .action-icon-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+  }
 }

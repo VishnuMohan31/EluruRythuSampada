@@ -90,3 +90,39 @@
   color: var(--color-text-light);
   opacity: 0.6;
 }
+
+/* Responsive Styles for Input */
+
+@media (max-width: 768px) {
+  .input {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .input-sm {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .input-lg {
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .input {
+    padding: 0.4375rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .input-sm {
+    padding: 0.3125rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .input-lg {
+    padding: 0.5625rem 0.75rem;
+    font-size: 0.9375rem;
+  }
+}

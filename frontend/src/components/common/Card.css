@@ -14,3 +14,49 @@
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
 }
+
+/* Responsive Styles for Card */
+
+@media (max-width: 768px) {
+  .card {
+    padding: var(--spacing-md);
+  }
+
+  .card-header {
+    padding: var(--spacing-md);
+  }
+
+  .card-body {
+    padding: var(--spacing-md);
+  }
+
+  .card-footer {
+    padding: var(--spacing-md);
+  }
+
+  .card-title {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: var(--spacing-sm);
+  }
+
+  .card-header {
+    padding: var(--spacing-sm);
+  }
+
+  .card-body {
+    padding: var(--spacing-sm);
+  }
+
+  .card-footer {
+    padding: var(--spacing-sm);
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+}
