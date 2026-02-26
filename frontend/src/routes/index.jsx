@@ -23,7 +23,6 @@ import SuperAdminLogin from '@pages/super-admin/SuperAdminLogin'
 // Admin Pages
 import AdminDashboard from '@pages/admin/AdminDashboard'
 import ManageSuperAdmins from '@pages/admin/ManageSuperAdmins'
-import SystemConfig from '@pages/admin/SystemConfig'
 import AdminReports from '@pages/admin/Reports'
 import AdminProfile from '@pages/admin/Profile'
 
@@ -78,7 +77,6 @@ const AppRoutes = () => {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="super-admins" element={<ManageSuperAdmins />} />
-        <Route path="config" element={<SystemConfig />} />
         <Route path="reports" element={<AdminReports />} />
         <Route path="profile" element={<AdminProfile />} />
       </Route>

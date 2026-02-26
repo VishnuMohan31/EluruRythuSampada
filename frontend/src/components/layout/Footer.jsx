@@ -46,6 +46,7 @@ const Footer = () => {
               <li><Link to="/about" onClick={scrollToTop}>{t('about')}</Link></li>
               <li><Link to="/terms" onClick={scrollToTop}>Terms & Conditions</Link></li>
               <li><Link to="/privacy" onClick={scrollToTop}>Privacy Policy</Link></li>
+              <li><Link to="/disclaimer" onClick={scrollToTop}>Disclaimer</Link></li>
             </ul>
           </div>
 

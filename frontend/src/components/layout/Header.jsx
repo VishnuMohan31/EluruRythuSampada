@@ -42,6 +42,10 @@ const Header = () => {
     navigate('/')
   }
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <header className="header">
       <div className="container">
@@ -66,11 +70,11 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="header-nav desktop-nav">
-            <NavLink to="/" className="nav-link" end>{t('home')}</NavLink>
-            <NavLink to="/products" className="nav-link">{t('products')}</NavLink>
-            <NavLink to="/about" className="nav-link">{t('about')}</NavLink>
+            <NavLink to="/" className="nav-link" end onClick={scrollToTop}>{t('home')}</NavLink>
+            <NavLink to="/products" className="nav-link" onClick={scrollToTop}>{t('products')}</NavLink>
+            <NavLink to="/about" className="nav-link" onClick={scrollToTop}>{t('about')}</NavLink>
             {isAuthenticated() && (
-              <NavLink to={user?.role === 'admin' ? '/admin' : '/super-admin'} className="nav-link">
+              <NavLink to={user?.role === 'admin' ? '/admin' : '/super-admin'} className="nav-link" onClick={scrollToTop}>
                 {t('dashboard')}
               </NavLink>
             )}
@@ -163,20 +167,20 @@ const Header = () => {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <nav className="mobile-nav">
-            <Link to="/" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/" className="mobile-nav-link" onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}>
               {t('home')}
             </Link>
-            <Link to="/products" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/products" className="mobile-nav-link" onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}>
               {t('products')}
             </Link>
-            <Link to="/about" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/about" className="mobile-nav-link" onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}>
               {t('about')}
             </Link>
             {isAuthenticated() && (
               <Link
                 to={user?.role === 'admin' ? '/admin' : '/super-admin'}
                 className="mobile-nav-link"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}
               >
                 {t('dashboard')}
               </Link>

@@ -7,7 +7,6 @@ const DisclaimerPage = () => {
       <div className="container">
         <div className="content-header">
           <h1>Disclaimer</h1>
-          <p className="last-updated">Last updated: February 15, 2026</p>
         </div>
 
         <div className="content-body">
