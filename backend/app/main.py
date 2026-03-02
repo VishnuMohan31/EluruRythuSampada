@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from .config import settings
 from .database import engine, Base
-from .api import auth, products, categories, shgs, inquiries, users, analytics, reports
+from .api import auth, products, categories, shgs, inquiries, users, analytics, reports, locations
 import logging
 from pathlib import Path
 
@@ -162,6 +162,7 @@ app.include_router(inquiries.router, prefix="/api/inquiries", tags=["Inquiries"]
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
+app.include_router(locations.router, prefix="/api/locations", tags=["Locations"])
 
 # Mount static files for serving uploaded images
 storage_path = Path(settings.STORAGE_PATH)

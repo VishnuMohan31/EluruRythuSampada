@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS shgs CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS master_locations CASCADE;
 
 -- ============================================
 -- TABLES
@@ -45,7 +46,23 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 
--- 2. CATEGORIES
+-- 2. MASTER_LOCATIONS (Mandal and Village master data)
+CREATE TABLE master_locations (
+    id SERIAL PRIMARY KEY,
+    state VARCHAR(100) NOT NULL,
+    district VARCHAR(100) NOT NULL,
+    mandal VARCHAR(100) NOT NULL,
+    village VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+CREATE INDEX idx_master_locations_state ON master_locations(state);
+CREATE INDEX idx_master_locations_district ON master_locations(district);
+CREATE INDEX idx_master_locations_mandal ON master_locations(mandal);
+CREATE INDEX idx_master_locations_village ON master_locations(village);
+
+-- 3. CATEGORIES
 CREATE TABLE categories (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
@@ -66,7 +83,7 @@ CREATE TABLE categories (
 CREATE INDEX idx_categories_name ON categories(name);
 CREATE INDEX idx_categories_state ON categories(state);
 
--- 3. SHGS (includes both SHGs and Farmers)
+-- 4. SHGS (includes both SHGs and Farmers)
 CREATE TABLE shgs (
     id VARCHAR(20) PRIMARY KEY,
     type VARCHAR(20) NOT NULL DEFAULT 'SHG' CHECK (type IN ('SHG', 'Farmer')),
@@ -93,7 +110,7 @@ CREATE INDEX idx_shgs_state ON shgs(state);
 CREATE INDEX idx_shgs_district ON shgs(district);
 CREATE INDEX idx_shgs_mobile ON shgs(mobile_number);
 
--- 4. PRODUCTS
+-- 5. PRODUCTS
 CREATE TABLE products (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
@@ -117,7 +134,7 @@ CREATE INDEX idx_products_category ON products(category_id);
 CREATE INDEX idx_products_shg ON products(shg_id);
 CREATE INDEX idx_products_name ON products USING gin(name gin_trgm_ops);
 
--- 5. BUYERS
+-- 6. BUYERS
 CREATE TABLE buyers (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -130,7 +147,7 @@ CREATE TABLE buyers (
 
 CREATE INDEX idx_buyers_email ON buyers(email);
 
--- 6. CONTACT_LOGS
+-- 7. CONTACT_LOGS
 CREATE TABLE contact_logs (
     id VARCHAR(20) PRIMARY KEY,
     buyer_id VARCHAR(20) NOT NULL REFERENCES buyers(id),
@@ -144,7 +161,7 @@ CREATE INDEX idx_contact_logs_buyer ON contact_logs(buyer_id);
 CREATE INDEX idx_contact_logs_product ON contact_logs(product_id);
 CREATE INDEX idx_contact_logs_shg ON contact_logs(shg_id);
 
--- 7. PRODUCT_VIEWS
+-- 8. PRODUCT_VIEWS
 CREATE TABLE product_views (
     id VARCHAR(20) PRIMARY KEY,
     product_id VARCHAR(20) NOT NULL REFERENCES products(id),
@@ -157,7 +174,7 @@ CREATE TABLE product_views (
 CREATE INDEX idx_product_views_product ON product_views(product_id);
 CREATE INDEX idx_product_views_session ON product_views(session_id);
 
--- 8. AUDIT_LOGS
+-- 9. AUDIT_LOGS
 CREATE TABLE audit_logs (
     id VARCHAR(20) PRIMARY KEY,
     user_id VARCHAR(20) REFERENCES users(id),
@@ -175,7 +192,7 @@ CREATE TABLE audit_logs (
 CREATE INDEX idx_audit_logs_user ON audit_logs(user_id);
 CREATE INDEX idx_audit_logs_resource ON audit_logs(resource_type, resource_id);
 
--- 9. SYSTEM_CONFIG
+-- 10. SYSTEM_CONFIG
 CREATE TABLE system_config (
     id VARCHAR(20) PRIMARY KEY,
     config_key VARCHAR(100) UNIQUE NOT NULL,
@@ -187,7 +204,7 @@ CREATE TABLE system_config (
 
 CREATE INDEX idx_system_config_key ON system_config(config_key);
 
--- 10. DAILY_ANALYTICS
+-- 11. DAILY_ANALYTICS
 CREATE TABLE daily_analytics (
     id VARCHAR(20) PRIMARY KEY,
     date DATE UNIQUE NOT NULL,

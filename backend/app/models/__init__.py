@@ -10,6 +10,7 @@ from .product_view import ProductView
 from .audit_log import AuditLog
 from .system_config import SystemConfig
 from .analytics import DailyAnalytics
+from .master_location import MasterLocation
 
 __all__ = [
     "User",
@@ -22,4 +23,5 @@ __all__ = [
     "AuditLog",
     "SystemConfig",
     "DailyAnalytics",
+    "MasterLocation",
 ]

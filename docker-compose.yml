@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shg_password_123}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ${SHARED_DATA_PATH}/postgres:/var/lib/postgresql/data
       - ./backend/database:/docker-entrypoint-initdb.d:ro
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -90,8 +90,9 @@ services:
     
     volumes:
       - ./backend/app:/app/app:ro  # Mount backend code (read-only for safety)
-      - ./storage:/app/storage
-      - ./backend/logs:/app/logs
+      - ${SHARED_DATA_PATH}/storage:/app/storage
+      - ${SHARED_DATA_PATH}/logs:/app/logs
+      - ${SHARED_DATA_PATH}/backups:/app/backups
     ports:
       - "0.0.0.0:${BACKEND_PORT:-8003}:8003"
     networks:
@@ -120,7 +121,7 @@ services:
     depends_on:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:80/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:80/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -130,7 +131,3 @@ networks:
   shg_network:
     driver: bridge
     name: shg_network
-
-volumes:
-  postgres_data:
-    name: shg_postgres_data

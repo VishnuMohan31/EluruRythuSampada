@@ -14,6 +14,13 @@ const ManageSHGs = () => {
   const [typeFilter, setTypeFilter] = useState('') // New: Type filter
   const [shgs, setSHGs] = useState([])
   const [loading, setLoading] = useState(true)
+  
+  // Location dropdowns state
+  const [mandals, setMandals] = useState([])
+  const [villages, setVillages] = useState([])
+  const [loadingMandals, setLoadingMandals] = useState(false)
+  const [loadingVillages, setLoadingVillages] = useState(false)
+  
   const [formData, setFormData] = useState({
     type: 'SHG',
     name: '', // SHG Group Name or Farmer Name
@@ -29,6 +36,55 @@ const ManageSHGs = () => {
   useEffect(() => {
     fetchSHGs()
   }, [])
+
+  // Fetch mandals when modal opens
+  useEffect(() => {
+    if (showModal) {
+      fetchMandals()
+    }
+  }, [showModal])
+
+  // Fetch villages when mandal changes
+  useEffect(() => {
+    if (formData.mandal) {
+      fetchVillages(formData.mandal)
+    } else {
+      setVillages([])
+      setFormData(prev => ({ ...prev, village: '' }))
+    }
+  }, [formData.mandal])
+
+  const fetchMandals = async () => {
+    try {
+      setLoadingMandals(true)
+      logger.info('Fetching Mandals', 'from locations API')
+      const data = await api.get('/api/locations/mandals')
+      setMandals(data.mandals || [])
+      logger.success('Fetched Mandals', `${data.mandals?.length || 0} mandals`)
+    } catch (error) {
+      logger.error('Fetch Mandals Failed', error.message)
+      showToast('Failed to load mandals', 'error')
+      setMandals([])
+    } finally {
+      setLoadingMandals(false)
+    }
+  }
+
+  const fetchVillages = async (mandal) => {
+    try {
+      setLoadingVillages(true)
+      logger.info('Fetching Villages', `for mandal: ${mandal}`)
+      const data = await api.get(`/api/locations/villages?mandal=${encodeURIComponent(mandal)}`)
+      setVillages(data.villages || [])
+      logger.success('Fetched Villages', `${data.villages?.length || 0} villages`)
+    } catch (error) {
+      logger.error('Fetch Villages Failed', error.message)
+      showToast('Failed to load villages', 'error')
+      setVillages([])
+    } finally {
+      setLoadingVillages(false)
+    }
+  }
 
   const fetchSHGs = async () => {
     try {
@@ -88,6 +144,9 @@ const ManageSHGs = () => {
     if (name === 'mobileNumber') {
       const cleanedValue = value.replace(/[^\d+\s-]/g, '')
       setFormData(prev => ({ ...prev, [name]: cleanedValue }))
+    } else if (name === 'mandal') {
+      // When mandal changes, reset village
+      setFormData(prev => ({ ...prev, mandal: value, village: '' }))
     } else {
       setFormData(prev => ({ ...prev, [name]: value }))
     }
@@ -150,6 +209,8 @@ const ManageSHGs = () => {
     setShowModal(false)
     setEditingSHG(null)
     setModalType('SHG')
+    setMandals([])
+    setVillages([])
     setFormData({
       type: 'SHG',
       name: '',
@@ -426,21 +487,31 @@ const ManageSHGs = () => {
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     Mandal <span style={{ color: 'red' }}>*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="mandal"
                     value={formData.mandal}
                     onChange={handleInputChange}
-                    placeholder="Enter mandal"
                     required
+                    disabled={loadingMandals}
                     style={{
                       width: '100%',
                       padding: '0.625rem',
                       border: '2px solid var(--color-border)',
                       borderRadius: '8px',
-                      fontSize: '0.875rem'
+                      fontSize: '0.875rem',
+                      backgroundColor: loadingMandals ? '#f3f4f6' : 'white',
+                      cursor: loadingMandals ? 'not-allowed' : 'pointer'
                     }}
-                  />
+                  >
+                    <option value="">
+                      {loadingMandals ? 'Loading mandals...' : 'Select mandal'}
+                    </option>
+                    {mandals.map(mandal => (
+                      <option key={mandal} value={mandal}>
+                        {mandal}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Village */}
@@ -448,21 +519,35 @@ const ManageSHGs = () => {
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     Village <span style={{ color: 'red' }}>*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="village"
                     value={formData.village}
                     onChange={handleInputChange}
-                    placeholder="Enter village"
                     required
+                    disabled={!formData.mandal || loadingVillages}
                     style={{
                       width: '100%',
                       padding: '0.625rem',
                       border: '2px solid var(--color-border)',
                       borderRadius: '8px',
-                      fontSize: '0.875rem'
+                      fontSize: '0.875rem',
+                      backgroundColor: (!formData.mandal || loadingVillages) ? '#f3f4f6' : 'white',
+                      cursor: (!formData.mandal || loadingVillages) ? 'not-allowed' : 'pointer'
                     }}
-                  />
+                  >
+                    <option value="">
+                      {!formData.mandal 
+                        ? 'Select mandal first' 
+                        : loadingVillages 
+                        ? 'Loading villages...' 
+                        : 'Select village'}
+                    </option>
+                    {villages.map(village => (
+                      <option key={village.id} value={village.village}>
+                        {village.village}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Contact Person - Only show for SHG type */}

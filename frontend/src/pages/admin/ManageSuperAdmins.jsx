@@ -17,10 +17,93 @@ const ManageSuperAdmins = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  // Form data - must be declared before useEffect hooks that reference it
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    mobile: '',
+    state: '',
+    district: '',
+    password: '',
+    confirmPassword: ''
+  })
+
+  // Location dropdowns state
+  const [states, setStates] = useState([])
+  const [districts, setDistricts] = useState([])
+  const [filterDistricts, setFilterDistricts] = useState([])
+  const [loadingStates, setLoadingStates] = useState(false)
+  const [loadingDistricts, setLoadingDistricts] = useState(false)
+  const [loadingFilterDistricts, setLoadingFilterDistricts] = useState(false)
+
   // Fetch super admins from API
   useEffect(() => {
     fetchSuperAdmins()
+    fetchStates()
   }, [])
+
+  // Fetch districts when state changes in form
+  useEffect(() => {
+    if (formData.state) {
+      fetchDistricts(formData.state)
+    } else {
+      setDistricts([])
+      setFormData(prev => ({ ...prev, district: '' }))
+    }
+  }, [formData.state])
+
+  // Fetch districts when state filter changes
+  useEffect(() => {
+    if (stateFilter) {
+      fetchFilterDistricts(stateFilter)
+    } else {
+      setFilterDistricts([])
+      setDistrictFilter('')
+    }
+  }, [stateFilter])
+
+  const fetchStates = async () => {
+    try {
+      setLoadingStates(true)
+      logger.info('Fetching States', 'from locations API')
+      const data = await api.get('/api/locations/states')
+      setStates(data.states || [])
+      logger.success('Fetched States', `${data.states?.length || 0} states`)
+    } catch (error) {
+      logger.error('Fetch States Failed', error.message)
+      setStates([])
+    } finally {
+      setLoadingStates(false)
+    }
+  }
+
+  const fetchDistricts = async (state) => {
+    try {
+      setLoadingDistricts(true)
+      logger.info('Fetching Districts', `for state: ${state}`)
+      const data = await api.get(`/api/locations/districts?state=${encodeURIComponent(state)}`)
+      setDistricts(data.districts || [])
+      logger.success('Fetched Districts', `${data.districts?.length || 0} districts`)
+    } catch (error) {
+      logger.error('Fetch Districts Failed', error.message)
+      setDistricts([])
+    } finally {
+      setLoadingDistricts(false)
+    }
+  }
+
+  const fetchFilterDistricts = async (state) => {
+    try {
+      setLoadingFilterDistricts(true)
+      const data = await api.get(`/api/locations/districts?state=${encodeURIComponent(state)}`)
+      setFilterDistricts(data.districts || [])
+    } catch (error) {
+      logger.error('Fetch Filter Districts Failed', error.message)
+      setFilterDistricts([])
+    } finally {
+      setLoadingFilterDistricts(false)
+    }
+  }
 
   const fetchSuperAdmins = async () => {
     try {
@@ -38,41 +121,6 @@ const ManageSuperAdmins = () => {
       setLoading(false)
     }
   }
-
-  const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    mobile: '',
-    state: '',
-    district: '',
-    password: '',
-    confirmPassword: ''
-  })
-
-  const stateDistrictMap = {
-    'Andhra Pradesh': [
-      'Alluri Sitharama Raju', 'Anakapalli', 'Ananthapuramu', 'Annamayya', 'Bapatla',
-      'Chittoor', 'Dr. B.R. Ambedkar Konaseema', 'East Godavari', 'Eluru', 'Guntur',
-      'Kakinada', 'Krishna', 'Kurnool', 'Nandyal', 'NTR', 'Palnadu', 'Parvathipuram Manyam',
-      'Prakasam', 'SPSR Nellore', 'Sri Sathya Sai', 'Srikakulam',
-      'Tirupati', 'Visakhapatnam', 'Vizianagaram', 'West Godavari', 'YSR'
-    ],
-    'Telangana': [
-      'Adilabad', 'Bhadradri Kothagudem', 'Hyderabad', 'Jagtial', 'Jangaon',
-      'Jayashankar Bhupalpally', 'Jogulamba Gadwal', 'Kamareddy', 'Karimnagar',
-      'Khammam', 'Komaram Bheem', 'Mahabubabad', 'Mahbubnagar', 'Mancherial',
-      'Medak', 'Medchal-Malkajgiri', 'Mulugu', 'Nagarkurnool', 'Nalgonda',
-      'Narayanpet', 'Nirmal', 'Nizamabad', 'Peddapalli', 'Rajanna Sircilla',
-      'Rangareddy', 'Sangareddy', 'Siddipet', 'Suryapet', 'Vikarabad',
-      'Wanaparthy', 'Warangal Rural', 'Warangal Urban', 'Yadadri Bhuvanagiri'
-    ]
-  }
-
-  // Get districts for selected state in form
-  const availableDistricts = formData.state ? stateDistrictMap[formData.state] || [] : []
-
-  // Get districts for filter
-  const filterAvailableDistricts = stateFilter ? stateDistrictMap[stateFilter] || [] : []
 
   // Filter logic
   const filteredAdmins = superAdmins.filter(admin => {
@@ -294,8 +342,7 @@ const ManageSuperAdmins = () => {
               onChange={(e) => handleStateFilterChange(e.target.value)}
               options={[
                 { value: '', label: 'All States' },
-                { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
-                { value: 'Telangana', label: 'Telangana' }
+                ...states.map(state => ({ value: state, label: state }))
               ]}
               placeholder="All States"
             />
@@ -310,8 +357,8 @@ const ManageSuperAdmins = () => {
               value={districtFilter}
               onChange={(e) => setDistrictFilter(e.target.value)}
               options={[
-                { value: '', label: 'All Districts' },
-                ...filterAvailableDistricts.map(district => ({ value: district, label: district }))
+                { value: '', label: loadingFilterDistricts ? 'Loading...' : 'All Districts' },
+                ...filterDistricts.map(district => ({ value: district, label: district }))
               ]}
               placeholder="All Districts"
               className={!stateFilter ? 'disabled' : ''}
@@ -472,7 +519,7 @@ const ManageSuperAdmins = () => {
                     value={formData.state}
                     onChange={handleInputChange}
                     required
-                    disabled={editingAdmin}
+                    disabled={editingAdmin || loadingStates}
                     style={{
                       width: '100%',
                       padding: '0.625rem',
@@ -480,13 +527,14 @@ const ManageSuperAdmins = () => {
                       borderRadius: '8px',
                       fontSize: '0.875rem',
                       backgroundColor: editingAdmin ? '#f3f4f6' : 'var(--color-surface)',
-                      cursor: editingAdmin ? 'not-allowed' : 'pointer',
+                      cursor: (editingAdmin || loadingStates) ? 'not-allowed' : 'pointer',
                       opacity: editingAdmin ? 0.7 : 1
                     }}
                   >
-                    <option value="">Select State</option>
-                    <option value="Andhra Pradesh">Andhra Pradesh</option>
-                    <option value="Telangana">Telangana</option>
+                    <option value="">{loadingStates ? 'Loading states...' : 'Select State'}</option>
+                    {states.map(state => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
                   </select>
                   {editingAdmin && (
                     <small style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
@@ -505,7 +553,7 @@ const ManageSuperAdmins = () => {
                     name="district"
                     value={formData.district}
                     onChange={handleInputChange}
-                    disabled={!formData.state || editingAdmin}
+                    disabled={!formData.state || editingAdmin || loadingDistricts}
                     required
                     style={{
                       width: '100%',
@@ -515,11 +563,17 @@ const ManageSuperAdmins = () => {
                       fontSize: '0.875rem',
                       backgroundColor: editingAdmin ? '#f3f4f6' : 'var(--color-surface)',
                       opacity: (!formData.state || editingAdmin) ? 0.7 : 1,
-                      cursor: (!formData.state || editingAdmin) ? 'not-allowed' : 'pointer'
+                      cursor: (!formData.state || editingAdmin || loadingDistricts) ? 'not-allowed' : 'pointer'
                     }}
                   >
-                    <option value="">Select District</option>
-                    {availableDistricts.map(district => (
+                    <option value="">
+                      {!formData.state 
+                        ? 'Select state first' 
+                        : loadingDistricts 
+                        ? 'Loading districts...' 
+                        : 'Select District'}
+                    </option>
+                    {districts.map(district => (
                       <option key={district} value={district}>{district}</option>
                     ))}
                   </select>
