@@ -129,9 +129,8 @@ async def get_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    # Increment view count
-    product.view_count += 1
-    db.commit()
+    # Note: We don't increment view_count here to avoid updating updated_at timestamp
+    # View tracking is handled separately in product_views table if needed
     
     return product
 
@@ -233,13 +232,13 @@ async def upload_product_image(
         print(f"❌ Invalid file type: {file.content_type}")
         raise HTTPException(status_code=400, detail="File must be an image")
     
-    # Validate file size (max 2MB)
+    # Validate file size (max 3MB for products - up to 5 images)
     file.file.seek(0, 2)
     file_size = file.file.tell()
     file.file.seek(0)
-    if file_size > 2 * 1024 * 1024:
+    if file_size > 3 * 1024 * 1024:
         print(f"❌ File too large: {file_size / (1024*1024):.2f}MB")
-        raise HTTPException(status_code=400, detail="File size must be less than 2MB")
+        raise HTTPException(status_code=400, detail="File size must be less than 3MB")
     
     # Generate unique filename
     file_extension = os.path.splitext(file.filename)[1]

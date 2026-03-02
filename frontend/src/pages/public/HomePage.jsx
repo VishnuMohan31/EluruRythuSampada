@@ -41,9 +41,21 @@ const HomePage = () => {
           .map(category => {
             // Find first product in this category
             const firstProduct = allProducts.find(p => p.category_id === category.id && p.is_active)
+            
+            // Get image from new images array or fallback to old image_url
+            let sampleImage = null
+            if (firstProduct) {
+              if (Array.isArray(firstProduct.images) && firstProduct.images.length > 0) {
+                const mainIndex = firstProduct.main_image_index || 0
+                sampleImage = firstProduct.images[mainIndex]
+              } else if (firstProduct.image_url) {
+                sampleImage = firstProduct.image_url
+              }
+            }
+            
             return {
               ...category,
-              sampleImage: firstProduct?.image_url || null
+              sampleImage
             }
           })
         

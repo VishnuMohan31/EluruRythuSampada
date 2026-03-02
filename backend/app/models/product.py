@@ -2,6 +2,7 @@
 Product model for SHG products
 """
 from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime, ForeignKey
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..database import Base
@@ -20,8 +21,14 @@ class Product(Base):
     category_id = Column(String, ForeignKey("categories.id"), nullable=False, index=True)
     shg_id = Column(String, ForeignKey("shgs.id"), nullable=False, index=True)
     
+    # Product details (optional for backward compatibility)
+    price = Column(String(20), nullable=True)  # Price as string (e.g., "99.99")
+    max_quantity = Column(String(50), nullable=True)  # Max quantity as string (e.g., "100 kg")
+    
     # Media
-    image_url = Column(String(500), nullable=True)  # Single product image S3 URL
+    image_url = Column(String(500), nullable=True)  # Deprecated: kept for backward compatibility
+    images = Column(ARRAY(Text), default=list, nullable=False)  # Array of image URLs (up to 5)
+    main_image_index = Column(Integer, default=0, nullable=False)  # Index of main image
     youtube_link = Column(String(500), nullable=True)
     instagram_link = Column(String(500), nullable=True)
     

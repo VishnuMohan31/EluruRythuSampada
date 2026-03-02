@@ -152,7 +152,7 @@ const AdminDashboard = () => {
             <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
               {statsLoading ? '...' : stats.totalSHGs}
             </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>SHG / Farmer Communities</div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>SHGs</div>
           </div>
         </div>
 
@@ -199,7 +199,7 @@ const AdminDashboard = () => {
                   whiteSpace: 'nowrap'
                 }}
               >
-                🏛 SHG / Farmer Inquiries
+                🏛 SHG Inquiries
               </button>
               <button
                 onClick={() => setMetricType('product')}
@@ -254,7 +254,7 @@ const AdminDashboard = () => {
           {/* Top 10 Column */}
           <div>
             <h4 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              🔥 Top 10 {metricType === 'shg' ? 'SHGs / Farmers' : 'Products'}
+              🔥 Top 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {loading ? (
@@ -276,7 +276,7 @@ const AdminDashboard = () => {
           {/* Least 10 Column */}
           <div>
             <h4 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              📉 Least 10 {metricType === 'shg' ? 'SHGs / Farmers' : 'Products'}
+              📉 Least 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {loading ? (

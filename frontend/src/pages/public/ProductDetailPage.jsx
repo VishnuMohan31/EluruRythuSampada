@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { FaYoutube, FaInstagram, FaWhatsapp } from 'react-icons/fa'
 import Button from '@components/common/Button'
 import { useToast } from '@components/common/ToastContainer'
 import { API_BASE_URL } from '@utils/api'
@@ -36,6 +37,9 @@ const ProductDetailPage = () => {
       
       const data = await response.json()
       setProduct(data)
+      
+      // After reordering, main image will always be at index 0
+      setSelectedImage(0)
       
       // Fetch related products
       if (data.category_id) {
@@ -126,9 +130,21 @@ const ProductDetailPage = () => {
     return <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>Product not found</div>
   }
 
-  const productImages = product.image_url 
-    ? [`${API_BASE_URL}${product.image_url}`] 
-    : ['/placeholder-product.jpg']
+  // Reorder images to show main image first
+  const productImages = product.images && product.images.length > 0
+    ? product.images.map(url => `${API_BASE_URL}${url}`)
+    : product.image_url 
+      ? [`${API_BASE_URL}${product.image_url}`]
+      : ['/placeholder-product.jpg']
+
+  // Reorder thumbnails: main image first, then others
+  const reorderedImages = [...productImages]
+  const mainIndex = product.main_image_index || 0
+  if (mainIndex > 0 && mainIndex < reorderedImages.length) {
+    const mainImage = reorderedImages[mainIndex]
+    reorderedImages.splice(mainIndex, 1)
+    reorderedImages.unshift(mainImage)
+  }
 
   return (
     <div className="product-detail-page">
@@ -139,7 +155,7 @@ const ProductDetailPage = () => {
           <span className="breadcrumb-separator">›</span>
           <Link to="/products">Products</Link>
           <span className="breadcrumb-separator">›</span>
-          <span>{product.name}</span>
+          <span style={{ color: 'var(--color-primary)', fontWeight: '600' }}>{product.name}</span>
         </div>
 
         {/* Product Detail */}
@@ -148,14 +164,14 @@ const ProductDetailPage = () => {
           <div className="product-gallery">
             <div className="main-image">
               <img
-                src={productImages[selectedImage]}
+                src={reorderedImages[selectedImage]}
                 alt={product.name}
                 className="gallery-main-img"
               />
             </div>
-            {productImages.length > 1 && (
+            {reorderedImages.length > 1 && (
               <div className="thumbnail-list">
-                {productImages.map((image, index) => (
+                {reorderedImages.map((image, index) => (
                   <button
                     key={index}
                     className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
@@ -177,13 +193,88 @@ const ProductDetailPage = () => {
 
             <h1 className="product-title">{product.name}</h1>
 
-            <div className="product-meta">
-              <span className="meta-item">
-                <strong>Category:</strong> {product.category?.name || 'N/A'}
-              </span>
-              <span className="meta-item">
-                <strong>SHG:</strong> {product.shg?.name || 'N/A'}
-              </span>
+            {/* Price and Quantity - Redesigned */}
+            {(product.price || product.max_quantity) && (
+              <div style={{ 
+                display: 'flex', 
+                gap: '4rem', 
+                margin: '2rem 0 1.25rem 0',
+                flexWrap: 'wrap'
+              }}>
+                {product.price && (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                    padding: '1rem 1.5rem',
+                    backgroundColor: '#faf8f5',
+                    borderLeft: '4px solid var(--color-primary)',
+                    borderRadius: '8px'
+                  }}>
+                    <span style={{ 
+                      fontSize: '0.875rem', 
+                      color: 'var(--color-text-light)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontWeight: '500'
+                    }}>
+                      Price
+                    </span>
+                    <span style={{ 
+                      fontSize: '2rem', 
+                      fontWeight: '700',
+                      color: 'var(--color-primary)',
+                      lineHeight: '1'
+                    }}>
+                      ₹{product.price}
+                    </span>
+                  </div>
+                )}
+                {product.max_quantity && (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                    padding: '1rem 1.5rem',
+                    backgroundColor: '#faf8f5',
+                    borderLeft: '4px solid var(--color-primary)',
+                    borderRadius: '8px'
+                  }}>
+                    <span style={{ 
+                      fontSize: '0.875rem', 
+                      color: 'var(--color-text-light)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      fontWeight: '500'
+                    }}>
+                      Maximum Supply Quantity
+                    </span>
+                    <span style={{ 
+                      fontSize: '2rem', 
+                      fontWeight: '700',
+                      color: 'var(--color-primary)',
+                      lineHeight: '1'
+                    }}>
+                      {product.max_quantity}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '0.75rem',
+              fontSize: '1.125rem',
+              marginTop: '0'
+            }}>
+              <div>
+                <strong style={{ fontSize: '1.125rem' }}>Category:</strong> {product.category?.name || 'N/A'}
+              </div>
+              <div>
+                <strong style={{ fontSize: '1.125rem' }}>SHG:</strong> {product.shg?.name || 'N/A'}
+              </div>
             </div>
 
             <div className="product-description">
@@ -191,18 +282,31 @@ const ProductDetailPage = () => {
               <p>{product.description}</p>
             </div>
 
-            {(product.youtube_link || product.instagram_link) && (
+            {(product.youtube_link || product.instagram_link || product.shg?.whatsapp_number) && (
               <div className="product-social">
                 <h4>See More</h4>
                 <div className="social-links">
                   {product.youtube_link && (
-                    <a href={product.youtube_link} target="_blank" rel="noopener noreferrer" className="social-link">
-                      📺 Watch Video
+                    <a href={product.youtube_link} target="_blank" rel="noopener noreferrer" className="social-link social-youtube">
+                      <FaYoutube size={24} />
+                      <span>Watch Video</span>
                     </a>
                   )}
                   {product.instagram_link && (
-                    <a href={product.instagram_link} target="_blank" rel="noopener noreferrer" className="social-link">
-                      📷 Instagram
+                    <a href={product.instagram_link} target="_blank" rel="noopener noreferrer" className="social-link social-instagram">
+                      <FaInstagram size={24} />
+                      <span>Instagram</span>
+                    </a>
+                  )}
+                  {product.shg?.whatsapp_number && (
+                    <a 
+                      href={`https://wa.me/91${product.shg.whatsapp_number}?text=Hi, I'm interested in ${encodeURIComponent(product.name)}`}
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="social-link social-whatsapp"
+                    >
+                      <FaWhatsapp size={24} />
+                      <span>WhatsApp</span>
                     </a>
                   )}
                 </div>
@@ -218,6 +322,7 @@ const ProductDetailPage = () => {
               >
                 📞 Contact Vendor
               </Button>
+              
               <p className="contact-note">
                 Connect directly with the artisan to learn more or place an order
               </p>
@@ -230,20 +335,31 @@ const ProductDetailPage = () => {
           <div className="related-products">
             <h2 className="section-title">Related Products</h2>
             <div className="related-grid">
-              {relatedProducts.map(relatedProduct => (
-                <Link
-                  key={relatedProduct.id}
-                  to={`/products/${relatedProduct.id}`}
-                  className="related-card"
-                >
-                  <img 
-                    src={relatedProduct.image_url ? `${API_BASE_URL}${relatedProduct.image_url}` : '/placeholder-product.jpg'} 
-                    alt={relatedProduct.name} 
-                  />
-                  <h4>{relatedProduct.name}</h4>
-                  <p>{relatedProduct.shg?.name || 'N/A'}</p>
-                </Link>
-              ))}
+              {relatedProducts.map(relatedProduct => {
+                // Get image from new images array or fallback to old image_url
+                let imageUrl = '/placeholder-product.jpg'
+                if (Array.isArray(relatedProduct.images) && relatedProduct.images.length > 0) {
+                  const mainIndex = relatedProduct.main_image_index || 0
+                  imageUrl = `${API_BASE_URL}${relatedProduct.images[mainIndex]}`
+                } else if (relatedProduct.image_url) {
+                  imageUrl = `${API_BASE_URL}${relatedProduct.image_url}`
+                }
+                
+                return (
+                  <Link
+                    key={relatedProduct.id}
+                    to={`/products/${relatedProduct.id}`}
+                    className="related-card"
+                  >
+                    <img 
+                      src={imageUrl} 
+                      alt={relatedProduct.name} 
+                    />
+                    <h4>{relatedProduct.name}</h4>
+                    <p>{relatedProduct.shg?.name || 'N/A'}</p>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}
@@ -329,6 +445,23 @@ const ProductDetailPage = () => {
             <h2>✅ Inquiry Submitted!</h2>
             <p>Thank you for your interest. Here are the vendor details:</p>
             
+            {/* SHG Photo */}
+            {product.shg?.shg_image && (
+              <div style={{ textAlign: 'center', margin: '1rem 0' }}>
+                <img 
+                  src={`${API_BASE_URL}${product.shg.shg_image}`}
+                  alt={product.shg.name}
+                  style={{ 
+                    width: '180px', 
+                    height: '180px', 
+                    objectFit: 'cover', 
+                    borderRadius: '50%',
+                    border: '3px solid var(--color-primary)'
+                  }}
+                />
+              </div>
+            )}
+            
             <div className="vendor-details">
               <div className="detail-item">
                 <strong>SHG Name:</strong> {product.shg?.name || 'N/A'}
@@ -339,12 +472,17 @@ const ProductDetailPage = () => {
               <div className="detail-item">
                 <strong>Mobile:</strong> <a href={`tel:${product.shg?.mobile_number}`}>{product.shg?.mobile_number || 'N/A'}</a>
               </div>
+              {product.shg?.whatsapp_number && (
+                <div className="detail-item">
+                  <strong>WhatsApp:</strong> <a href={`https://wa.me/91${product.shg.whatsapp_number}`} target="_blank" rel="noopener noreferrer">{product.shg.whatsapp_number}</a>
+                </div>
+              )}
               <div className="detail-item">
                 <strong>Location:</strong> {product.shg?.village}, {product.shg?.mandal}
               </div>
             </div>
             
-            <Button variant="primary" size="large" fullWidth onClick={() => setShowSuccessModal(false)}>
+            <Button variant="primary" size="large" fullWidth onClick={() => setShowSuccessModal(false)} style={{ marginTop: '1.5rem' }}>
               Close
             </Button>
           </div>

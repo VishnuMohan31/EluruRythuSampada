@@ -30,20 +30,36 @@ const AdminLogin = () => {
         }),
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
-        // Handle specific error messages
+        let errorMessage = 'Login failed. Please try again.'
+        
+        try {
+          const data = await response.json()
+          // Ensure error message is always a string
+          if (typeof data.detail === 'string') {
+            errorMessage = data.detail
+          } else if (typeof data.message === 'string') {
+            errorMessage = data.message
+          } else if (typeof data === 'string') {
+            errorMessage = data
+          }
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError)
+        }
+        
+        // Handle specific error messages based on status
         if (response.status === 401) {
           setError('Invalid email or password. Please try again.')
         } else if (response.status === 403) {
           setError('Your account has been deactivated. Please contact support.')
         } else {
-          setError(data.detail || 'Login failed. Please try again.')
+          setError(errorMessage)
         }
         setLoading(false)
         return
       }
+
+      const data = await response.json()
 
       // Check if user is admin
       if (data.user.role !== 'admin') {
@@ -58,7 +74,8 @@ const AdminLogin = () => {
       navigate('/admin')
     } catch (err) {
       console.error('❌ Login error:', err)
-      setError('Unable to connect to server. Please check your connection and try again.')
+      const errorMessage = typeof err === 'string' ? err : err?.message || 'Unable to connect to server. Please check your connection and try again.'
+      setError(errorMessage)
       showToast('Login failed. Please try again.', 'error')
     } finally {
       setLoading(false)

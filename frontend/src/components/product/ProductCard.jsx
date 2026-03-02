@@ -4,10 +4,19 @@ import { API_BASE_URL } from '@utils/api'
 import './ProductCard.css'
 
 const ProductCard = ({ product }) => {
-  // Handle image URL - use backend storage or placeholder
+  // Handle image URL - use images array or fallback to old image_url
   const getImageUrl = () => {
+    // Try new images array first (check for array and length)
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      const mainIndex = product.main_image_index || 0
+      const imagePath = product.images[mainIndex]
+      // Only add API_BASE_URL if the path doesn't already include it
+      return imagePath.startsWith('http') ? imagePath : `${API_BASE_URL}${imagePath}`
+    }
+    // Fallback to old single image
     if (product.image_url) {
-      return `${API_BASE_URL}${product.image_url}`
+      const imagePath = product.image_url
+      return imagePath.startsWith('http') ? imagePath : `${API_BASE_URL}${imagePath}`
     }
     return null
   }

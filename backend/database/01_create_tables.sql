@@ -83,19 +83,21 @@ CREATE TABLE categories (
 CREATE INDEX idx_categories_name ON categories(name);
 CREATE INDEX idx_categories_state ON categories(state);
 
--- 4. SHGS (includes both SHGs and Farmers)
+-- 4. SHGS (Self Help Groups)
 CREATE TABLE shgs (
     id VARCHAR(20) PRIMARY KEY,
-    type VARCHAR(20) NOT NULL DEFAULT 'SHG' CHECK (type IN ('SHG', 'Farmer')),
+    type VARCHAR(20) NOT NULL DEFAULT 'SHG' CHECK (type IN ('SHG')),
     name VARCHAR(200) NOT NULL,
     contact_person VARCHAR(100) NOT NULL,
     mobile_number VARCHAR(20) NOT NULL UNIQUE, -- Prevent duplicate mobile numbers
+    whatsapp_number VARCHAR(20), -- WhatsApp contact number
     state VARCHAR(100),
     district VARCHAR(100),
     mandal VARCHAR(100) NOT NULL,
     village VARCHAR(100) NOT NULL,
     description TEXT,
     image_url VARCHAR(500),
+    shg_image VARCHAR(500), -- SHG/Contact person photo
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(20),
@@ -117,7 +119,11 @@ CREATE TABLE products (
     description TEXT,
     category_id VARCHAR(20) NOT NULL REFERENCES categories(id),
     shg_id VARCHAR(20) NOT NULL REFERENCES shgs(id),
-    image_url VARCHAR(500),
+    price VARCHAR(20), -- Product price (stored as string for flexibility)
+    max_quantity VARCHAR(50), -- Maximum quantity available (stored as string for flexibility)
+    image_url VARCHAR(500), -- Deprecated: kept for backward compatibility
+    images TEXT[] DEFAULT '{}', -- Array of image URLs (up to 5 images)
+    main_image_index INTEGER DEFAULT 0, -- Index of main image in images array
     youtube_link VARCHAR(500),
     instagram_link VARCHAR(500),
     view_count INTEGER NOT NULL DEFAULT 0,
@@ -133,6 +139,7 @@ CREATE TABLE products (
 CREATE INDEX idx_products_category ON products(category_id);
 CREATE INDEX idx_products_shg ON products(shg_id);
 CREATE INDEX idx_products_name ON products USING gin(name gin_trgm_ops);
+CREATE INDEX idx_products_images ON products USING GIN(images);
 
 -- 6. BUYERS
 CREATE TABLE buyers (
@@ -229,7 +236,6 @@ CREATE INDEX idx_daily_analytics_date ON daily_analytics(date);
 CREATE SEQUENCE IF NOT EXISTS users_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS categories_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS shgs_id_seq START 1;
-CREATE SEQUENCE IF NOT EXISTS farmers_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS products_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS buyers_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS contact_logs_id_seq START 1;

@@ -60,13 +60,13 @@ async def export_inquiries(
         'Product Name',
         'Product ID',
         'Product Description',
-        'SHG / Farmer Name',
-        'SHG / Farmer Type',
-        'SHG / Farmer ID',
-        'SHG / Farmer Contact Person',
-        'SHG / Farmer Mobile Number',
-        'SHG / Farmer Mandal',
-        'SHG / Farmer Village'
+        'SHG Name',
+        'SHG Type',
+        'SHG ID',
+        'SHG Contact Person',
+        'SHG Mobile Number',
+        'SHG Mandal',
+        'SHG Village'
     ])
     
     # Write data rows

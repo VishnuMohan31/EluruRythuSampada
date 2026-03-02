@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Edit2, Trash2, RotateCcw } from 'lucide-react'
+import { Edit2, Trash2, RotateCcw, X } from 'lucide-react'
 import Button from '@components/common/Button'
 import CustomSelect from '@components/common/CustomSelect'
 import { api, logger, showToast, API_BASE_URL } from '@/utils/api'
@@ -16,15 +16,24 @@ const ManageProducts = () => {
   const [categories, setCategories] = useState([])
   const [shgs, setSHGs] = useState([])
   const [loading, setLoading] = useState(true)
+  
+  // Location dropdowns state
+  const [mandals, setMandals] = useState([])
+  const [villages, setVillages] = useState([])
+  const [loadingMandals, setLoadingMandals] = useState(false)
+  const [loadingVillages, setLoadingVillages] = useState(false)
+  
   const [formData, setFormData] = useState({
     name: '',
     category: '',
     shgName: '',
     mandal: '',
     village: '',
+    price: '',
+    maxQuantity: '',
     description: '',
-    image: null,
-    imagePreview: null,
+    images: [],  // Array of {file, preview, url} objects
+    mainImageIndex: 0,  // Index of main image
     youtubeLink: '',
     instagramLink: '',
     status: 'Active'
@@ -36,6 +45,23 @@ const ManageProducts = () => {
     fetchCategories()
     fetchSHGs()
   }, [])
+
+  // Fetch mandals when modal opens
+  useEffect(() => {
+    if (showModal) {
+      fetchMandals()
+    }
+  }, [showModal])
+
+  // Fetch villages when mandal changes
+  useEffect(() => {
+    if (formData.mandal) {
+      fetchVillages(formData.mandal)
+    } else {
+      setVillages([])
+      setFormData(prev => ({ ...prev, village: '' }))
+    }
+  }, [formData.mandal])
 
   const fetchProducts = async () => {
     try {
@@ -55,7 +81,13 @@ const ManageProducts = () => {
         shgId: product.shg_id,
         mandal: product.shg?.mandal || '',
         village: product.shg?.village || '',
-        image: product.image_url ? `${API_BASE_URL}${product.image_url}` : null,
+        price: product.price || '',
+        maxQuantity: product.max_quantity || '',
+        images: product.images || [],  // Array of image URLs
+        mainImageIndex: product.main_image_index || 0,
+        image: product.images && product.images.length > 0 
+          ? `${API_BASE_URL}${product.images[product.main_image_index || 0]}` 
+          : (product.image_url ? `${API_BASE_URL}${product.image_url}` : null),  // Fallback to old single image
         youtubeLink: product.youtube_link || '',
         instagramLink: product.instagram_link || '',
         status: product.is_active ? 'Active' : 'Inactive'
@@ -91,6 +123,38 @@ const ManageProducts = () => {
     }
   }
 
+  const fetchMandals = async () => {
+    try {
+      setLoadingMandals(true)
+      logger.info('Fetching Mandals', 'from locations API')
+      const data = await api.get('/api/locations/mandals')
+      setMandals(data.mandals || [])
+      logger.success('Fetched Mandals', `${data.mandals?.length || 0} mandals`)
+    } catch (error) {
+      logger.error('Fetch Mandals Failed', error.message)
+      showToast('Failed to load mandals', 'error')
+      setMandals([])
+    } finally {
+      setLoadingMandals(false)
+    }
+  }
+
+  const fetchVillages = async (mandal) => {
+    try {
+      setLoadingVillages(true)
+      logger.info('Fetching Villages', `for mandal: ${mandal}`)
+      const data = await api.get(`/api/locations/villages?mandal=${encodeURIComponent(mandal)}`)
+      setVillages(data.villages || [])
+      logger.success('Fetched Villages', `${data.villages?.length || 0} villages`)
+    } catch (error) {
+      logger.error('Fetch Villages Failed', error.message)
+      showToast('Failed to load villages', 'error')
+      setVillages([])
+    } finally {
+      setLoadingVillages(false)
+    }
+  }
+
   // Get unique values for filters
   const uniqueCategories = categories.map(c => c.name).filter(Boolean).sort()
   const uniqueSHGs = shgs.map(s => s.name).filter(Boolean).sort()
@@ -114,15 +178,29 @@ const ManageProducts = () => {
 
   const handleEdit = (product) => {
     setEditingProduct(product)
+    
+    // Convert product images to format needed by form
+    const productImages = product.images && product.images.length > 0
+      ? product.images.map(url => ({
+          file: null,
+          preview: null,
+          url: `${API_BASE_URL}${url}`
+        }))
+      : product.image  // Fallback to old single image if exists
+        ? [{ file: null, preview: null, url: product.image }]
+        : []
+    
     setFormData({
       name: product.name || '',
       category: product.category?.name || '',
       shgName: product.shgName || '',
       mandal: product.mandal || '',
       village: product.village || '',
+      price: product.price || '',
+      maxQuantity: product.maxQuantity || '',
       description: product.description || '',
-      image: null,
-      imagePreview: product.image || null,
+      images: productImages,
+      mainImageIndex: product.mainImageIndex || 0,
       youtubeLink: product.youtubeLink || '',
       instagramLink: product.instagramLink || '',
       status: product.status || 'Active'
@@ -168,50 +246,107 @@ const ManageProducts = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    
+    // When mandal changes, reset village
+    if (name === 'mandal') {
+      setFormData(prev => ({ ...prev, mandal: value, village: '' }))
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
+  const handleImagesChange = (e) => {
+    const files = Array.from(e.target.files)
+    
+    // Check if adding these files would exceed the limit
+    if (formData.images.length + files.length > 5) {
+      showToast('Maximum 5 images allowed', 'error')
+      return
+    }
+    
+    // Validate and process each file
+    const validFiles = []
+    for (const file of files) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        showToast('Please select an image file', 'error')
-        return
+        showToast(`${file.name} is not an image file`, 'error')
+        continue
       }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Image size should be less than 5MB', 'error')
-        return
+      // Validate file size (max 3MB for products)
+      if (file.size > 3 * 1024 * 1024) {
+        showToast(`${file.name} is too large. Please upload images within 3MB`, 'error')
+        continue
       }
-      
+      validFiles.push(file)
+    }
+    
+    // Read and add valid files
+    validFiles.forEach(file => {
       const reader = new FileReader()
       reader.onloadend = () => {
         setFormData(prev => ({
           ...prev,
-          image: file,
-          imagePreview: reader.result
+          images: [...prev.images, { file, preview: reader.result, url: null }]
         }))
       }
       reader.readAsDataURL(file)
-    }
+    })
+    
+    // Reset input
+    e.target.value = ''
+  }
+
+  const handleRemoveImage = (index) => {
+    setFormData(prev => {
+      const newImages = prev.images.filter((_, i) => i !== index)
+      // Adjust main image index if needed
+      let newMainIndex = prev.mainImageIndex
+      if (index === prev.mainImageIndex) {
+        newMainIndex = 0  // Reset to first image
+      } else if (index < prev.mainImageIndex) {
+        newMainIndex = prev.mainImageIndex - 1
+      }
+      return {
+        ...prev,
+        images: newImages,
+        mainImageIndex: newMainIndex
+      }
+    })
+  }
+
+  const handleSetMainImage = (index) => {
+    setFormData(prev => ({ ...prev, mainImageIndex: index }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    try {
-      let imageUrl = formData.imagePreview
+    // Validate at least one image
+    if (formData.images.length === 0) {
+      showToast('Please upload at least one product image', 'error')
+      return
+    }
 
-      // Upload image if new file selected
-      if (formData.image) {
-        logger.info('Uploading Product Image', formData.image.name)
-        const imageFormData = new FormData()
-        imageFormData.append('file', formData.image)
-        
-        const uploadData = await api.post('/api/products/upload-image', imageFormData)
-        imageUrl = uploadData.image_url
-        logger.success('Image Uploaded', imageUrl)
+    try {
+      // Upload new images
+      const imageUrls = []
+      for (const img of formData.images) {
+        if (img.file) {
+          // New image - upload it
+          logger.info('Uploading Product Image', img.file.name)
+          const imageFormData = new FormData()
+          imageFormData.append('file', img.file)
+          
+          const uploadData = await api.post('/api/products/upload-image', imageFormData)
+          imageUrls.push(uploadData.image_url)
+          logger.success('Image Uploaded', uploadData.image_url)
+        } else if (img.url) {
+          // Existing image - strip API_BASE_URL if present
+          const cleanUrl = img.url.startsWith(API_BASE_URL) 
+            ? img.url.replace(API_BASE_URL, '') 
+            : img.url
+          imageUrls.push(cleanUrl)
+        }
       }
 
       // Find category and SHG IDs
@@ -228,7 +363,10 @@ const ManageProducts = () => {
         description: formData.description,
         category_id: category.id,
         shg_id: shg.id,
-        image_url: imageUrl,
+        price: formData.price || null,
+        max_quantity: formData.maxQuantity || null,
+        images: imageUrls,
+        main_image_index: formData.mainImageIndex,
         youtube_link: formData.youtubeLink || null,
         instagram_link: formData.instagramLink || null
       }
@@ -266,9 +404,11 @@ const ManageProducts = () => {
       shgName: '',
       mandal: '',
       village: '',
+      price: '',
+      maxQuantity: '',
       description: '',
-      image: null,
-      imagePreview: null,
+      images: [],
+      mainImageIndex: 0,
       youtubeLink: '',
       instagramLink: '',
       status: 'Active'
@@ -323,19 +463,19 @@ const ManageProducts = () => {
             />
           </div>
 
-          {/* SHG/Farmer Filter */}
+          {/* SHG Filter */}
           <div style={{ minWidth: '180px' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-              SHG / Farmer
+              SHG
             </label>
             <CustomSelect
               value={shgFilter}
               onChange={(e) => setShgFilter(e.target.value)}
               options={[
-                { value: '', label: 'All SHGs / Farmers' },
+                { value: '', label: 'All SHGs' },
                 ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
               ]}
-              placeholder="All SHGs / Farmers"
+              placeholder="All SHGs"
             />
           </div>
 
@@ -360,7 +500,7 @@ const ManageProducts = () => {
           <Button 
             variant="outline" 
             onClick={clearFilters}
-            style={{ height: '42px', whiteSpace: 'nowrap' }}
+            style={{ height: '44px', whiteSpace: 'nowrap', alignSelf: 'end' }}
           >
             Clear Filters
           </Button>
@@ -369,16 +509,18 @@ const ManageProducts = () => {
 
       <div className="dashboard-card">
         <div className="dashboard-table-wrapper">
-          <table className="data-table" style={{ minWidth: '1200px', width: '100%' }}>
+          <table className="data-table" style={{ minWidth: '1400px', width: '100%' }}>
             <thead>
               <tr>
                 <th style={{ width: '80px' }}>ID</th>
                 <th style={{ width: '100px' }}>Image</th>
                 <th style={{ width: '200px' }}>Name</th>
                 <th style={{ width: '140px' }}>Category</th>
-                <th style={{ width: '160px' }}>SHG / Farmer Name</th>
+                <th style={{ width: '160px' }}>SHG Name</th>
                 <th style={{ width: '120px' }}>Mandal</th>
                 <th style={{ width: '120px' }}>Village</th>
+                <th style={{ width: '100px' }}>Price</th>
+                <th style={{ width: '120px' }}>Max Quantity</th>
                 <th style={{ width: '100px' }}>Status</th>
                 <th style={{ width: '100px' }}>Actions</th>
               </tr>
@@ -428,6 +570,12 @@ const ManageProducts = () => {
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={product.shgName}>{product.shgName || '-'}</td>
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={product.mandal}>{product.mandal || '-'}</td>
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={product.village}>{product.village || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {product.price ? `₹${product.price}` : '-'}
+                    </td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={product.maxQuantity}>
+                      {product.maxQuantity || '-'}
+                    </td>
                     <td>
                       <span className={`status-badge ${product.status.toLowerCase()}`}>
                         {product.status}
@@ -510,25 +658,58 @@ const ManageProducts = () => {
                   />
                 </div>
 
+                {/* Category */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Category <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <CustomSelect
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    required
+                    options={[
+                      { value: '', label: 'Select Category' },
+                      ...uniqueCategories.map(cat => ({ value: cat, label: cat }))
+                    ]}
+                    placeholder="Select Category"
+                  />
+                </div>
+
+                {/* SHG Name */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    SHG Name <span style={{ color: 'red' }}>*</span>
+                  </label>
+                  <CustomSelect
+                    name="shgName"
+                    value={formData.shgName}
+                    onChange={handleInputChange}
+                    required
+                    options={[
+                      { value: '', label: 'Select SHG' },
+                      ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
+                    ]}
+                    placeholder="Select SHG"
+                  />
+                </div>
+
                 {/* Mandal */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     Mandal <span style={{ color: 'red' }}>*</span>
                   </label>
-                  <input
-                    type="text"
+                  <CustomSelect
                     name="mandal"
                     value={formData.mandal}
                     onChange={handleInputChange}
-                    placeholder="Enter mandal"
                     required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
+                    disabled={loadingMandals}
+                    options={[
+                      { value: '', label: loadingMandals ? 'Loading mandals...' : 'Select mandal' },
+                      ...mandals.map(mandal => ({ value: mandal, label: mandal }))
+                    ]}
+                    placeholder="Select mandal"
                   />
                 </div>
 
@@ -537,13 +718,38 @@ const ManageProducts = () => {
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                     Village <span style={{ color: 'red' }}>*</span>
                   </label>
-                  <input
-                    type="text"
+                  <CustomSelect
                     name="village"
                     value={formData.village}
                     onChange={handleInputChange}
-                    placeholder="Enter village"
                     required
+                    disabled={!formData.mandal || loadingVillages}
+                    options={[
+                      { 
+                        value: '', 
+                        label: !formData.mandal 
+                          ? 'Select mandal first' 
+                          : loadingVillages 
+                          ? 'Loading villages...' 
+                          : 'Select village'
+                      },
+                      ...villages.map(village => ({ value: village.village, label: village.village }))
+                    ]}
+                    placeholder="Select village"
+                  />
+                </div>
+
+                {/* Price */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+                    Price (₹)
+                  </label>
+                  <input
+                    type="text"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="Enter price (e.g., 99.99)"
                     style={{
                       width: '100%',
                       padding: '0.625rem',
@@ -554,74 +760,115 @@ const ManageProducts = () => {
                   />
                 </div>
 
-                {/* Category */}
+                {/* Max Quantity */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Category <span style={{ color: 'red' }}>*</span>
+                    Maximum Supply Quantity
                   </label>
-                  <select
-                    name="category"
-                    value={formData.category}
+                  <input
+                    type="text"
+                    name="maxQuantity"
+                    value={formData.maxQuantity}
                     onChange={handleInputChange}
-                    required
-                    className="filter-select"
-                  >
-                    <option value="">Select Category</option>
-                    {uniqueCategories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
+                    placeholder="Enter quantity (e.g., 100 kg)"
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem',
+                      border: '2px solid var(--color-border)',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem'
+                    }}
+                  />
                 </div>
 
-                {/* SHG/Farmer Name */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    SHG / Farmer Name <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <select
-                    name="shgName"
-                    value={formData.shgName}
-                    onChange={handleInputChange}
-                    required
-                    className="filter-select"
-                  >
-                    <option value="">Select SHG / Farmer</option>
-                    {uniqueSHGs.map(shg => (
-                      <option key={shg} value={shg}>{shg}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Product Image */}
+                {/* Product Images (up to 5) */}
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Product Image
+                    Product Images (Max 5) {formData.images.length === 0 && <span style={{ color: 'red' }}>*</span>}
                   </label>
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={handleImageChange}
+                    multiple
+                    onChange={handleImagesChange}
+                    disabled={formData.images.length >= 5}
                     style={{
                       width: '100%',
                       padding: '0.625rem',
                       border: '2px solid var(--color-border)',
                       borderRadius: '8px',
-                      fontSize: '0.875rem'
+                      fontSize: '0.875rem',
+                      backgroundColor: formData.images.length >= 5 ? '#f3f4f6' : 'white',
+                      cursor: formData.images.length >= 5 ? 'not-allowed' : 'pointer'
                     }}
                   />
-                  {formData.imagePreview && (
-                    <div style={{ marginTop: '1rem' }}>
-                      <img 
-                        src={formData.imagePreview} 
-                        alt="Preview" 
-                        style={{ 
-                          width: '150px', 
-                          height: '150px', 
-                          objectFit: 'cover', 
-                          borderRadius: '8px',
-                          border: '2px solid var(--color-border)'
-                        }}
-                      />
+                  <small style={{ display: 'block', marginTop: '0.25rem', color: 'var(--color-text-light)', fontSize: '0.75rem' }}>
+                    {formData.images.length}/5 images uploaded. Select main image with radio button.
+                  </small>
+                  
+                  {/* Image Previews with Radio Buttons */}
+                  {formData.images.length > 0 && (
+                    <div style={{ 
+                      marginTop: '1rem', 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
+                      gap: '1rem' 
+                    }}>
+                      {formData.images.map((img, index) => (
+                        <div 
+                          key={index} 
+                          style={{ 
+                            position: 'relative',
+                            border: formData.mainImageIndex === index ? '3px solid var(--color-primary)' : '2px solid var(--color-border)',
+                            borderRadius: '8px',
+                            padding: '0.5rem',
+                            backgroundColor: formData.mainImageIndex === index ? 'var(--color-overlay)' : 'transparent'
+                          }}
+                        >
+                          <img 
+                            src={img.preview || img.url} 
+                            alt={`Product ${index + 1}`} 
+                            style={{ 
+                              width: '100%', 
+                              height: '100px', 
+                              objectFit: 'cover', 
+                              borderRadius: '4px'
+                            }}
+                          />
+                          <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer', fontSize: '0.75rem' }}>
+                              <input
+                                type="radio"
+                                name="mainImage"
+                                checked={formData.mainImageIndex === index}
+                                onChange={() => handleSetMainImage(index)}
+                                style={{ cursor: 'pointer' }}
+                              />
+                              <span>Main</span>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(index)}
+                              style={{
+                                padding: '0.25rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#dc2626',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                width: '24px',
+                                height: '24px'
+                              }}
+                              title="Remove image"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

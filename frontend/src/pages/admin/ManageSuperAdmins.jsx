@@ -514,28 +514,18 @@ const ManageSuperAdmins = () => {
                     State <span style={{ color: 'red' }}>*</span>
                     {editingAdmin && <span style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginLeft: '0.5rem' }}>(Locked)</span>}
                   </label>
-                  <select
+                  <CustomSelect
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
                     required
                     disabled={editingAdmin || loadingStates}
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      backgroundColor: editingAdmin ? '#f3f4f6' : 'var(--color-surface)',
-                      cursor: (editingAdmin || loadingStates) ? 'not-allowed' : 'pointer',
-                      opacity: editingAdmin ? 0.7 : 1
-                    }}
-                  >
-                    <option value="">{loadingStates ? 'Loading states...' : 'Select State'}</option>
-                    {states.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: '', label: loadingStates ? 'Loading states...' : 'Select State' },
+                      ...states.map(state => ({ value: state, label: state }))
+                    ]}
+                    placeholder="Select State"
+                  />
                   {editingAdmin && (
                     <small style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
                       State cannot be changed after creation
@@ -549,34 +539,25 @@ const ManageSuperAdmins = () => {
                     District <span style={{ color: 'red' }}>*</span>
                     {editingAdmin && <span style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginLeft: '0.5rem' }}>(Locked)</span>}
                   </label>
-                  <select
+                  <CustomSelect
                     name="district"
                     value={formData.district}
                     onChange={handleInputChange}
                     disabled={!formData.state || editingAdmin || loadingDistricts}
                     required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      backgroundColor: editingAdmin ? '#f3f4f6' : 'var(--color-surface)',
-                      opacity: (!formData.state || editingAdmin) ? 0.7 : 1,
-                      cursor: (!formData.state || editingAdmin || loadingDistricts) ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    <option value="">
-                      {!formData.state 
-                        ? 'Select state first' 
-                        : loadingDistricts 
-                        ? 'Loading districts...' 
-                        : 'Select District'}
-                    </option>
-                    {districts.map(district => (
-                      <option key={district} value={district}>{district}</option>
-                    ))}
-                  </select>
+                    options={[
+                      { 
+                        value: '', 
+                        label: !formData.state 
+                          ? 'Select state first' 
+                          : loadingDistricts 
+                          ? 'Loading districts...' 
+                          : 'Select District'
+                      },
+                      ...districts.map(district => ({ value: district, label: district }))
+                    ]}
+                    placeholder="Select District"
+                  />
                   {editingAdmin && (
                     <small style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
                       District cannot be changed after creation
