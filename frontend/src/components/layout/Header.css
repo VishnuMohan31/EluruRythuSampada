@@ -1,10 +1,12 @@
 .header {
   background-color: var(--color-surface);
   box-shadow: var(--shadow-sm);
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
   transition: box-shadow var(--transition-base);
+  width: 100%;
 }
 
 .header-content {

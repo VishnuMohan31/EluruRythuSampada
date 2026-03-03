@@ -4,6 +4,8 @@ services:
     image: postgres:14-alpine
     container_name: shg_postgres
     restart: unless-stopped
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-shg_marketplace}
       POSTGRES_USER: ${POSTGRES_USER:-shg_user}
@@ -27,6 +29,8 @@ services:
       dockerfile: Dockerfile
     container_name: shg_backend
     restart: unless-stopped
+    ports:
+      - "8003:8003"
     environment:
       # Application
       APP_NAME: ${APP_NAME:-SHG India Marketplace}
@@ -39,7 +43,7 @@ services:
       PORT: 8003
       
       # Database
-      DATABASE_URL: postgresql://${POSTGRES_USER:-shg_user}:${POSTGRES_PASSWORD}@postgres:5433/${POSTGRES_DB:-shg_marketplace}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-shg_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-shg_marketplace}
       DB_ECHO: "False"
       
       # JWT
