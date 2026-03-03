@@ -121,6 +121,10 @@ dmypy.json
 storage/*
 !storage/.gitkeep
 
+# SSL Certificates and Nginx
+certbot/
+nginx/logs/
+
 # Jupyter
 .ipynb_checkpoints
 
