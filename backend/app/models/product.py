@@ -1,5 +1,5 @@
 """
-Product model for SHG products
+Product model for Farmer products
 """
 from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -19,7 +19,7 @@ class Product(Base):
     
     # Foreign keys (required)
     category_id = Column(String, ForeignKey("categories.id"), nullable=False, index=True)
-    shg_id = Column(String, ForeignKey("shgs.id"), nullable=False, index=True)
+    farmer_id = Column(String, ForeignKey("farmers.id"), nullable=False, index=True)
     
     # Product details (optional for backward compatibility)
     price = Column(String(20), nullable=True)  # Price as string (e.g., "99.99")
@@ -48,6 +48,6 @@ class Product(Base):
     
     # Relationships
     category = relationship("Category", back_populates="products")
-    shg = relationship("SHG", back_populates="products")
+    farmer = relationship("Farmer", back_populates="products")
     product_views = relationship("ProductView", back_populates="product")
     contact_logs = relationship("ContactLog", back_populates="product")

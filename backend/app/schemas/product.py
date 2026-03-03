@@ -15,17 +15,16 @@ class CategoryNested(BaseModel):
         from_attributes = True
 
 
-class SHGNested(BaseModel):
+class FarmerNested(BaseModel):
     id: str
     name: str
-    contact_person: str
     mobile_number: str
     whatsapp_number: Optional[str] = None
     state: Optional[str] = None
     district: Optional[str] = None
     mandal: str
     village: str
-    shg_image: Optional[str] = None  # SHG photo
+    farmer_image: Optional[str] = None  # Farmer photo
     
     class Config:
         from_attributes = True
@@ -35,7 +34,7 @@ class ProductBase(BaseModel):
     name: str
     description: str
     category_id: str
-    shg_id: str
+    farmer_id: str
     price: Optional[str] = None  # Price as string (optional)
     max_quantity: Optional[str] = None  # Max quantity as string (optional)
     image_url: Optional[str] = None  # Deprecated: kept for backward compatibility
@@ -53,7 +52,7 @@ class ProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     category_id: Optional[str] = None
-    shg_id: Optional[str] = None
+    farmer_id: Optional[str] = None
     price: Optional[str] = None
     max_quantity: Optional[str] = None
     image_url: Optional[str] = None
@@ -71,7 +70,7 @@ class ProductResponse(ProductBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
     category: Optional[CategoryNested] = None
-    shg: Optional[SHGNested] = None
+    farmer: Optional[FarmerNested] = None
 
     @field_serializer('created_at', 'updated_at')
     def serialize_datetime(self, dt: Optional[datetime], _info) -> Optional[str]:

@@ -33,7 +33,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="footer-description">
-              Empowering SHG communities through authentic handcrafted products.
+              Empowering Farmer communities through authentic handcrafted products.
               Preserving heritage, supporting artisans.
             </p>
           </div>

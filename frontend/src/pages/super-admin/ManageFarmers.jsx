@@ -5,12 +5,12 @@ import CustomSelect from '@components/common/CustomSelect'
 import { api, logger, showToast } from '@/utils/api'
 import '../admin/Dashboard.css'
 
-const ManageSHGs = () => {
+const ManageFarmers = () => {
   const [showModal, setShowModal] = useState(false)
-  const [editingSHG, setEditingSHG] = useState(null)
+  const [editingFarmer, setEditingFarmer] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [shgs, setSHGs] = useState([])
+  const [farmers, setFarmers] = useState([])
   const [loading, setLoading] = useState(true)
   
   // Location dropdowns state
@@ -20,9 +20,8 @@ const ManageSHGs = () => {
   const [loadingVillages, setLoadingVillages] = useState(false)
   
   const [formData, setFormData] = useState({
-    type: 'SHG',
+    type: 'Farmer',
     name: '',
-    contactPerson: '',
     mobileNumber: '',
     whatsappNumber: '',
     sameAsMobile: false,  // Checkbox state
@@ -34,9 +33,9 @@ const ManageSHGs = () => {
     photoPreview: null
   })
 
-  // Fetch SHGs from API
+  // Fetch Farmers from API
   useEffect(() => {
-    fetchSHGs()
+    fetchFarmers()
   }, [])
 
   // Fetch mandals when modal opens
@@ -88,48 +87,46 @@ const ManageSHGs = () => {
     }
   }
 
-  const fetchSHGs = async () => {
+  const fetchFarmers = async () => {
     try {
       setLoading(true)
-      logger.info('Fetching SHGs', 'include_inactive=true')
+      logger.info('Fetching Farmers', 'include_inactive=true')
       
-      const data = await api.get('/api/shgs/?include_inactive=true')
-      logger.success('Fetched SHGs', `${data.length} records`)
+      const data = await api.get('/api/farmers/?include_inactive=true')
+      logger.success('Fetched Farmers', `${data.length} records`)
       
       // Map backend data to frontend format
-      const mappedData = data.map(shg => ({
-        id: shg.id,
-        type: shg.type || 'SHG',
-        name: shg.name,
-        contactPerson: shg.contact_person,
-        mobileNumber: shg.mobile_number,
-        whatsappNumber: shg.whatsapp_number || '',
-        mandal: shg.mandal,
-        village: shg.village,
-        description: shg.description || '',
-        shgImage: shg.shg_image || null,
-        status: shg.is_active ? 'Active' : 'Inactive'
+      const mappedData = data.map(farmer => ({
+        id: farmer.id,
+        type: farmer.type || 'Farmer',
+        name: farmer.name,
+        mobileNumber: farmer.mobile_number,
+        whatsappNumber: farmer.whatsapp_number || '',
+        mandal: farmer.mandal,
+        village: farmer.village,
+        description: farmer.description || '',
+        farmerImage: farmer.farmer_image || null,
+        status: farmer.is_active ? 'Active' : 'Inactive'
       }))
-      setSHGs(mappedData)
+      setFarmers(mappedData)
     } catch (error) {
-      logger.error('Fetch SHGs Failed', error.message)
-      showToast('Failed to load SHGs', 'error')
+      logger.error('Fetch Farmers Failed', error.message)
+      showToast('Failed to load Farmers', 'error')
     } finally {
       setLoading(false)
     }
   }
 
   // Filter logic (treat missing status as 'Active' so filters work with existing data)
-  const filteredSHGs = shgs.filter(shg => {
+  const filteredFarmers = farmers.filter(farmer => {
     const search = (searchQuery || '').trim().toLowerCase()
     const matchesSearch = !search ||
-      (shg.name && shg.name.toLowerCase().includes(search)) ||
-      (shg.id && shg.id.toLowerCase().includes(search)) ||
-      (shg.contactPerson && shg.contactPerson.toLowerCase().includes(search)) ||
-      (shg.mobileNumber && shg.mobileNumber.includes(search)) ||
-      (shg.mandal && shg.mandal.toLowerCase().includes(search)) ||
-      (shg.village && shg.village.toLowerCase().includes(search))
-    const effectiveStatus = shg.status || 'Active'
+      (farmer.name && farmer.name.toLowerCase().includes(search)) ||
+      (farmer.id && farmer.id.toLowerCase().includes(search)) ||
+      (farmer.mobileNumber && farmer.mobileNumber.includes(search)) ||
+      (farmer.mandal && farmer.mandal.toLowerCase().includes(search)) ||
+      (farmer.village && farmer.village.toLowerCase().includes(search))
+    const effectiveStatus = farmer.status || 'Active'
     const matchesStatus = !statusFilter || effectiveStatus === statusFilter
     return matchesSearch && matchesStatus
   })
@@ -187,7 +184,7 @@ const ManageSHGs = () => {
         showToast('Please select an image file', 'error')
         return
       }
-      // Validate file size (max 2MB for SHG photos)
+      // Validate file size (max 2MB for Farmer photos)
       if (file.size > 2 * 1024 * 1024) {
         showToast('Image size should be within 2MB', 'error')
         return
@@ -215,70 +212,67 @@ const ManageSHGs = () => {
     }
 
     try {
-      let shgImageUrl = formData.photoPreview
+      let farmerImageUrl = formData.photoPreview
 
       // Upload photo if new file selected
       if (formData.photo) {
-        logger.info('Uploading SHG Photo', formData.photo.name)
+        logger.info('Uploading Farmer Photo', formData.photo.name)
         const photoFormData = new FormData()
         photoFormData.append('file', formData.photo)
         
-        const uploadData = await api.post('/api/shgs/upload-image', photoFormData)
-        shgImageUrl = uploadData.image_url
-        logger.success('Photo Uploaded', shgImageUrl)
-      } else if (shgImageUrl && shgImageUrl.startsWith('http')) {
+        const uploadData = await api.post('/api/farmers/upload-image', photoFormData)
+        farmerImageUrl = uploadData.image_url
+        logger.success('Photo Uploaded', farmerImageUrl)
+      } else if (farmerImageUrl && farmerImageUrl.startsWith('http')) {
         // Strip API_BASE_URL from existing image URL to get relative path
-        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8003'
-        shgImageUrl = shgImageUrl.replace(API_BASE_URL, '')
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+        farmerImageUrl = farmerImageUrl.replace(API_BASE_URL, '')
       }
 
-      const shgData = {
-        type: 'SHG',
+      const farmerData = {
+        type: 'FARMER',
         name: formData.name,
-        contact_person: formData.contactPerson,
         mobile_number: formData.mobileNumber,
         whatsapp_number: formData.whatsappNumber || null,
         mandal: formData.mandal,
-        village: formData.village,
-        description: formData.description,
-        shg_image: shgImageUrl || null
-        // state and district will be auto-filled by backend from logged-in super admin
+        village: String(formData.village || ''),
+        description: formData.description || '',
+        farmer_image: farmerImageUrl || null
       }
       
-      if (editingSHG) {
-        // Update existing SHG
-        logger.info('Updating SHG', editingSHG.id)
-        const updated = await api.put(`/api/shgs/${editingSHG.id}`, shgData)
-        logger.success('SHG Updated', updated)
+      if (editingFarmer) {
+        // Update existing Farmer
+        logger.info('Updating Farmer', editingFarmer.id)
+        const updated = await api.put(`/api/farmers/${editingFarmer.id}`, farmerData)
+        logger.success('Farmer Updated', updated)
         
-        showToast('SHG updated successfully!', 'success')
-        fetchSHGs()
+        showToast('Farmer updated successfully!', 'success')
+        fetchFarmers()
       } else {
-        // Add new SHG
-        logger.info('Creating SHG', formData.name)
-        const created = await api.post('/api/shgs/', shgData)
-        logger.success('SHG Created', created)
+        // Add new Farmer
+        logger.info('Creating Farmer', formData.name)
+        const created = await api.post('/api/farmers/', farmerData)
+        logger.success('Farmer Created', created)
         
-        showToast('SHG added successfully!', 'success')
-        fetchSHGs()
+        showToast('Farmer added successfully!', 'success')
+        fetchFarmers()
       }
       
       closeModal()
     } catch (error) {
-      logger.error('Save SHG Failed', error.message)
-      showToast('Failed to save SHG', 'error')
+      logger.error('Save Farmer Failed', error.message)
+      showToast('Failed to save Farmer', 'error')
     }
   }
 
   const closeModal = () => {
     setShowModal(false)
-    setEditingSHG(null)
+    setEditingFarmer(null)
     setMandals([])
     setVillages([])
     setFormData({
-      type: 'SHG',
+      type: 'Farmer',
       name: '',
-      contactPerson: '',
       mobileNumber: '',
       whatsappNumber: '',
       sameAsMobile: false,
@@ -291,73 +285,72 @@ const ManageSHGs = () => {
     })
   }
 
-  const handleEdit = (shg) => {
-    setEditingSHG(shg)
-    const sameNumber = shg.whatsappNumber === shg.mobileNumber
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8003'
+  const handleEdit = (farmer) => {
+    setEditingFarmer(farmer)
+    const sameNumber = farmer.whatsappNumber === farmer.mobileNumber
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
     setFormData({
-      type: 'SHG',
-      name: shg.name || '',
-      contactPerson: shg.contactPerson || '',
-      mobileNumber: shg.mobileNumber || '',
-      whatsappNumber: shg.whatsappNumber || '',
+      type: 'Farmer',
+      name: farmer.name || '',
+      mobileNumber: farmer.mobileNumber || '',
+      whatsappNumber: farmer.whatsappNumber || '',
       sameAsMobile: sameNumber,
-      mandal: shg.mandal || '',
-      village: shg.village || '',
-      status: shg.status || 'Active',
-      description: shg.description || '',
+      mandal: farmer.mandal || '',
+      village: farmer.village || '',
+      status: farmer.status || 'Active',
+      description: farmer.description || '',
       photo: null,
-      photoPreview: shg.shgImage ? `${API_BASE_URL}${shg.shgImage}` : null
+      photoPreview: farmer.farmerImage ? `${API_BASE_URL}${farmer.farmerImage}` : null
     })
     setShowModal(true)
   }
 
-  const handleAddSHG = () => {
+  const handleAddFarmer = () => {
     setShowModal(true)
   }
 
-  const handleDeactivate = async (shgId) => {
-    if (!window.confirm('Are you sure you want to deactivate this SHG?')) return
+  const handleDeactivate = async (farmerId) => {
+    if (!window.confirm('Are you sure you want to deactivate this Farmer?')) return
     
     try {
-      logger.info('Deactivating SHG', shgId)
-      await api.put(`/api/shgs/${shgId}/deactivate`)
-      logger.success('SHG Deactivated', shgId)
+      logger.info('Deactivating Farmer', farmerId)
+      await api.put(`/api/farmers/${farmerId}/deactivate`)
+      logger.success('Farmer Deactivated', farmerId)
       
-      setSHGs(prev => prev.map(shg => 
-        shg.id === shgId ? { ...shg, status: 'Inactive' } : shg
+      setFarmers(prev => prev.map(farmer => 
+        farmer.id === farmerId ? { ...farmer, status: 'Inactive' } : farmer
       ))
-      showToast('SHG deactivated successfully!', 'success')
+      showToast('Farmer deactivated successfully!', 'success')
     } catch (error) {
-      logger.error('Deactivate SHG Failed', error.message)
-      showToast('Failed to deactivate SHG', 'error')
+      logger.error('Deactivate Farmer Failed', error.message)
+      showToast('Failed to deactivate Farmer', 'error')
     }
   }
 
-  const handleReactivate = async (shgId) => {
-    if (!window.confirm('Are you sure you want to reactivate this SHG?')) return
+  const handleReactivate = async (farmerId) => {
+    if (!window.confirm('Are you sure you want to reactivate this Farmer?')) return
     
     try {
-      logger.info('Reactivating SHG', shgId)
-      await api.put(`/api/shgs/${shgId}/reactivate`)
-      logger.success('SHG Reactivated', shgId)
+      logger.info('Reactivating Farmer', farmerId)
+      await api.put(`/api/farmers/${farmerId}/reactivate`)
+      logger.success('Farmer Reactivated', farmerId)
       
-      setSHGs(prev => prev.map(shg => 
-        shg.id === shgId ? { ...shg, status: 'Active' } : shg
+      setFarmers(prev => prev.map(farmer => 
+        farmer.id === farmerId ? { ...farmer, status: 'Active' } : farmer
       ))
-      showToast('SHG reactivated successfully!', 'success')
+      showToast('Farmer reactivated successfully!', 'success')
     } catch (error) {
-      logger.error('Reactivate SHG Failed', error.message)
-      showToast('Failed to reactivate SHG', 'error')
+      logger.error('Reactivate Farmer Failed', error.message)
+      showToast('Failed to reactivate Farmer', 'error')
     }
   }
 
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
-        <h1>Manage SHGs</h1>
-        <Button variant="primary" onClick={handleAddSHG}>
-          + Add SHG
+        <h1>Manage Farmers</h1>
+        <Button variant="primary" onClick={handleAddFarmer}>
+          + Add Farmer
         </Button>
       </div>
 
@@ -371,7 +364,7 @@ const ManageSHGs = () => {
             </label>
             <input
               type="text"
-              placeholder="Search by ID, Name, Contact Person, Mobile, Mandal, or Village..."
+              placeholder="Search by ID, Name, Mobile, Mandal, or Village..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -419,25 +412,24 @@ const ManageSHGs = () => {
               <tr>
                 <th style={{ width: '80px' }}>ID</th>
                 <th style={{ width: '80px' }}>Photo</th>
-                <th style={{ width: '160px' }}>Name</th>
-                <th style={{ width: '140px' }}>Contact Person</th>
-                <th style={{ width: '120px' }}>Mobile Number</th>
-                <th style={{ width: '110px' }}>Mandal</th>
-                <th style={{ width: '110px' }}>Village</th>
+                <th style={{ width: '200px' }}>Name</th>
+                <th style={{ width: '140px' }}>Mobile Number</th>
+                <th style={{ width: '130px' }}>Mandal</th>
+                <th style={{ width: '130px' }}>Village</th>
                 <th style={{ width: '90px' }}>Status</th>
                 <th style={{ width: '100px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredSHGs.length > 0 ? (
-                filteredSHGs.map(shg => (
-                  <tr key={shg.id}>
-                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shg.id}</td>
+              {filteredFarmers.length > 0 ? (
+                filteredFarmers.map(farmer => (
+                  <tr key={farmer.id}>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{farmer.id}</td>
                     <td>
-                      {shg.shgImage ? (
+                      {farmer.farmerImage ? (
                         <img 
-                          src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8003'}${shg.shgImage}`}
-                          alt={shg.name}
+                          src={`${import.meta.env.VITE_API_BASE_URL || ''}${farmer.farmerImage}`}
+                          alt={farmer.name}
                           style={{ 
                             width: '50px', 
                             height: '50px', 
@@ -462,14 +454,13 @@ const ManageSHGs = () => {
                         </div>
                       )}
                     </td>
-                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.name}>{shg.name || '-'}</td>
-                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.contactPerson}>{shg.contactPerson || '-'}</td>
-                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shg.mobileNumber || '-'}</td>
-                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.mandal}>{shg.mandal || '-'}</td>
-                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={shg.village}>{shg.village || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={farmer.name}>{farmer.name || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{farmer.mobileNumber || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={farmer.mandal}>{farmer.mandal || '-'}</td>
+                    <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={farmer.village}>{farmer.village || '-'}</td>
                     <td>
-                      <span className={`status-badge ${(shg.status || 'Active').toLowerCase()}`}>
-                        {shg.status || 'Active'}
+                      <span className={`status-badge ${(farmer.status || 'Active').toLowerCase()}`}>
+                        {farmer.status || 'Active'}
                       </span>
                     </td>
                     <td>
@@ -477,15 +468,15 @@ const ManageSHGs = () => {
                         <button 
                           className="action-icon-btn edit" 
                           title="Edit"
-                          onClick={() => handleEdit(shg)}
+                          onClick={() => handleEdit(farmer)}
                         >
                           <Edit2 size={18} />
                         </button>
-                        {(shg.status || 'Active') === 'Active' ? (
+                        {(farmer.status || 'Active') === 'Active' ? (
                           <button 
                             className="action-icon-btn delete" 
                             title="Deactivate"
-                            onClick={() => handleDeactivate(shg.id)}
+                            onClick={() => handleDeactivate(farmer.id)}
                           >
                             <Trash2 size={18} />
                           </button>
@@ -493,7 +484,7 @@ const ManageSHGs = () => {
                           <button 
                             className="action-icon-btn reactivate" 
                             title="Reactivate"
-                            onClick={() => handleReactivate(shg.id)}
+                            onClick={() => handleReactivate(farmer.id)}
                           >
                             <RotateCcw size={18} />
                           </button>
@@ -504,8 +495,8 @@ const ManageSHGs = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
-                    No SHGs found matching your filters
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
+                    No Farmers found matching your filters
                   </td>
                 </tr>
               )}
@@ -514,30 +505,30 @@ const ManageSHGs = () => {
         </div>
       </div>
 
-      {/* Add/Edit SHG Modal */}
+      {/* Add/Edit Farmer Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={closeModal} style={{ paddingTop: '7rem', paddingBottom: '2rem' }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px', margin: '2rem auto' }}>
             <div className="modal-header" style={{ padding: '1.25rem 1.5rem' }}>
               <h2 style={{ fontSize: '1.25rem' }}>
-                {editingSHG ? 'Edit SHG' : 'Add New SHG'}
+                {editingFarmer ? 'Edit Farmer' : 'Add New Farmer'}
               </h2>
               <button className="modal-close" onClick={closeModal}>✕</button>
             </div>
 
             <form onSubmit={handleSubmit} className="modal-body" style={{ padding: '1.5rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                {/* SHG Name */}
+                {/* Farmer Name */}
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    SHG Name <span style={{ color: 'red' }}>*</span>
+                    Farmer Name <span style={{ color: 'red' }}>*</span>
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Enter SHG name"
+                    placeholder="Enter Farmer name"
                     required
                     style={{
                       width: '100%',
@@ -591,28 +582,6 @@ const ManageSHGs = () => {
                       ...villages.map(village => ({ value: village.village, label: village.village }))
                     ]}
                     placeholder="Select village"
-                  />
-                </div>
-
-                {/* Contact Person */}
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    Contact Person <span style={{ color: 'red' }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleInputChange}
-                    placeholder="Enter contact person name"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '0.625rem',
-                      border: '2px solid var(--color-border)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem'
-                    }}
                   />
                 </div>
 
@@ -701,7 +670,7 @@ const ManageSHGs = () => {
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    placeholder="Enter SHG description"
+                    placeholder="Enter Farmer description"
                     rows="3"
                     style={{
                       width: '100%',
@@ -714,10 +683,10 @@ const ManageSHGs = () => {
                   />
                 </div>
 
-                {/* SHG/Contact Person Photo */}
+                {/* Farmer Photo */}
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    SHG/Contact Person Photo
+                    Farmer Photo
                   </label>
                   <input
                     type="file"
@@ -754,7 +723,7 @@ const ManageSHGs = () => {
                   Cancel
                 </Button>
                 <Button type="submit" variant="primary">
-                  {editingSHG ? 'Update SHG' : 'Add SHG'}
+                  {editingFarmer ? 'Update Farmer' : 'Add Farmer'}
                 </Button>
               </div>
             </form>
@@ -765,4 +734,4 @@ const ManageSHGs = () => {
   )
 }
 
-export default ManageSHGs
+export default ManageFarmers

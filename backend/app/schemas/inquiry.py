@@ -1,5 +1,5 @@
 """
-Contact Log schemas for buyer-SHG communication
+Contact Log schemas for buyer-Farmer communication
 """
 from pydantic import BaseModel, EmailStr, field_serializer
 from typing import Optional
@@ -28,7 +28,7 @@ class InquiryResponse(BaseModel):
     id: str
     buyer_id: str
     product_id: str
-    shg_id: str
+    farmer_id: str
     ip_address: str
     created_at: datetime
 

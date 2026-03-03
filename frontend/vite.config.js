@@ -22,14 +22,14 @@ export default defineConfig({
     port: 3000,
     host: '0.0.0.0',
     allowedHosts: [
-      'swayameluruconnect.in',
-      'www.swayameluruconnect.in',
+      'elururythusampada.in',
+      'www.elururythusampada.in',
       'localhost',
       '62.171.191.132'
     ],
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_API_URL || 'http://localhost:8004',
         changeOrigin: true,
       },
     },

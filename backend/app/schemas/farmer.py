@@ -1,5 +1,5 @@
 """
-SHG (Self Help Group) schemas for validation
+Farmer schemas for validation
 """
 from pydantic import BaseModel, validator, field_serializer
 from typing import Optional, Literal
@@ -7,10 +7,9 @@ from datetime import datetime
 from ..utils.timezone import format_ist_datetime
 
 
-class SHGBase(BaseModel):
-    type: Literal['SHG'] = 'SHG'
+class FarmerBase(BaseModel):
+    type: Literal['FARMER'] = 'FARMER'
     name: str
-    contact_person: str
     mobile_number: str
     whatsapp_number: Optional[str] = None  # WhatsApp number (optional)
     state: Optional[str] = None  # Auto-filled from super admin
@@ -19,17 +18,16 @@ class SHGBase(BaseModel):
     village: str
     description: Optional[str] = None
     image_url: Optional[str] = None
-    shg_image: Optional[str] = None  # SHG/Contact person photo
+    farmer_image: Optional[str] = None  # Farmer photo
 
 
-class SHGCreate(SHGBase):
+class FarmerCreate(FarmerBase):
     pass
 
 
-class SHGUpdate(BaseModel):
-    type: Optional[Literal['SHG']] = None
+class FarmerUpdate(BaseModel):
+    type: Optional[Literal['FARMER']] = None
     name: Optional[str] = None
-    contact_person: Optional[str] = None
     mobile_number: Optional[str] = None
     whatsapp_number: Optional[str] = None
     state: Optional[str] = None
@@ -38,11 +36,11 @@ class SHGUpdate(BaseModel):
     village: Optional[str] = None
     description: Optional[str] = None
     image_url: Optional[str] = None
-    shg_image: Optional[str] = None
+    farmer_image: Optional[str] = None
     is_active: Optional[bool] = None
 
 
-class SHGResponse(SHGBase):
+class FarmerResponse(FarmerBase):
     id: str
     type: str
     is_active: bool
@@ -58,3 +56,4 @@ class SHGResponse(SHGBase):
 
     class Config:
         from_attributes = True
+

@@ -70,7 +70,7 @@ async def create_inquiry(
         db.add(buyer)
         db.flush()
     
-    # Get product to find SHG
+    # Get product to find Farmer
     product = db.query(Product).filter(Product.id == inquiry.product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -85,7 +85,7 @@ async def create_inquiry(
         id=contact_id,
         buyer_id=buyer.id,
         product_id=inquiry.product_id,
-        shg_id=product.shg_id,
+        farmer_id=product.farmer_id,
         ip_address=client_ip
     )
     db.add(contact_log)

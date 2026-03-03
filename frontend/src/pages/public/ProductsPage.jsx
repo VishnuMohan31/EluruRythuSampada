@@ -17,7 +17,7 @@ const ProductsPage = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('')
   const [selectedMandal, setSelectedMandal] = useState('')
   const [selectedVillage, setSelectedVillage] = useState('')
-  const [selectedSHG, setSelectedSHG] = useState('')
+  const [selectedFarmer, setSelectedSHG] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   
@@ -61,10 +61,10 @@ const ProductsPage = () => {
   }
 
   // Get unique values for filters from real data
-  const uniqueDistricts = [...new Set(products.map(p => p.shg?.district).filter(Boolean))].sort()
-  const uniqueMandals = [...new Set(products.map(p => p.shg?.mandal).filter(Boolean))].sort()
-  const uniqueVillages = [...new Set(products.map(p => p.shg?.village).filter(Boolean))].sort()
-  const uniqueSHGs = [...new Set(products.map(p => p.shg?.name).filter(Boolean))].sort()
+  const uniqueDistricts = [...new Set(products.map(p => p.farmer?.district).filter(Boolean))].sort()
+  const uniqueMandals = [...new Set(products.map(p => p.farmer?.mandal).filter(Boolean))].sort()
+  const uniqueVillages = [...new Set(products.map(p => p.farmer?.village).filter(Boolean))].sort()
+  const uniqueFarmers = [...new Set(products.map(p => p.farmer?.name).filter(Boolean))].sort()
 
   // Read category from URL on component mount
   useEffect(() => {
@@ -78,12 +78,12 @@ const ProductsPage = () => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = !selectedCategory || product.category?.id === selectedCategory
-    const matchesDistrict = !selectedDistrict || product.shg?.district === selectedDistrict
-    const matchesMandal = !selectedMandal || product.shg?.mandal === selectedMandal
-    const matchesVillage = !selectedVillage || product.shg?.village === selectedVillage
-    const matchesSHG = !selectedSHG || product.shg?.name === selectedSHG
+    const matchesDistrict = !selectedDistrict || product.farmer?.district === selectedDistrict
+    const matchesMandal = !selectedMandal || product.farmer?.mandal === selectedMandal
+    const matchesVillage = !selectedVillage || product.farmer?.village === selectedVillage
+    const matchesFarmer = !selectedFarmer || product.farmer?.name === selectedFarmer
     
-    return matchesSearch && matchesCategory && matchesDistrict && matchesMandal && matchesVillage && matchesSHG
+    return matchesSearch && matchesCategory && matchesDistrict && matchesMandal && matchesVillage && matchesFarmer
   })
 
   // Pagination logic
@@ -95,7 +95,7 @@ const ProductsPage = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchQuery, selectedCategory, selectedDistrict, selectedMandal, selectedVillage, selectedSHG])
+  }, [searchQuery, selectedCategory, selectedDistrict, selectedMandal, selectedVillage, selectedFarmer])
 
   const clearFilters = () => {
     setSearchQuery('')
@@ -151,7 +151,7 @@ const ProductsPage = () => {
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${productsHeaderBg})`
           }}
         >
-          <h1 className="page-title">Discover SHG Products</h1>
+          <h1 className="page-title">Discover Farmer Products</h1>
           <p className="page-description">
             Browse our collection of {products.length} authentic handcrafted products
           </p>
@@ -211,13 +211,13 @@ const ProductsPage = () => {
                 placeholder="All Villages"
               />
               <CustomSelect
-                value={selectedSHG}
+                value={selectedFarmer}
                 onChange={(e) => setSelectedSHG(e.target.value)}
                 options={[
-                  { value: '', label: 'All SHGs' },
-                  ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
+                  { value: '', label: 'All Farmers' },
+                  ...uniqueFarmers.map(farmer => ({ value: farmer, label: farmer }))
                 ]}
-                placeholder="All SHGs"
+                placeholder="All Farmers"
               />
             </div>
           </div>
@@ -247,7 +247,7 @@ const ProductsPage = () => {
             <div className="filters-header">
               <h3>Filters</h3>
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                {(selectedCategory || selectedDistrict || selectedMandal || selectedVillage || selectedSHG) && (
+                {(selectedCategory || selectedDistrict || selectedMandal || selectedVillage || selectedFarmer) && (
                   <button className="clear-filters-btn" onClick={clearFilters}>
                     Clear All
                   </button>

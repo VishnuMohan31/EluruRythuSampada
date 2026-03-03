@@ -1,5 +1,5 @@
 -- ============================================
--- SHG India Marketplace Portal
+-- Eluru Rythu Sampada - Farmers Marketplace Portal
 -- Database Schema - PostgreSQL 14+
 -- Simple approach: Auto-increment IDs
 -- ============================================
@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS product_views CASCADE;
 DROP TABLE IF EXISTS contact_logs CASCADE;
 DROP TABLE IF EXISTS buyers CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
-DROP TABLE IF EXISTS shgs CASCADE;
+DROP TABLE IF EXISTS farmers CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS master_locations CASCADE;
@@ -83,12 +83,11 @@ CREATE TABLE categories (
 CREATE INDEX idx_categories_name ON categories(name);
 CREATE INDEX idx_categories_state ON categories(state);
 
--- 4. SHGS (Self Help Groups)
-CREATE TABLE shgs (
+-- 4. FARMERS (Farmer Groups)
+CREATE TABLE farmers (
     id VARCHAR(20) PRIMARY KEY,
-    type VARCHAR(20) NOT NULL DEFAULT 'SHG' CHECK (type IN ('SHG')),
+    type VARCHAR(20) NOT NULL DEFAULT 'FARMER' CHECK (type IN ('FARMER')),
     name VARCHAR(200) NOT NULL,
-    contact_person VARCHAR(100) NOT NULL,
     mobile_number VARCHAR(20) NOT NULL UNIQUE, -- Prevent duplicate mobile numbers
     whatsapp_number VARCHAR(20), -- WhatsApp contact number
     state VARCHAR(100),
@@ -97,7 +96,7 @@ CREATE TABLE shgs (
     village VARCHAR(100) NOT NULL,
     description TEXT,
     image_url VARCHAR(500),
-    shg_image VARCHAR(500), -- SHG/Contact person photo
+    farmer_image VARCHAR(500), -- Farmer photo
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(20),
@@ -107,10 +106,10 @@ CREATE TABLE shgs (
     deleted_by VARCHAR(20)
 );
 
-CREATE INDEX idx_shgs_type ON shgs(type);
-CREATE INDEX idx_shgs_state ON shgs(state);
-CREATE INDEX idx_shgs_district ON shgs(district);
-CREATE INDEX idx_shgs_mobile ON shgs(mobile_number);
+CREATE INDEX idx_farmers_type ON farmers(type);
+CREATE INDEX idx_farmers_state ON farmers(state);
+CREATE INDEX idx_farmers_district ON farmers(district);
+CREATE INDEX idx_farmers_mobile ON farmers(mobile_number);
 
 -- 5. PRODUCTS
 CREATE TABLE products (
@@ -118,7 +117,7 @@ CREATE TABLE products (
     name VARCHAR(200) NOT NULL,
     description TEXT,
     category_id VARCHAR(20) NOT NULL REFERENCES categories(id),
-    shg_id VARCHAR(20) NOT NULL REFERENCES shgs(id),
+    farmer_id VARCHAR(20) NOT NULL REFERENCES farmers(id),
     price VARCHAR(20), -- Product price (stored as string for flexibility)
     max_quantity VARCHAR(50), -- Maximum quantity available (stored as string for flexibility)
     image_url VARCHAR(500), -- Deprecated: kept for backward compatibility
@@ -137,7 +136,7 @@ CREATE TABLE products (
 );
 
 CREATE INDEX idx_products_category ON products(category_id);
-CREATE INDEX idx_products_shg ON products(shg_id);
+CREATE INDEX idx_products_farmer ON products(farmer_id);
 CREATE INDEX idx_products_name ON products USING gin(name gin_trgm_ops);
 CREATE INDEX idx_products_images ON products USING GIN(images);
 
@@ -159,14 +158,14 @@ CREATE TABLE contact_logs (
     id VARCHAR(20) PRIMARY KEY,
     buyer_id VARCHAR(20) NOT NULL REFERENCES buyers(id),
     product_id VARCHAR(20) NOT NULL REFERENCES products(id),
-    shg_id VARCHAR(20) NOT NULL REFERENCES shgs(id),
+    farmer_id VARCHAR(20) NOT NULL REFERENCES farmers(id),
     ip_address VARCHAR(45) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_contact_logs_buyer ON contact_logs(buyer_id);
 CREATE INDEX idx_contact_logs_product ON contact_logs(product_id);
-CREATE INDEX idx_contact_logs_shg ON contact_logs(shg_id);
+CREATE INDEX idx_contact_logs_farmer ON contact_logs(farmer_id);
 
 -- 8. PRODUCT_VIEWS
 CREATE TABLE product_views (
@@ -216,13 +215,13 @@ CREATE TABLE daily_analytics (
     id VARCHAR(20) PRIMARY KEY,
     date DATE UNIQUE NOT NULL,
     total_product_views INTEGER DEFAULT 0,
-    total_shg_contacts INTEGER DEFAULT 0,
+    total_farmer_contacts INTEGER DEFAULT 0,
     new_products INTEGER DEFAULT 0,
-    new_shgs INTEGER DEFAULT 0,
+    new_farmers INTEGER DEFAULT 0,
     new_buyers INTEGER DEFAULT 0,
     top_products JSONB,
     top_categories JSONB,
-    top_shgs JSONB,
+    top_farmers JSONB,
     metrics JSONB,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -235,7 +234,7 @@ CREATE INDEX idx_daily_analytics_date ON daily_analytics(date);
 
 CREATE SEQUENCE IF NOT EXISTS users_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS categories_id_seq START 1;
-CREATE SEQUENCE IF NOT EXISTS shgs_id_seq START 1;
+CREATE SEQUENCE IF NOT EXISTS farmers_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS products_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS buyers_id_seq START 1;
 CREATE SEQUENCE IF NOT EXISTS contact_logs_id_seq START 1;

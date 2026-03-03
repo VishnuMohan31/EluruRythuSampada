@@ -4,18 +4,18 @@ import { api, logger } from '@/utils/api'
 import './Dashboard.css'
 
 const AdminDashboard = () => {
-  const [metricType, setMetricType] = useState('shg') // 'shg' or 'product'
-  const [shgTimePeriod, setShgTimePeriod] = useState('30') // For SHG Inquiries
+  const [metricType, setMetricType] = useState('farmer') // 'farmer' or 'product'
+  const [shgTimePeriod, setShgTimePeriod] = useState('30') // For Farmer Inquiries
   // Product metrics always use 'all' time period
 
   const [stats, setStats] = useState({
     totalProducts: 0,
-    totalSHGs: 0,
+    totalFarmers: 0,
     totalContacts: 0,
     totalSuperAdmins: 0
   })
-  const [topSHGInquiries, setTopSHGInquiries] = useState([])
-  const [leastSHGInquiries, setLeastSHGInquiries] = useState([])
+  const [topFarmerInquiries, setTopSHGInquiries] = useState([])
+  const [leastFarmerInquiries, setLeastSHGInquiries] = useState([])
   const [topProductInquiries, setTopProductInquiries] = useState([])
   const [leastProductInquiries, setLeastProductInquiries] = useState([])
   const [loading, setLoading] = useState(true)
@@ -36,7 +36,7 @@ const AdminDashboard = () => {
       
       setStats({
         totalProducts: data.totalProducts || 0,
-        totalSHGs: data.totalSHGs || 0,
+        totalFarmers: data.totalFarmers || 0,
         totalContacts: data.totalContacts || 0,
         totalSuperAdmins: data.totalSuperAdmins || 0
       })
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
       logger.error('Fetch Dashboard Stats Failed', error.message)
       setStats({
         totalProducts: 0,
-        totalSHGs: 0,
+        totalFarmers: 0,
         totalContacts: 0,
         totalSuperAdmins: 0
       })
@@ -66,8 +66,8 @@ const AdminDashboard = () => {
       const data = await api.get(`/api/analytics/metrics/?type=${metricType}&period=${shgTimePeriod}`)
       logger.success('Fetched Dashboard Metrics', data)
       
-      setTopSHGInquiries(data.topSHGs || [])
-      setLeastSHGInquiries(data.leastSHGs || [])
+      setTopSHGInquiries(data.topFarmers || [])
+      setLeastSHGInquiries(data.leastFarmers || [])
       setTopProductInquiries(data.topProducts || [])
       setLeastProductInquiries(data.leastProducts || [])
     } catch (error) {
@@ -82,7 +82,7 @@ const AdminDashboard = () => {
   }
 
   const renderListItem = (item, index, isProduct = false, isLeast = false) => {
-    // For product metrics, show product count; for SHG metrics, show inquiry count
+    // For product metrics, show product count; for Farmer metrics, show inquiry count
     const count = item.inquiries || 0
     const label = metricType === 'product' ? (count === 1 ? 'product' : 'products') : (count === 1 ? 'inquiry' : 'inquiries')
     
@@ -150,9 +150,9 @@ const AdminDashboard = () => {
           <div className="stat-icon">🏛</div>
           <div className="stat-content">
             <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
-              {statsLoading ? '...' : stats.totalSHGs}
+              {statsLoading ? '...' : stats.totalFarmers}
             </div>
-            <div className="stat-label" style={{ color: '#ffffff' }}>SHGs</div>
+            <div className="stat-label" style={{ color: '#ffffff' }}>Farmers</div>
           </div>
         </div>
 
@@ -182,10 +182,10 @@ const AdminDashboard = () => {
         <div className="metrics-header">
           <h3 style={{ margin: 0 }}>📊 Performance Metrics</h3>
           <div className="metrics-controls">
-            {/* Metric Type Toggle - SHG or Product */}
+            {/* Metric Type Toggle - Farmer or Product */}
             <div className="metrics-toggle" style={{ display: 'flex', gap: '0.5rem', backgroundColor: 'var(--color-background)', padding: '0.25rem', borderRadius: '8px' }}>
               <button
-                onClick={() => setMetricType('shg')}
+                onClick={() => setMetricType('farmer')}
                 style={{
                   padding: '0.5rem 1rem',
                   border: 'none',
@@ -193,13 +193,13 @@ const AdminDashboard = () => {
                   fontSize: '0.875rem',
                   fontWeight: '500',
                   cursor: 'pointer',
-                  backgroundColor: metricType === 'shg' ? 'var(--color-primary)' : 'transparent',
-                  color: metricType === 'shg' ? 'white' : 'var(--color-text)',
+                  backgroundColor: metricType === 'farmer' ? 'var(--color-primary)' : 'transparent',
+                  color: metricType === 'farmer' ? 'white' : 'var(--color-text)',
                   transition: 'all 0.2s',
                   whiteSpace: 'nowrap'
                 }}
               >
-                🏛 SHG Inquiries
+                🏛 Farmer Inquiries
               </button>
               <button
                 onClick={() => setMetricType('product')}
@@ -222,7 +222,7 @@ const AdminDashboard = () => {
 
             {/* Time Period Filter - below toggle */}
             <div className="metrics-dropdown">
-              {metricType === 'shg' ? (
+              {metricType === 'farmer' ? (
                 <CustomSelect
                   value={shgTimePeriod}
                   onChange={(e) => setShgTimePeriod(e.target.value)}
@@ -254,16 +254,16 @@ const AdminDashboard = () => {
           {/* Top 10 Column */}
           <div>
             <h4 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              🔥 Top 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
+              🔥 Top 10 {metricType === 'farmer' ? 'Farmers' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {loading ? (
                 <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
                   Loading...
                 </div>
-              ) : (metricType === 'shg' ? topSHGInquiries : topProductInquiries).length > 0 ? (
-                metricType === 'shg' 
-                  ? topSHGInquiries.map((shg, index) => renderListItem(shg, index, false, false))
+              ) : (metricType === 'farmer' ? topFarmerInquiries : topProductInquiries).length > 0 ? (
+                metricType === 'farmer' 
+                  ? topFarmerInquiries.map((farmer, index) => renderListItem(farmer, index, false, false))
                   : topProductInquiries.map((product, index) => renderListItem(product, index, true, false))
               ) : (
                 <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
@@ -276,16 +276,16 @@ const AdminDashboard = () => {
           {/* Least 10 Column */}
           <div>
             <h4 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              📉 Least 10 {metricType === 'shg' ? 'SHGs' : 'Products'}
+              📉 Least 10 {metricType === 'farmer' ? 'Farmers' : 'Products'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {loading ? (
                 <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>
                   Loading...
                 </div>
-              ) : (metricType === 'shg' ? leastSHGInquiries : leastProductInquiries).length > 0 ? (
-                metricType === 'shg' 
-                  ? leastSHGInquiries.map((shg, index) => renderListItem(shg, index, false, true))
+              ) : (metricType === 'farmer' ? leastFarmerInquiries : leastProductInquiries).length > 0 ? (
+                metricType === 'farmer' 
+                  ? leastFarmerInquiries.map((farmer, index) => renderListItem(farmer, index, false, true))
                   : leastProductInquiries.map((product, index) => renderListItem(product, index, true, true))
               ) : (
                 <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-light)' }}>

@@ -1,9 +1,9 @@
 """
-Database models for SHG India Marketplace Portal
+Database models for Eluru Rythu Sampada - Farmers Marketplace Portal
 """
 from .user import User
 from .category import Category
-from .shg import SHG
+from .farmer import Farmer
 from .product import Product
 from .inquiry import Buyer, ContactLog
 from .product_view import ProductView
@@ -15,7 +15,7 @@ from .master_location import MasterLocation
 __all__ = [
     "User",
     "Category",
-    "SHG",
+    "Farmer",
     "Product",
     "Buyer",
     "ContactLog",

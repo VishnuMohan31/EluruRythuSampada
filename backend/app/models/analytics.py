@@ -25,7 +25,7 @@ class DailyAnalytics(Base):
     # Top items (JSON arrays of IDs)
     top_products = Column(JSON, nullable=True)  # [{id, name, views}, ...]
     top_categories = Column(JSON, nullable=True)  # [{id, name, count}, ...]
-    top_shgs = Column(JSON, nullable=True)  # [{id, name, contacts}, ...]
+    top_farmers = Column(JSON, nullable=True)  # [{id, name, contacts}, ...]
     
     # Additional metrics
     metrics = Column(JSON, nullable=True)  # Flexible field for additional data

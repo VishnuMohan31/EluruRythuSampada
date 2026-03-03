@@ -13,7 +13,7 @@ const DisclaimerPage = () => {
           <section>
             <h2>1. Platform Purpose</h2>
             <p>
-              Swayam Eluru Market Place is a communication platform that connects buyers with SHG artisans and
+              Swayam Eluru Market Place is a communication platform that connects buyers with Farmer artisans and
               vendors. We do not process payments, handle transactions, or act as an intermediary in sales.
             </p>
           </section>
@@ -98,7 +98,7 @@ const DisclaimerPage = () => {
             <h2>8. Government Initiative</h2>
             <p>
               While this is a government-supported initiative, it does not constitute an endorsement of any
-              specific vendor or product. The government's role is to provide a platform for SHG artisans,
+              specific vendor or product. The government's role is to provide a platform for Farmer artisans,
               not to guarantee transactions.
             </p>
           </section>

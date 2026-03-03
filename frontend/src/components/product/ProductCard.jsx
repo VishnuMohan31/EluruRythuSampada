@@ -60,9 +60,9 @@ const ProductCard = ({ product }) => {
       </div>
       
       <div className="product-info">
-        <div className="product-shg-badge">
-          <span className="shg-icon">🏛</span>
-          <span className="shg-name">{product.shg?.name || 'N/A'}</span>
+        <div className="product-farmer-badge">
+          <span className="farmer-icon">🏛</span>
+          <span className="farmer-name">{product.farmer?.name || 'N/A'}</span>
         </div>
         
         <h3 className="product-name">{product.name}</h3>

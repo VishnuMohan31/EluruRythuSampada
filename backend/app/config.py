@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     LOGIN_RATE_LIMIT: int = 5
     
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "http://localhost:3004")
     CORS_ALLOW_CREDENTIALS: bool = True
     
     # File Upload

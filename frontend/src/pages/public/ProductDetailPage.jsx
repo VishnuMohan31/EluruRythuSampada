@@ -186,9 +186,9 @@ const ProductDetailPage = () => {
 
           {/* Product Info */}
           <div className="product-info-section">
-            <div className="product-shg-badge">
-              <span className="shg-icon">🏛</span>
-              <span>{product.shg?.name || 'N/A'} • {product.shg?.village || ''}, {product.shg?.mandal || ''}</span>
+            <div className="product-farmer-badge">
+              <span className="farmer-icon">🏛</span>
+              <span>{product.farmer?.name || 'N/A'} • {product.farmer?.village || ''}, {product.farmer?.mandal || ''}</span>
             </div>
 
             <h1 className="product-title">{product.name}</h1>
@@ -273,7 +273,7 @@ const ProductDetailPage = () => {
                 <strong style={{ fontSize: '1.125rem' }}>Category:</strong> {product.category?.name || 'N/A'}
               </div>
               <div>
-                <strong style={{ fontSize: '1.125rem' }}>SHG:</strong> {product.shg?.name || 'N/A'}
+                <strong style={{ fontSize: '1.125rem' }}>Farmer:</strong> {product.farmer?.name || 'N/A'}
               </div>
             </div>
 
@@ -282,7 +282,7 @@ const ProductDetailPage = () => {
               <p>{product.description}</p>
             </div>
 
-            {(product.youtube_link || product.instagram_link || product.shg?.whatsapp_number) && (
+            {(product.youtube_link || product.instagram_link || product.farmer?.whatsapp_number) && (
               <div className="product-social">
                 <h4>See More</h4>
                 <div className="social-links">
@@ -298,9 +298,9 @@ const ProductDetailPage = () => {
                       <span>Instagram</span>
                     </a>
                   )}
-                  {product.shg?.whatsapp_number && (
+                  {product.farmer?.whatsapp_number && (
                     <a 
-                      href={`https://wa.me/91${product.shg.whatsapp_number}?text=Hi, I'm interested in ${encodeURIComponent(product.name)}`}
+                      href={`https://wa.me/91${product.farmer.whatsapp_number}?text=Hi, I'm interested in ${encodeURIComponent(product.name)}`}
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="social-link social-whatsapp"
@@ -356,7 +356,7 @@ const ProductDetailPage = () => {
                       alt={relatedProduct.name} 
                     />
                     <h4>{relatedProduct.name}</h4>
-                    <p>{relatedProduct.shg?.name || 'N/A'}</p>
+                    <p>{relatedProduct.farmer?.name || 'N/A'}</p>
                   </Link>
                 )
               })}
@@ -445,12 +445,12 @@ const ProductDetailPage = () => {
             <h2>✅ Inquiry Submitted!</h2>
             <p>Thank you for your interest. Here are the vendor details:</p>
             
-            {/* SHG Photo */}
-            {product.shg?.shg_image && (
+            {/* Farmer Photo */}
+            {product.farmer?.farmer_image && (
               <div style={{ textAlign: 'center', margin: '1rem 0' }}>
                 <img 
-                  src={`${API_BASE_URL}${product.shg.shg_image}`}
-                  alt={product.shg.name}
+                  src={`${API_BASE_URL}${product.farmer.farmer_image}`}
+                  alt={product.farmer.name}
                   style={{ 
                     width: '180px', 
                     height: '180px', 
@@ -464,21 +464,18 @@ const ProductDetailPage = () => {
             
             <div className="vendor-details">
               <div className="detail-item">
-                <strong>SHG Name:</strong> {product.shg?.name || 'N/A'}
+                <strong>Farmer Name:</strong> {product.farmer?.name || 'N/A'}
               </div>
               <div className="detail-item">
-                <strong>Contact Person:</strong> {product.shg?.contact_person || 'N/A'}
+                <strong>Mobile:</strong> <a href={`tel:${product.farmer?.mobile_number}`}>{product.farmer?.mobile_number || 'N/A'}</a>
               </div>
-              <div className="detail-item">
-                <strong>Mobile:</strong> <a href={`tel:${product.shg?.mobile_number}`}>{product.shg?.mobile_number || 'N/A'}</a>
-              </div>
-              {product.shg?.whatsapp_number && (
+              {product.farmer?.whatsapp_number && (
                 <div className="detail-item">
-                  <strong>WhatsApp:</strong> <a href={`https://wa.me/91${product.shg.whatsapp_number}`} target="_blank" rel="noopener noreferrer">{product.shg.whatsapp_number}</a>
+                  <strong>WhatsApp:</strong> <a href={`https://wa.me/91${product.farmer.whatsapp_number}`} target="_blank" rel="noopener noreferrer">{product.farmer.whatsapp_number}</a>
                 </div>
               )}
               <div className="detail-item">
-                <strong>Location:</strong> {product.shg?.village}, {product.shg?.mandal}
+                <strong>Location:</strong> {product.farmer?.village}, {product.farmer?.mandal}
               </div>
             </div>
             

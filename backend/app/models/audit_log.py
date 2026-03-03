@@ -15,7 +15,7 @@ class AuditLog(Base):
     
     user_id = Column(String, nullable=False, index=True)  # Admin or Super Admin ID
     action_type = Column(String(50), nullable=False, index=True)  # CREATE, UPDATE, DELETE, etc.
-    resource_type = Column(String(50), nullable=False, index=True)  # Product, Vendor, SHG, etc.
+    resource_type = Column(String(50), nullable=False, index=True)  # Product, Vendor, Farmer, etc.
     resource_id = Column(String, nullable=True, index=True)  # ID of affected resource
     
     old_value = Column(JSON, nullable=True)  # Previous state (for updates/deletes)

@@ -28,7 +28,7 @@ class Buyer(Base):
 
 
 class ContactLog(Base):
-    """Log of all SHG contacts by buyers"""
+    """Log of all Farmer contacts by buyers"""
     __tablename__ = "contact_logs"
 
     # Primary key with formatted ID (CNT001)
@@ -36,7 +36,7 @@ class ContactLog(Base):
     
     buyer_id = Column(String, ForeignKey("buyers.id"), nullable=False, index=True)
     product_id = Column(String, ForeignKey("products.id"), nullable=False, index=True)
-    shg_id = Column(String, ForeignKey("shgs.id"), nullable=False, index=True)
+    farmer_id = Column(String, ForeignKey("farmers.id"), nullable=False, index=True)
     
     ip_address = Column(String(45), nullable=False, index=True)  # IPv4 or IPv6
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
@@ -44,4 +44,4 @@ class ContactLog(Base):
     # Relationships
     buyer = relationship("Buyer", back_populates="contact_logs")
     product = relationship("Product", back_populates="contact_logs")
-    shg = relationship("SHG", back_populates="contact_logs")
+    farmer = relationship("Farmer", back_populates="contact_logs")

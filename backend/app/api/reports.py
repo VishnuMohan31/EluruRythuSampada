@@ -12,7 +12,7 @@ from datetime import datetime
 from ..core.deps import get_db, get_current_admin
 from ..models.inquiry import ContactLog, Buyer
 from ..models.product import Product
-from ..models.shg import SHG
+from ..models.farmer import Farmer
 from ..models.category import Category
 from ..utils.timezone import format_ist_datetime
 
@@ -60,20 +60,19 @@ async def export_inquiries(
         'Product Name',
         'Product ID',
         'Product Description',
-        'SHG Name',
-        'SHG Type',
-        'SHG ID',
-        'SHG Contact Person',
-        'SHG Mobile Number',
-        'SHG Mandal',
-        'SHG Village'
+        'Farmer Name',
+        'Farmer Type',
+        'Farmer ID',
+        'Farmer Mobile Number',
+        'Farmer Mandal',
+        'Farmer Village'
     ])
     
     # Write data rows
     for log in contact_logs:
         buyer = db.query(Buyer).filter(Buyer.id == log.buyer_id).first()
         product = db.query(Product).filter(Product.id == log.product_id).first()
-        shg = db.query(SHG).filter(SHG.id == log.shg_id).first()
+        farmer = db.query(Farmer).filter(Farmer.id == log.farmer_id).first()
         
         writer.writerow([
             log.id,
@@ -85,13 +84,12 @@ async def export_inquiries(
             product.name if product else '',
             product.id if product else '',
             product.description if product else '',
-            shg.name if shg else '',
-            shg.type if shg else '',
-            shg.id if shg else '',
-            shg.contact_person if shg else '',
-            shg.mobile_number if shg else '',
-            shg.mandal if shg else '',
-            shg.village if shg else ''
+            farmer.name if farmer else '',
+            farmer.type if farmer else '',
+            farmer.id if farmer else '',
+            farmer.mobile_number if farmer else '',
+            farmer.mandal if farmer else '',
+            farmer.village if farmer else ''
         ])
     
     # Prepare response
@@ -141,8 +139,8 @@ async def export_analytics(
         'Product ID',
         'Product Name',
         'Category',
-        'SHG / Farmer Name',
-        'SHG / Farmer Type',
+        'Farmer / Farmer Name',
+        'Farmer / Farmer Type',
         'View Count',
         'Contact Count',
         'Status',
@@ -152,15 +150,15 @@ async def export_analytics(
     # Write data rows
     for product in products:
         category = db.query(Category).filter(Category.id == product.category_id).first()
-        shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
+        farmer = db.query(Farmer).filter(Farmer.id == product.farmer_id).first()
         contact_count = db.query(ContactLog).filter(ContactLog.product_id == product.id).count()
         
         writer.writerow([
             product.id,
             product.name,
             category.name if category else '',
-            shg.name if shg else '',
-            shg.type if shg else '',
+            farmer.name if farmer else '',
+            farmer.type if farmer else '',
             product.view_count,
             contact_count,
             'Active' if product.is_active else 'Inactive',
@@ -215,10 +213,9 @@ async def export_products(
         'Product Name',
         'Description',
         'Category',
-        'SHG / Farmer Name',
-        'SHG / Farmer Type',
-        'SHG / Farmer Contact Person',
-        'SHG / Farmer Mobile',
+        'Farmer Name',
+        'Farmer Type',
+        'Farmer Mobile',
         'Mandal',
         'Village',
         'View Count',
@@ -232,19 +229,18 @@ async def export_products(
     # Write data rows
     for product in products:
         category = db.query(Category).filter(Category.id == product.category_id).first()
-        shg = db.query(SHG).filter(SHG.id == product.shg_id).first()
+        farmer = db.query(Farmer).filter(Farmer.id == product.farmer_id).first()
         
         writer.writerow([
             product.id,
             product.name,
             product.description,
             category.name if category else '',
-            shg.name if shg else '',
-            shg.type if shg else '',
-            shg.contact_person if shg else '',
-            shg.mobile_number if shg else '',
-            shg.mandal if shg else '',
-            shg.village if shg else '',
+            farmer.name if farmer else '',
+            farmer.type if farmer else '',
+            farmer.mobile_number if farmer else '',
+            farmer.mandal if farmer else '',
+            farmer.village if farmer else '',
             product.view_count,
             'Active' if product.is_active else 'Inactive',
             format_ist_datetime(product.created_at),

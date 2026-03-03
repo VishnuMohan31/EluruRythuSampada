@@ -14,7 +14,7 @@ const ManageProducts = () => {
   const [statusFilter, setStatusFilter] = useState('')
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
-  const [shgs, setSHGs] = useState([])
+  const [farmers, setSHGs] = useState([])
   const [loading, setLoading] = useState(true)
   
   // Location dropdowns state
@@ -39,7 +39,7 @@ const ManageProducts = () => {
     status: 'Active'
   })
 
-  // Fetch products, categories, and SHGs from API
+  // Fetch products, categories, and Farmers from API
   useEffect(() => {
     fetchProducts()
     fetchCategories()
@@ -77,10 +77,10 @@ const ManageProducts = () => {
         name: product.name,
         description: product.description,
         category: { name: product.category?.name || '' },
-        shgName: product.shg?.name || '',
-        shgId: product.shg_id,
-        mandal: product.shg?.mandal || '',
-        village: product.shg?.village || '',
+        shgName: product.farmer?.name || '',
+        shgId: product.farmer_id,
+        mandal: product.farmer?.mandal || '',
+        village: product.farmer?.village || '',
         price: product.price || '',
         maxQuantity: product.max_quantity || '',
         images: product.images || [],  // Array of image URLs
@@ -114,12 +114,12 @@ const ManageProducts = () => {
 
   const fetchSHGs = async () => {
     try {
-      logger.info('Fetching SHGs', 'for dropdown')
-      const data = await api.get('/api/shgs/')
-      logger.success('Fetched SHGs', `${data.length} SHGs`)
+      logger.info('Fetching Farmers', 'for dropdown')
+      const data = await api.get('/api/farmers/')
+      logger.success('Fetched Farmers', `${data.length} Farmers`)
       setSHGs(data)
     } catch (error) {
-      logger.error('Fetch SHGs Failed', error.message)
+      logger.error('Fetch Farmers Failed', error.message)
     }
   }
 
@@ -157,16 +157,16 @@ const ManageProducts = () => {
 
   // Get unique values for filters
   const uniqueCategories = categories.map(c => c.name).filter(Boolean).sort()
-  const uniqueSHGs = shgs.map(s => s.name).filter(Boolean).sort()
+  const uniqueFarmers = farmers.map(s => s.name).filter(Boolean).sort()
 
   // Filter logic
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false
     const matchesCategory = !categoryFilter || product.category?.name === categoryFilter
-    const matchesSHG = !shgFilter || product.shgName === shgFilter
+    const matchesFarmer = !shgFilter || product.shgName === shgFilter
     const matchesStatus = !statusFilter || product.status === statusFilter
     
-    return matchesSearch && matchesCategory && matchesSHG && matchesStatus
+    return matchesSearch && matchesCategory && matchesFarmer && matchesStatus
   })
 
   const clearFilters = () => {
@@ -349,12 +349,12 @@ const ManageProducts = () => {
         }
       }
 
-      // Find category and SHG IDs
+      // Find category and Farmer IDs
       const category = categories.find(c => c.name === formData.category)
-      const shg = shgs.find(s => s.name === formData.shgName)
+      const farmer = farmers.find(s => s.name === formData.shgName)
 
-      if (!category || !shg) {
-        showToast('Please select valid category and SHG', 'error')
+      if (!category || !farmer) {
+        showToast('Please select valid category and Farmer', 'error')
         return
       }
 
@@ -362,7 +362,7 @@ const ManageProducts = () => {
         name: formData.name,
         description: formData.description,
         category_id: category.id,
-        shg_id: shg.id,
+        farmer_id: farmer.id,
         price: formData.price || null,
         max_quantity: formData.maxQuantity || null,
         images: imageUrls,
@@ -463,19 +463,19 @@ const ManageProducts = () => {
             />
           </div>
 
-          {/* SHG Filter */}
+          {/* Farmer Filter */}
           <div style={{ minWidth: '180px' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-              SHG
+              Farmer
             </label>
             <CustomSelect
               value={shgFilter}
               onChange={(e) => setShgFilter(e.target.value)}
               options={[
-                { value: '', label: 'All SHGs' },
-                ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
+                { value: '', label: 'All Farmers' },
+                ...uniqueFarmers.map(farmer => ({ value: farmer, label: farmer }))
               ]}
-              placeholder="All SHGs"
+              placeholder="All Farmers"
             />
           </div>
 
@@ -516,7 +516,7 @@ const ManageProducts = () => {
                 <th style={{ width: '100px' }}>Image</th>
                 <th style={{ width: '200px' }}>Name</th>
                 <th style={{ width: '140px' }}>Category</th>
-                <th style={{ width: '160px' }}>SHG Name</th>
+                <th style={{ width: '160px' }}>Farmer Name</th>
                 <th style={{ width: '120px' }}>Mandal</th>
                 <th style={{ width: '120px' }}>Village</th>
                 <th style={{ width: '100px' }}>Price</th>
@@ -676,10 +676,10 @@ const ManageProducts = () => {
                   />
                 </div>
 
-                {/* SHG Name */}
+                {/* Farmer Name */}
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
-                    SHG Name <span style={{ color: 'red' }}>*</span>
+                    Farmer Name <span style={{ color: 'red' }}>*</span>
                   </label>
                   <CustomSelect
                     name="shgName"
@@ -687,10 +687,10 @@ const ManageProducts = () => {
                     onChange={handleInputChange}
                     required
                     options={[
-                      { value: '', label: 'Select SHG' },
-                      ...uniqueSHGs.map(shg => ({ value: shg, label: shg }))
+                      { value: '', label: 'Select Farmer' },
+                      ...uniqueFarmers.map(farmer => ({ value: farmer, label: farmer }))
                     ]}
-                    placeholder="Select SHG"
+                    placeholder="Select Farmer"
                   />
                 </div>
 

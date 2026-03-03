@@ -8,7 +8,7 @@ from typing import Optional
 
 from ..core.deps import get_db, get_current_admin
 from ..models.product import Product
-from ..models.shg import SHG
+from ..models.farmer import Farmer
 from ..models.inquiry import ContactLog
 from ..models.product_view import ProductView
 from ..models.category import Category
@@ -25,14 +25,14 @@ async def get_stats(
     """Get dashboard statistics"""
     
     total_products = db.query(Product).filter(Product.is_active == True).count()
-    total_shgs = db.query(SHG).filter(SHG.is_active == True).count()
+    total_shgs = db.query(Farmer).filter(Farmer.is_active == True).count()
     total_contacts = db.query(ContactLog).count()
     total_categories = db.query(Category).filter(Category.is_active == True).count()
     total_super_admins = db.query(User).filter(User.role == 'super_admin', User.is_active == True).count()
     
     return {
         "totalProducts": total_products,
-        "totalSHGs": total_shgs,
+        "totalFarmers": total_shgs,
         "totalContacts": total_contacts,
         "totalCategories": total_categories,
         "totalSuperAdmins": total_super_admins
@@ -41,88 +41,88 @@ async def get_stats(
 
 @router.get("/metrics")
 async def get_metrics(
-    type: str = "shg",
+    type: str = "farmer",
     period: str = "30",
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
     """
-    Get performance metrics (top/least SHGs or products)
+    Get performance metrics (top/least Farmers or products)
     
-    type: 'shg' for inquiry metrics, 'product' for product count metrics
-    period: '7', '30', '90', 'all' (only applies to 'shg' type)
+    type: 'farmer' for inquiry metrics, 'product' for product count metrics
+    period: '7', '30', '90', 'all' (only applies to 'farmer' type)
     """
     from datetime import datetime, timedelta
     
-    if type == "shg":
-        # SHG/Farmer Inquiries Metrics
+    if type == "farmer":
+        # Farmer/Farmer Inquiries Metrics
         # Calculate date filter based on period
         date_filter = None
         if period != "all":
             days = int(period)
             date_filter = datetime.utcnow() - timedelta(days=days)
         
-        # Query to get inquiry counts per SHG
+        # Query to get inquiry counts per Farmer
         query = db.query(
-            SHG.id,
-            SHG.name,
-            SHG.state,
-            SHG.district,
-            SHG.type,
+            Farmer.id,
+            Farmer.name,
+            Farmer.state,
+            Farmer.district,
+            Farmer.type,
             func.count(ContactLog.id).label('inquiry_count')
         ).outerjoin(
-            ContactLog, SHG.id == ContactLog.shg_id
+            ContactLog, Farmer.id == ContactLog.farmer_id
         ).filter(
-            SHG.is_active == True
+            Farmer.is_active == True
         )
         
         # Apply date filter if not "all time"
         if date_filter:
             query = query.filter(ContactLog.created_at >= date_filter)
         
-        # Group by SHG
-        query = query.group_by(SHG.id, SHG.name, SHG.state, SHG.district, SHG.type)
+        # Group by Farmer
+        query = query.group_by(Farmer.id, Farmer.name, Farmer.state, Farmer.district, Farmer.type)
         
         # Get all results
         all_shgs = query.all()
         
         # Sort for top 10 (most inquiries)
-        top_shgs = sorted(all_shgs, key=lambda x: x.inquiry_count, reverse=True)[:10]
+        top_farmers = sorted(all_shgs, key=lambda x: x.inquiry_count, reverse=True)[:10]
         
-        # Sort for least 10 (least inquiries, but only SHGs with at least 1 product)
-        # Filter SHGs that have products
-        shgs_with_products = db.query(SHG.id).join(Product).filter(
-            SHG.is_active == True,
+        # Sort for least 10 (least inquiries, but only Farmers with at least 1 product)
+        # Filter Farmers that have products
+        shgs_with_products = db.query(Farmer.id).join(Product).filter(
+            Farmer.is_active == True,
             Product.is_active == True
         ).distinct().all()
-        shg_ids_with_products = {shg.id for shg in shgs_with_products}
+        shg_ids_with_products = {farmer.id for farmer in shgs_with_products}
         
-        # Filter to only include SHGs with products
-        shgs_with_products_list = [shg for shg in all_shgs if shg.id in shg_ids_with_products]
+        # Filter to only include Farmers with products
+        shgs_with_products_list = [farmer for farmer in all_shgs if farmer.id in shg_ids_with_products]
         least_shgs = sorted(shgs_with_products_list, key=lambda x: x.inquiry_count)[:10]
         
         return {
-            "topSHGs": [
+            "topFarmers": [
                 {
-                    "id": shg.id,
-                    "name": shg.name,
-                    "state": shg.state or "N/A",
-                    "district": shg.district or "N/A",
-                    "type": shg.type,
-                    "inquiries": shg.inquiry_count
+                    "id": farmer.id,
+                    "name": farmer.name,
+                    "state": farmer.state or "N/A",
+                    "district": farmer.district or "N/A",
+                    "type": farmer.type,
+                    "inquiries": farmer.inquiry_count
                 }
-                for shg in top_shgs
+                for farmer in top_farmers
             ],
-            "leastSHGs": [
+            "leastFarmers": [
                 {
-                    "id": shg.id,
-                    "name": shg.name,
-                    "state": shg.state or "N/A",
-                    "district": shg.district or "N/A",
-                    "type": shg.type,
-                    "inquiries": shg.inquiry_count
+                    "id": farmer.id,
+                    "name": farmer.name,
+                    "state": farmer.state or "N/A",
+                    "district": farmer.district or "N/A",
+                    "type": farmer.type,
+                    "inquiries": farmer.inquiry_count
                 }
-                for shg in least_shgs
+                for farmer in least_shgs
             ],
             "topProducts": [],
             "leastProducts": []
@@ -130,27 +130,27 @@ async def get_metrics(
     
     elif type == "product":
         # Number of Products Metrics (always all time)
-        # Query to get product counts per SHG
+        # Query to get product counts per Farmer
         query = db.query(
-            SHG.id,
-            SHG.name,
-            SHG.state,
-            SHG.district,
-            SHG.type,
+            Farmer.id,
+            Farmer.name,
+            Farmer.state,
+            Farmer.district,
+            Farmer.type,
             func.count(Product.id).label('product_count')
         ).outerjoin(
-            Product, SHG.id == Product.shg_id
+            Product, Farmer.id == Product.farmer_id
         ).filter(
-            SHG.is_active == True
+            Farmer.is_active == True
         ).group_by(
-            SHG.id, SHG.name, SHG.state, SHG.district, SHG.type
+            Farmer.id, Farmer.name, Farmer.state, Farmer.district, Farmer.type
         )
         
         # Get all results
         all_shgs = query.all()
         
-        # Filter to only include SHGs with at least 1 product
-        shgs_with_products = [shg for shg in all_shgs if shg.product_count > 0]
+        # Filter to only include Farmers with at least 1 product
+        shgs_with_products = [farmer for farmer in all_shgs if farmer.product_count > 0]
         
         # Sort for top 10 (most products)
         top_products = sorted(shgs_with_products, key=lambda x: x.product_count, reverse=True)[:10]
@@ -159,36 +159,36 @@ async def get_metrics(
         least_products = sorted(shgs_with_products, key=lambda x: x.product_count)[:10]
         
         return {
-            "topSHGs": [],
-            "leastSHGs": [],
+            "topFarmers": [],
+            "leastFarmers": [],
             "topProducts": [
                 {
-                    "id": shg.id,
-                    "name": shg.name,
-                    "state": shg.state or "N/A",
-                    "district": shg.district or "N/A",
-                    "type": shg.type,
-                    "inquiries": shg.product_count  # Frontend expects 'inquiries' field
+                    "id": farmer.id,
+                    "name": farmer.name,
+                    "state": farmer.state or "N/A",
+                    "district": farmer.district or "N/A",
+                    "type": farmer.type,
+                    "inquiries": farmer.product_count  # Frontend expects 'inquiries' field
                 }
-                for shg in top_products
+                for farmer in top_products
             ],
             "leastProducts": [
                 {
-                    "id": shg.id,
-                    "name": shg.name,
-                    "state": shg.state or "N/A",
-                    "district": shg.district or "N/A",
-                    "type": shg.type,
-                    "inquiries": shg.product_count  # Frontend expects 'inquiries' field
+                    "id": farmer.id,
+                    "name": farmer.name,
+                    "state": farmer.state or "N/A",
+                    "district": farmer.district or "N/A",
+                    "type": farmer.type,
+                    "inquiries": farmer.product_count  # Frontend expects 'inquiries' field
                 }
-                for shg in least_products
+                for farmer in least_products
             ]
         }
     
     # Default fallback
     return {
-        "topSHGs": [],
-        "leastSHGs": [],
+        "topFarmers": [],
+        "leastFarmers": [],
         "topProducts": [],
         "leastProducts": []
     }

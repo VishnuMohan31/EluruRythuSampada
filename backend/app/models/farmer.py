@@ -1,5 +1,5 @@
 """
-SHG (Self Help Group) model for community information
+Farmer model for farmer information
 """
 from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime
 from sqlalchemy.sql import func
@@ -7,18 +7,17 @@ from sqlalchemy.orm import relationship
 from ..database import Base
 
 
-class SHG(Base):
-    __tablename__ = "shgs"
+class Farmer(Base):
+    __tablename__ = "farmers"
 
-    # Primary key with formatted ID (SHG001)
+    # Primary key with formatted ID (FARMER001)
     id = Column(String(20), primary_key=True, index=True)
     
-    # Type: 'SHG' only
-    type = Column(String(20), nullable=False, default='SHG', index=True)
+    # Type: 'FARMER' only
+    type = Column(String(20), nullable=False, default='FARMER', index=True)
     
     name = Column(String(100), nullable=False, index=True)
-    contact_person = Column(String(100), nullable=False)  # Contact person name
-    mobile_number = Column(String(20), nullable=False)  # Contact mobile number
+    mobile_number = Column(String(20), nullable=False)  # Mobile number
     whatsapp_number = Column(String(20), nullable=True)  # WhatsApp number (optional)
     
     # Location hierarchy
@@ -29,7 +28,7 @@ class SHG(Base):
     
     description = Column(Text, nullable=True)
     image_url = Column(String(500), nullable=True)  # S3 URL
-    shg_image = Column(String(500), nullable=True)  # SHG/Contact person photo
+    farmer_image = Column(String(500), nullable=True)  # Farmer photo
     
     # Status and audit fields
     is_active = Column(Boolean, default=True, nullable=False, index=True)
@@ -43,5 +42,6 @@ class SHG(Base):
     deleted_by = Column(String, nullable=True)
     
     # Relationships
-    products = relationship("Product", back_populates="shg")
-    contact_logs = relationship("ContactLog", back_populates="shg")
+    products = relationship("Product", back_populates="farmer")
+    contact_logs = relationship("ContactLog", back_populates="farmer")
+

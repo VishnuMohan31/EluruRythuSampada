@@ -2,13 +2,14 @@
 Main FastAPI application entry point.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.exceptions import RequestValidationError
 from .config import settings
 from .database import engine, Base
-from .api import auth, products, categories, shgs, inquiries, users, analytics, reports, locations
+from .api import auth, products, categories, farmers, inquiries, users, analytics, reports, locations
 import logging
 from pathlib import Path
 
@@ -31,7 +32,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="A government-supported platform for promoting tribal products",
+    description="A government-supported platform for promoting farmers products",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
@@ -42,7 +43,7 @@ if settings.DEBUG:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
-        allow_credentials=False,
+        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -83,6 +84,19 @@ if not settings.DEBUG:
     app.add_middleware(HTTPSRedirectMiddleware)
 
 
+# Add validation error handler to log detailed errors
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Log detailed validation errors for debugging"""
+    logger.error(f"Validation error for {request.method} {request.url}")
+    logger.error(f"Request body: {await request.body()}")
+    logger.error(f"Validation errors: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()}
+    )
+
+
 @app.on_event("startup")
 async def startup_event():
     """Application startup event."""
@@ -113,7 +127,7 @@ async def shutdown_event():
 async def root():
     """Root endpoint."""
     return {
-        "message": "Welcome to Swayam Eluru Market Place API",
+        "message": "Welcome to Eluru Rythu Sampada - Farmers Marketplace API",
         "version": settings.APP_VERSION,
         "docs": "/docs" if settings.DEBUG else "Documentation disabled in production"
     }
@@ -157,7 +171,7 @@ async def health_check():
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(products.router, prefix="/api/products", tags=["Products"])
 app.include_router(categories.router, prefix="/api/categories", tags=["Categories"])
-app.include_router(shgs.router, prefix="/api/shgs", tags=["SHGs"])
+app.include_router(farmers.router, prefix="/api/farmers", tags=["Farmers"])
 app.include_router(inquiries.router, prefix="/api/inquiries", tags=["Inquiries"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])

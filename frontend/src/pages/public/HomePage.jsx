@@ -93,10 +93,10 @@ const HomePage = () => {
           <div className="hero-content">
             <h1 className="hero-title">
               Discover Authentic
-              <span className="hero-highlight"> SHG Heritage</span>
+              <span className="hero-highlight"> Farmer Heritage</span>
             </h1>
             <p className="hero-description">
-              Handcrafted products from India's SHG artisans, preserving culture
+              Handcrafted products from India's Farmer artisans, preserving culture
               and empowering communities. Each piece tells a story of tradition,
               skill, and heritage passed down through generations.
             </p>
@@ -119,7 +119,7 @@ const HomePage = () => {
           <div className="section-header">
             <h2 className="section-title">Browse by Category</h2>
             <p className="section-description">
-              Explore our diverse collection of authentic SHG products
+              Explore our diverse collection of authentic Farmer products
             </p>
           </div>
           
@@ -236,31 +236,31 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* About / SHG Heritage Section - WHITE BACKGROUND */}
+      {/* About / Farmer Heritage Section - WHITE BACKGROUND */}
       <section className="featured-section heritage-section">
         <div className="container">
           <div className="section-header heritage-header">
-            <h2 className="section-title">Celebrating Andhra Pradesh's SHG Heritage</h2>
+            <h2 className="section-title">Celebrating Andhra Pradesh's Farmer Heritage</h2>
             <p className="section-description heritage-description">
               Swayam Eluru Market Place is a government-backed platform supported by TRIFED 
               and the Government of Andhra Pradesh. We showcase the exceptional craftsmanship 
-              of SHG communities from across Andhra Pradesh—from the Nallamala forests to 
+              of Farmer communities from across Andhra Pradesh—from the Nallamala forests to 
               the Eastern Ghats.
             </p>
             <p className="section-description heritage-description">
-              Our platform connects you directly with skilled SHG artisans including the 
+              Our platform connects you directly with skilled Farmer artisans including the 
               Chenchu, Lambadi, Gond, and Koya communities. Each product represents centuries 
               of traditional knowledge, passed down through generations. From bamboo weaving 
               to Dhokra metalwork, from natural forest honey to handloom textiles—discover 
-              authentic SHG crafts that tell stories of heritage and skill.
+              authentic Farmer crafts that tell stories of heritage and skill.
             </p>
             <Link to="/about" className="btn btn-outline btn-large">
               Discover Our Artisans
             </Link>
           </div>
           <div className="heritage-images">
-            <img src={TribalPic1} alt="SHG bamboo weaving craftsmanship" loading="lazy" />
-            <img src={TibePic3} alt="Traditional SHG handicraft artisan" loading="lazy" />
+            <img src={TribalPic1} alt="Farmer bamboo weaving craftsmanship" loading="lazy" />
+            <img src={TibePic3} alt="Traditional Farmer handicraft artisan" loading="lazy" />
           </div>
         </div>
       </section>

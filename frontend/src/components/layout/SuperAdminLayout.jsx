@@ -50,9 +50,9 @@ const SuperAdminLayout = () => {
             <span className="nav-icon"><LayoutDashboard size={20} /></span>
             {sidebarOpen && <span className="nav-text">Dashboard</span>}
           </Link>
-          <Link to="/super-admin/shgs" className="nav-item" data-tooltip="SHGs">
+          <Link to="/super-admin/farmers" className="nav-item" data-tooltip="Farmers">
             <span className="nav-icon"><Users size={20} /></span>
-            {sidebarOpen && <span className="nav-text">SHGs</span>}
+            {sidebarOpen && <span className="nav-text">Farmers</span>}
           </Link>
           <Link to="/super-admin/products" className="nav-item" data-tooltip="Products">
             <span className="nav-icon"><Package size={20} /></span>

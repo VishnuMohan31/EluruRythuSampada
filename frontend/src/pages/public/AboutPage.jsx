@@ -13,7 +13,7 @@ const AboutPage = () => {
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${aboutHeaderBg})`
           }}
         >
-          <h1 className="page-title">Celebrating SHG Artisans of Andhra Pradesh</h1>
+          <h1 className="page-title">Celebrating Farmer Artisans of Andhra Pradesh</h1>
           <p className="page-subtitle">A Government Initiative Connecting Authentic Craftsmanship with Appreciative Buyers</p>
         </div>
 
@@ -24,7 +24,7 @@ const AboutPage = () => {
               <p>
                 Swayam Eluru Market Place is a government-backed initiative supported by TRIFED (Tribal Cooperative
                 Marketing Development Federation of India) and the Government of Andhra Pradesh. We showcase the
-                rich heritage and exceptional craftsmanship of SHG communities across Andhra Pradesh.
+                rich heritage and exceptional craftsmanship of Farmer communities across Andhra Pradesh.
               </p>
               <p>
                 From the intricate Dhokra metalwork to vibrant Lambadi embroidery, from handwoven Chenchu baskets
@@ -33,7 +33,7 @@ const AboutPage = () => {
               </p>
             </div>
             <div className="section-image">
-              <img src={about2Img} alt="SHG artisan crafting" />
+              <img src={about2Img} alt="Farmer artisan crafting" />
             </div>
           </section>
 
@@ -68,7 +68,7 @@ const AboutPage = () => {
             <div className="impact-stats">
               <div className="stat-card">
                 <div className="stat-number">45+</div>
-                <div className="stat-label">SHG Communities</div>
+                <div className="stat-label">Farmer Communities</div>
               </div>
               <div className="stat-card">
                 <div className="stat-number">234+</div>
@@ -91,12 +91,12 @@ const AboutPage = () => {
               <div className="step-card">
                 <div className="step-number">1</div>
                 <h3>Explore</h3>
-                <p>Browse authentic SHG handicrafts, textiles, jewelry, and home decor from Andhra Pradesh artisans.</p>
+                <p>Browse authentic Farmer handicrafts, textiles, jewelry, and home decor from Andhra Pradesh artisans.</p>
               </div>
               <div className="step-card">
                 <div className="step-number">2</div>
                 <h3>Learn</h3>
-                <p>Discover the stories behind each craft, the SHG communities, and traditional techniques used.</p>
+                <p>Discover the stories behind each craft, the Farmer communities, and traditional techniques used.</p>
               </div>
               <div className="step-card">
                 <div className="step-number">3</div>
@@ -116,7 +116,7 @@ const AboutPage = () => {
             <div className="purpose-content">
               <p>
                 This is a communication and discovery platform designed to bring visibility to the incredible work
-                of Andhra Pradesh's SHG artisans. We provide a space where artisans can showcase their products
+                of Andhra Pradesh's Farmer artisans. We provide a space where artisans can showcase their products
                 and buyers can discover authentic, handcrafted treasures.
               </p>
               <p>
@@ -135,7 +135,7 @@ const AboutPage = () => {
                 </div>
                 <div className="trust-item">
                   <span className="trust-icon">🎯</span>
-                  <span>Authentic SHG Products Only</span>
+                  <span>Authentic Farmer Products Only</span>
                 </div>
               </div>
             </div>

@@ -1,9 +1,9 @@
 /**
  * Centralized API utility with token management and logging
  */
-// For production: empty VITE_API_URL means use relative URLs (same origin)
-// For development: VITE_API_URL should be 'http://localhost:8003'
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8003'
+// Production: Uses empty string for same-origin requests (relative URLs)
+// Development: Uses VITE_API_URL from .env
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 export { API_BASE_URL }
 

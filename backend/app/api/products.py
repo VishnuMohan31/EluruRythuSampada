@@ -13,7 +13,7 @@ import shutil
 from ..core.deps import get_db, get_current_admin
 from ..models.product import Product
 from ..models.category import Category
-from ..models.shg import SHG
+from ..models.farmer import Farmer
 from ..schemas.product import ProductCreate, ProductUpdate, ProductResponse
 from ..config import settings
 
@@ -47,7 +47,7 @@ async def get_most_contacted_products(
     # Then fetch full products with relationships
     products = db.query(Product).options(
         joinedload(Product.category),
-        joinedload(Product.shg)
+        joinedload(Product.farmer)
     ).join(
         subquery, Product.id == subquery.c.id
     ).all()
@@ -65,7 +65,7 @@ async def get_recent_products(
     
     products = db.query(Product).options(
         joinedload(Product.category),
-        joinedload(Product.shg)
+        joinedload(Product.farmer)
     ).filter(
         Product.is_active == True
     ).order_by(
@@ -80,7 +80,7 @@ async def get_products(
     skip: int = 0,
     limit: int = 100,
     category_id: Optional[str] = None,
-    shg_id: Optional[str] = None,
+    farmer_id: Optional[str] = None,
     search: Optional[str] = None,
     is_featured: Optional[bool] = None,
     include_inactive: bool = False,
@@ -91,15 +91,15 @@ async def get_products(
     
     query = db.query(Product).options(
         joinedload(Product.category),
-        joinedload(Product.shg)
+        joinedload(Product.farmer)
     )
     
     if not include_inactive:
         query = query.filter(Product.is_active == True)
     if category_id:
         query = query.filter(Product.category_id == category_id)
-    if shg_id:
-        query = query.filter(Product.shg_id == shg_id)
+    if farmer_id:
+        query = query.filter(Product.farmer_id == farmer_id)
     if search:
         query = query.filter(Product.name.ilike(f"%{search}%"))
     if is_featured is not None:
@@ -123,7 +123,7 @@ async def get_product(
     
     product = db.query(Product).options(
         joinedload(Product.category),
-        joinedload(Product.shg)
+        joinedload(Product.farmer)
     ).filter(Product.id == product_id).first()
     
     if not product:
