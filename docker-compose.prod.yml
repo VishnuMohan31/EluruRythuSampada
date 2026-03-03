@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ../SwayamEluruConnect_Shared_Data/postgres:/var/lib/postgresql/data
+      - ../SwayamEluru_Shared_Data/postgres:/var/lib/postgresql/data
       - ./backend/database:/docker-entrypoint-initdb.d:ro
     networks:
       - shg_network
@@ -92,8 +92,8 @@ services:
     
     volumes:
       - ./backend/app:/app/app:ro
-      - ../SwayamEluruConnect_Shared_Data/storage:/app/storage
-      - ../SwayamEluruConnect_Shared_Data/logs:/app/logs
+      - ../SwayamEluru_Shared_Data/storage:/app/storage
+      - ../SwayamEluru_Shared_Data/logs:/app/logs
     networks:
       - shg_network
     depends_on:
@@ -137,7 +137,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
-      - ../SwayamEluruConnect_Shared_Data/nginx_logs:/var/log/nginx
+      - ../SwayamEluru_Shared_Data/nginx_logs:/var/log/nginx
     networks:
       - shg_network
     depends_on:
