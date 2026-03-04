@@ -6,6 +6,8 @@ import Input from '@components/common/Input'
 import { showToast, API_BASE_URL } from '@/utils/api'
 import './AuthPage.css'
 
+import Logo from '../../Images/Logo.jpeg'
+
 const AdminLogin = () => {
   const navigate = useNavigate()
   const { login } = useAuth()
@@ -89,16 +91,9 @@ const AdminLogin = () => {
           <div className="auth-header">
             <div className="auth-logo">
               <div className="logo-icon">
-                <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="20" cy="20" r="18" fill="var(--color-primary)" opacity="0.1"/>
-                  <path d="M20 8L24 16H16L20 8Z" fill="var(--color-primary)"/>
-                  <path d="M12 18L16 26H8L12 18Z" fill="var(--color-secondary)"/>
-                  <path d="M28 18L32 26H24L28 18Z" fill="var(--color-secondary)"/>
-                  <path d="M20 22L24 30H16L20 22Z" fill="var(--color-accent)"/>
-                  <circle cx="20" cy="20" r="3" fill="var(--color-primary)"/>
-                </svg>
+                <img src={Logo} alt="Eluru Rythu Sampada" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
               </div>
-              <span className="logo-text">Swayam Eluru Market Place</span>
+              <span className="logo-text">Eluru Rythu Sampada</span>
             </div>
             <h1>Admin Login</h1>
             <p>Sign in to access the admin dashboard</p>

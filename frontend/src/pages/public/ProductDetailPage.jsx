@@ -186,8 +186,19 @@ const ProductDetailPage = () => {
 
           {/* Product Info */}
           <div className="product-info-section">
-            <div className="product-farmer-badge">
-              <span className="farmer-icon">🏛</span>
+            <div className="product-farmer-badge" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'var(--color-overlay)',
+              borderRadius: '50px',
+              width: 'fit-content',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              color: 'var(--color-primary)'
+            }}>
+              <span className="farmer-icon" style={{ fontSize: '1.25rem', lineHeight: '1' }}>◈</span>
               <span>{product.farmer?.name || 'N/A'} • {product.farmer?.village || ''}, {product.farmer?.mandal || ''}</span>
             </div>
 
@@ -269,11 +280,44 @@ const ProductDetailPage = () => {
               fontSize: '1.125rem',
               marginTop: '0'
             }}>
-              <div>
-                <strong style={{ fontSize: '1.125rem' }}>Category:</strong> {product.category?.name || 'N/A'}
-              </div>
-              <div>
-                <strong style={{ fontSize: '1.125rem' }}>Farmer:</strong> {product.farmer?.name || 'N/A'}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <strong style={{ fontSize: '1.125rem' }}>Category:</strong> {product.category?.name || 'N/A'}
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: '1.125rem' }}>Farmer:</strong> {product.farmer?.name || 'N/A'}
+                  </div>
+                </div>
+                
+                {/* Farmer Photo - Right Side */}
+                {product.farmer?.farmer_image && (
+                  <div style={{ 
+                    textAlign: 'center',
+                    flexShrink: 0
+                  }}>
+                    <img 
+                      src={`${API_BASE_URL}${product.farmer.farmer_image}`}
+                      alt={product.farmer.name}
+                      style={{ 
+                        width: '120px', 
+                        height: '120px', 
+                        objectFit: 'cover', 
+                        borderRadius: '50%',
+                        border: '3px solid var(--color-primary)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                    <p style={{ 
+                      marginTop: '0.5rem', 
+                      fontSize: '0.875rem', 
+                      color: 'var(--color-text-light)',
+                      fontWeight: '500'
+                    }}>
+                      {product.farmer.name}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -282,7 +326,7 @@ const ProductDetailPage = () => {
               <p>{product.description}</p>
             </div>
 
-            {(product.youtube_link || product.instagram_link || product.farmer?.whatsapp_number) && (
+            {(product.youtube_link || product.instagram_link) && (
               <div className="product-social">
                 <h4>See More</h4>
                 <div className="social-links">
@@ -298,17 +342,6 @@ const ProductDetailPage = () => {
                       <span>Instagram</span>
                     </a>
                   )}
-                  {product.farmer?.whatsapp_number && (
-                    <a 
-                      href={`https://wa.me/91${product.farmer.whatsapp_number}?text=Hi, I'm interested in ${encodeURIComponent(product.name)}`}
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="social-link social-whatsapp"
-                    >
-                      <FaWhatsapp size={24} />
-                      <span>WhatsApp</span>
-                    </a>
-                  )}
                 </div>
               </div>
             )}
@@ -320,11 +353,11 @@ const ProductDetailPage = () => {
                 fullWidth
                 onClick={() => setShowContactModal(true)}
               >
-                📞 Contact Vendor
+                📞 Contact
               </Button>
               
               <p className="contact-note">
-                Connect directly with the artisan to learn more or place an order
+                Connect directly with the farmer to learn more or place an order
               </p>
             </div>
           </div>
@@ -372,8 +405,8 @@ const ProductDetailPage = () => {
             <button className="modal-close" onClick={() => setShowContactModal(false)}>
               ✕
             </button>
-            <h2>Contact Vendor</h2>
-            <p>To contact the vendor, please provide your details:</p>
+            <h2>Contact Farmer</h2>
+            <p>To contact the farmer, please provide your details:</p>
             
             <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
@@ -428,7 +461,7 @@ const ProductDetailPage = () => {
                 />
               </div>
               <Button variant="primary" size="large" fullWidth type="submit" disabled={submitting}>
-                {submitting ? 'Submitting...' : 'Submit & Get Vendor Details'}
+                {submitting ? 'Submitting...' : 'Submit & Get Farmer Details'}
               </Button>
             </form>
           </div>
@@ -443,24 +476,7 @@ const ProductDetailPage = () => {
               ✕
             </button>
             <h2>✅ Inquiry Submitted!</h2>
-            <p>Thank you for your interest. Here are the vendor details:</p>
-            
-            {/* Farmer Photo */}
-            {product.farmer?.farmer_image && (
-              <div style={{ textAlign: 'center', margin: '1rem 0' }}>
-                <img 
-                  src={`${API_BASE_URL}${product.farmer.farmer_image}`}
-                  alt={product.farmer.name}
-                  style={{ 
-                    width: '180px', 
-                    height: '180px', 
-                    objectFit: 'cover', 
-                    borderRadius: '50%',
-                    border: '3px solid var(--color-primary)'
-                  }}
-                />
-              </div>
-            )}
+            <p>Thank you for your interest. Here are the farmer details:</p>
             
             <div className="vendor-details">
               <div className="detail-item">
@@ -478,6 +494,37 @@ const ProductDetailPage = () => {
                 <strong>Location:</strong> {product.farmer?.village}, {product.farmer?.mandal}
               </div>
             </div>
+            
+            {/* WhatsApp Button */}
+            {product.farmer?.whatsapp_number && (
+              <a 
+                href={`https://wa.me/91${product.farmer.whatsapp_number}?text=Hi, I'm interested in ${encodeURIComponent(product.name)}`}
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  padding: '0.875rem 1.5rem',
+                  backgroundColor: '#25D366',
+                  color: 'white',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  fontSize: '1rem',
+                  marginTop: '1rem',
+                  transition: 'background-color 0.2s',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#20BA5A'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#25D366'}
+              >
+                <FaWhatsapp size={24} />
+                <span>Contact on WhatsApp</span>
+              </a>
+            )}
             
             <Button variant="primary" size="large" fullWidth onClick={() => setShowSuccessModal(false)} style={{ marginTop: '1.5rem' }}>
               Close

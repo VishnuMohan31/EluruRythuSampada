@@ -153,7 +153,7 @@ const ProductsPage = () => {
         >
           <h1 className="page-title">Discover Farmer Products</h1>
           <p className="page-description">
-            Browse our collection of {products.length} authentic handcrafted products
+            Browse our collection of {products.length} fresh farm products from local farmers
           </p>
         </div>
 

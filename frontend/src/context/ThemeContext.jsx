@@ -94,7 +94,7 @@ const themes = {
 
 export const ThemeProvider = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'tribal-earth'
+    return localStorage.getItem('theme') || 'eco-sustainable'
   })
 
   useEffect(() => {

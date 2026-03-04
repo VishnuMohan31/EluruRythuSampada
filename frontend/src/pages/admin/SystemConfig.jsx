@@ -5,7 +5,7 @@ import { useTheme } from '@context/ThemeContext'
 
 const SystemConfig = () => {
   const { themes, currentTheme, changeTheme } = useTheme()
-  const [appName, setAppName] = useState('Swayam Eluru Market Place')
+  const [appName, setAppName] = useState('Eluru Rythu Sampada')
   const [selectedTheme, setSelectedTheme] = useState(currentTheme)
   const [language, setLanguage] = useState('en')
 

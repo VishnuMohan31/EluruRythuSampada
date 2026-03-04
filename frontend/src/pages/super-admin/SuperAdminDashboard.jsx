@@ -146,7 +146,7 @@ const SuperAdminDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🏛</div>
+          <div className="stat-icon">◈</div>
           <div className="stat-content">
             <div className="stat-value" style={{ color: '#ffffff', fontFamily: 'inherit', fontWeight: '500' }}>
               {statsLoading ? '...' : stats.totalFarmers}
@@ -198,7 +198,7 @@ const SuperAdminDashboard = () => {
                   whiteSpace: 'nowrap'
                 }}
               >
-                🏛 Farmer Inquiries
+                ◈ Farmer Inquiries
               </button>
               <button
                 onClick={() => setMetricType('product')}

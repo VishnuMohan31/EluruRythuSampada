@@ -6,7 +6,7 @@ const resources = {
   en: {
     translation: {
       // Common
-      welcome: 'Welcome to Swayam Eluru Market Place',
+      welcome: 'Welcome to Eluru Rythu Sampada',
       loading: 'Loading...',
       error: 'An error occurred',
       success: 'Success',

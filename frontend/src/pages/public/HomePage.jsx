@@ -92,13 +92,14 @@ const HomePage = () => {
         <div className="container">
           <div className="hero-content">
             <h1 className="hero-title">
-              Discover Authentic
-              <span className="hero-highlight"> Farmer Heritage</span>
+              Empowering Farmers,
+              <span className="hero-highlight"> Serving Fresh</span>
             </h1>
             <p className="hero-description">
-              Handcrafted products from India's Farmer artisans, preserving culture
-              and empowering communities. Each piece tells a story of tradition,
-              skill, and heritage passed down through generations.
+              Fresh, organic products directly from local farmers. Supporting 
+              sustainable agriculture and empowering farming communities. Each product 
+              represents dedication, hard work, and traditional farming practices passed 
+              down through generations.
             </p>
             <div className="hero-actions">
               <Link to="/products" className="btn btn-outline btn-large">
@@ -119,7 +120,7 @@ const HomePage = () => {
           <div className="section-header">
             <h2 className="section-title">Browse by Category</h2>
             <p className="section-description">
-              Explore our diverse collection of authentic Farmer products
+              Explore our diverse collection of fresh farm products from local farmers
             </p>
           </div>
           
@@ -210,7 +211,7 @@ const HomePage = () => {
           <div className="section-header">
             <h2 className="section-title">Recently Added Products</h2>
             <p className="section-description">
-              Fresh arrivals from our artisans
+              Fresh arrivals from our local farmers
             </p>
           </div>
           
@@ -240,27 +241,25 @@ const HomePage = () => {
       <section className="featured-section heritage-section">
         <div className="container">
           <div className="section-header heritage-header">
-            <h2 className="section-title">Celebrating Andhra Pradesh's Farmer Heritage</h2>
+            <h2 className="section-title">Celebrating Our Farming Heritage</h2>
             <p className="section-description heritage-description">
-              Swayam Eluru Market Place is a government-backed platform supported by TRIFED 
-              and the Government of Andhra Pradesh. We showcase the exceptional craftsmanship 
-              of Farmer communities from across Andhra Pradesh—from the Nallamala forests to 
-              the Eastern Ghats.
+              Rythu Sampada is a government-backed platform promoting sustainable agriculture 
+              and fair trade practices. We connect consumers directly with local farmers, 
+              eliminating middlemen and ensuring fair prices for their produce.
             </p>
             <p className="section-description heritage-description">
-              Our platform connects you directly with skilled Farmer artisans including the 
-              Chenchu, Lambadi, Gond, and Koya communities. Each product represents centuries 
-              of traditional knowledge, passed down through generations. From bamboo weaving 
-              to Dhokra metalwork, from natural forest honey to handloom textiles—discover 
-              authentic Farmer crafts that tell stories of heritage and skill.
+              Our platform empowers farmers by providing direct market access and supporting 
+              their livelihoods. From fresh vegetables and fruits to organic grains, dairy 
+              products, and traditional farm produce—discover authentic agricultural products 
+              that support local farming communities and preserve traditional farming methods.
             </p>
             <Link to="/about" className="btn btn-outline btn-large">
-              Discover Our Artisans
+              Discover Our Farmers
             </Link>
           </div>
           <div className="heritage-images">
-            <img src={TribalPic1} alt="Farmer bamboo weaving craftsmanship" loading="lazy" />
-            <img src={TibePic3} alt="Traditional Farmer handicraft artisan" loading="lazy" />
+            <img src={TribalPic1} alt="Local farmer working in the fields" loading="lazy" />
+            <img src={TibePic3} alt="Traditional farming practices" loading="lazy" />
           </div>
         </div>
       </section>

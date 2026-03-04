@@ -4,8 +4,9 @@ services:
     image: postgres:14-alpine
     container_name: farmers_postgres
     restart: unless-stopped
-    ports:
-      - "5434:5432"
+    # No external port exposure - internal only
+    expose:
+      - "5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-farmers_marketplace}
       POSTGRES_USER: ${POSTGRES_USER:-farmers_user}
@@ -29,8 +30,9 @@ services:
       dockerfile: Dockerfile
     container_name: farmers_backend
     restart: unless-stopped
+    # Expose to host for system nginx (localhost only)
     ports:
-      - "8004:8004"
+      - "127.0.0.1:8004:8004"
     environment:
       # Application
       APP_NAME: ${APP_NAME:-Eluru Rythu Sampada - Farmers Marketplace}
@@ -106,7 +108,7 @@ services:
       retries: 3
       start_period: 40s
 
-  # React Frontend with Nginx
+  # React Frontend
   frontend:
     build:
       context: ./frontend
@@ -115,6 +117,9 @@ services:
         VITE_API_URL: ""  # Empty for production - uses same-origin /api/
     container_name: farmers_frontend
     restart: unless-stopped
+    # Expose to host for system nginx (localhost only)
+    ports:
+      - "127.0.0.1:3004:80"
     environment:
       - NODE_ENV=production
     networks:
@@ -127,42 +132,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:1.25-alpine
-    container_name: farmers_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d/production.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
-      - ./certbot/www:/var/www/certbot:ro
-      - ../EluruRythuSampada_Shared_data/nginx_logs:/var/log/nginx
-    networks:
-      - farmers_network
-    depends_on:
-      - backend
-      - frontend
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  # Certbot for SSL certificates
-  certbot:
-    image: certbot/certbot:latest
-    container_name: farmers_certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    networks:
-      - farmers_network
 
 networks:
   farmers_network:

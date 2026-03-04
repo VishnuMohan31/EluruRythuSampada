@@ -6,6 +6,8 @@ import { useLanguage } from '@context/LanguageContext'
 import { useAuth } from '@context/AuthContext'
 import './Header.css'
 
+import Logo from '../../Images/Logo.jpeg'
+
 const Header = () => {
   const { t } = useTranslation()
   const { themes, currentTheme, changeTheme } = useTheme()
@@ -53,18 +55,10 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="header-logo">
             <div className="logo-icon">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="20" r="18" fill="var(--color-primary)" opacity="0.1"/>
-                <path d="M20 8L24 16H16L20 8Z" fill="var(--color-primary)"/>
-                <path d="M12 18L16 26H8L12 18Z" fill="var(--color-secondary)"/>
-                <path d="M28 18L32 26H24L28 18Z" fill="var(--color-secondary)"/>
-                <path d="M20 22L24 30H16L20 22Z" fill="var(--color-accent)"/>
-                <circle cx="20" cy="20" r="3" fill="var(--color-primary)"/>
-              </svg>
+              <img src={Logo} alt="Eluru Rythu Sampada" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', marginRight: '20px' }} />
             </div>
             <div className="logo-text">
-              <span className="logo-title">Swayam Eluru</span>
-              <span className="logo-subtitle">Market Place</span>
+              <span className="logo-title">Eluru Rythu Sampada</span>
             </div>
           </Link>
 

@@ -13,7 +13,7 @@ const PrivacyPage = () => {
           <section>
             <h2>1. Information We Collect</h2>
             <h3>1.1 Buyer Information</h3>
-            <p>When you contact a vendor, we collect:</p>
+            <p>When you contact a farmer, we collect:</p>
             <ul>
               <li>Name</li>
               <li>Email address</li>
@@ -35,7 +35,7 @@ const PrivacyPage = () => {
             <h2>2. How We Use Your Information</h2>
             <p>We use collected information for:</p>
             <ul>
-              <li>Facilitating communication between buyers and vendors</li>
+              <li>Facilitating communication between buyers and farmers</li>
               <li>Analytics and improving platform performance</li>
               <li>Government decision-making and reporting</li>
               <li>Preventing abuse and enforcing rate limits</li>
@@ -46,8 +46,8 @@ const PrivacyPage = () => {
           <section>
             <h2>3. Information Sharing</h2>
             <p>
-              When you contact a vendor, your information (name, email, location, phone) is shared with that
-              specific vendor to facilitate communication. We do not sell your personal information to third parties.
+              When you contact a farmer, your information (name, email, location, phone) is shared with that
+              specific farmer to facilitate communication. We do not sell your personal information to third parties.
             </p>
             <p>
               Aggregated, anonymized data may be used for government reporting and analytics purposes.
@@ -115,7 +115,7 @@ const PrivacyPage = () => {
               For privacy-related questions or requests, contact us at:
             </p>
             <p>
-              Email: privacy@swayameluru.com<br />
+              Email: privacy@rythusampada.com<br />
               Phone: +91 1234567890
             </p>
           </section>

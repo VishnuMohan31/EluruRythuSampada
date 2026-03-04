@@ -61,7 +61,7 @@ const ProductCard = ({ product }) => {
       
       <div className="product-info">
         <div className="product-farmer-badge">
-          <span className="farmer-icon">🏛</span>
+          <span className="farmer-icon">◈</span>
           <span className="farmer-name">{product.farmer?.name || 'N/A'}</span>
         </div>
         

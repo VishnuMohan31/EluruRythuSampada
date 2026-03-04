@@ -13,8 +13,8 @@ const DisclaimerPage = () => {
           <section>
             <h2>1. Platform Purpose</h2>
             <p>
-              Swayam Eluru Market Place is a communication platform that connects buyers with Farmer artisans and
-              vendors. We do not process payments, handle transactions, or act as an intermediary in sales.
+              Rythu Sampada is a communication platform that connects consumers with local farmers. We do not 
+              process payments, handle transactions, or act as an intermediary in sales.
             </p>
           </section>
 
@@ -25,8 +25,8 @@ const DisclaimerPage = () => {
               regarding:
             </p>
             <ul>
-              <li>Product quality, authenticity, or condition</li>
-              <li>Vendor reliability or responsiveness</li>
+              <li>Product quality, freshness, or condition</li>
+              <li>Farmer reliability or responsiveness</li>
               <li>Accuracy of product descriptions or images</li>
               <li>Availability of products</li>
               <li>Successful completion of transactions</li>
@@ -36,7 +36,7 @@ const DisclaimerPage = () => {
           <section>
             <h2>3. Third-Party Transactions</h2>
             <p>
-              All transactions occur directly between buyers and vendors. Swayam Eluru Market Place is not a party
+              All transactions occur directly between buyers and farmers. Rythu Sampada is not a party
               to these transactions and bears no responsibility for:
             </p>
             <ul>
@@ -44,14 +44,14 @@ const DisclaimerPage = () => {
               <li>Product delivery or shipping</li>
               <li>Product returns or refunds</li>
               <li>Quality issues or defects</li>
-              <li>Vendor conduct or communication</li>
+              <li>Farmer conduct or communication</li>
             </ul>
           </section>
 
           <section>
             <h2>4. Product Information</h2>
             <p>
-              Product information, descriptions, and images are provided by vendors. While we strive to ensure
+              Product information, descriptions, and images are provided by farmers. While we strive to ensure
               accuracy, we cannot guarantee that all information is complete, current, or error-free.
             </p>
           </section>
@@ -67,14 +67,13 @@ const DisclaimerPage = () => {
           <section>
             <h2>6. Limitation of Liability</h2>
             <p>
-              To the fullest extent permitted by law, Swayam Eluru Market Place, TRIFED, and the Government of
-              Andhra Pradesh shall not be liable for any direct, indirect, incidental, consequential, or punitive
-              damages arising from:
+              To the fullest extent permitted by law, Rythu Sampada and the Government shall not be liable 
+              for any direct, indirect, incidental, consequential, or punitive damages arising from:
             </p>
             <ul>
               <li>Use or inability to use the platform</li>
-              <li>Transactions with vendors</li>
-              <li>Product quality or authenticity issues</li>
+              <li>Transactions with farmers</li>
+              <li>Product quality or freshness issues</li>
               <li>Loss of data or information</li>
               <li>Unauthorized access to your information</li>
             </ul>
@@ -86,9 +85,9 @@ const DisclaimerPage = () => {
               Users are responsible for:
             </p>
             <ul>
-              <li>Verifying product details with vendors</li>
+              <li>Verifying product details with farmers</li>
               <li>Conducting due diligence before transactions</li>
-              <li>Negotiating terms directly with vendors</li>
+              <li>Negotiating terms directly with farmers</li>
               <li>Resolving disputes independently</li>
               <li>Complying with applicable laws</li>
             </ul>
@@ -98,7 +97,7 @@ const DisclaimerPage = () => {
             <h2>8. Government Initiative</h2>
             <p>
               While this is a government-supported initiative, it does not constitute an endorsement of any
-              specific vendor or product. The government's role is to provide a platform for Farmer artisans,
+              specific farmer or product. The government's role is to provide a platform for farmers,
               not to guarantee transactions.
             </p>
           </section>
@@ -117,7 +116,7 @@ const DisclaimerPage = () => {
               For questions about this disclaimer, contact us at:
             </p>
             <p>
-              Email: info@swayameluru.com<br />
+              Email: info@rythusampada.com<br />
               Phone: +91 1234567890
             </p>
           </section>
