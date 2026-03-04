@@ -536,8 +536,8 @@ const ManageProducts = () => {
                           src={product.image} 
                           alt={product.name}
                           style={{ 
-                            width: '60px', 
-                            height: '60px', 
+                            width: '40px', 
+                            height: '40px', 
                             objectFit: 'cover', 
                             borderRadius: '8px',
                             border: '2px solid var(--color-border)'
@@ -545,17 +545,17 @@ const ManageProducts = () => {
                         />
                       ) : (
                         <div style={{ 
-                          width: '60px', 
-                          height: '60px', 
+                          width: '40px', 
+                          height: '40px', 
                           backgroundColor: 'var(--color-overlay)', 
                           borderRadius: '8px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '0.75rem',
+                          fontSize: '0.7rem',
                           color: 'var(--color-text-light)'
                         }}>
-                          No Image
+                          No
                         </div>
                       )}
                     </td>

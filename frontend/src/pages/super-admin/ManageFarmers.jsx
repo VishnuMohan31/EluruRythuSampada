@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Edit2, Trash2, RotateCcw } from 'lucide-react'
 import Button from '@components/common/Button'
 import CustomSelect from '@components/common/CustomSelect'
-import { api, logger, showToast } from '@/utils/api'
+import { api, logger, showToast, API_BASE_URL } from '@/utils/api'
 import '../admin/Dashboard.css'
 
 const ManageFarmers = () => {
@@ -428,29 +428,33 @@ const ManageFarmers = () => {
                     <td>
                       {farmer.farmerImage ? (
                         <img 
-                          src={`${import.meta.env.VITE_API_BASE_URL || ''}${farmer.farmerImage}`}
+                          src={`${API_BASE_URL}${farmer.farmerImage}`}
                           alt={farmer.name}
                           style={{ 
-                            width: '50px', 
-                            height: '50px', 
+                            width: '40px', 
+                            height: '40px', 
                             objectFit: 'cover', 
                             borderRadius: '8px',
                             border: '2px solid var(--color-border)'
                           }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
                         />
                       ) : (
                         <div style={{ 
-                          width: '50px', 
-                          height: '50px', 
+                          width: '40px', 
+                          height: '40px', 
                           backgroundColor: 'var(--color-overlay)', 
                           borderRadius: '8px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '0.75rem',
+                          fontSize: '0.7rem',
                           color: 'var(--color-text-light)'
                         }}>
-                          No Photo
+                          No
                         </div>
                       )}
                     </td>
