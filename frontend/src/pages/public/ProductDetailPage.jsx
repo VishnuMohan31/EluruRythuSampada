@@ -440,14 +440,13 @@ const ProductDetailPage = () => {
                 )}
               </div>
               <div className="form-group">
-                <label>Location *</label>
+                <label>Location</label>
                 <input 
                   type="text" 
                   name="location"
                   value={formData.location}
                   onChange={handleInputChange}
                   placeholder="Your city/state" 
-                  required 
                 />
               </div>
               <div className="form-group">
