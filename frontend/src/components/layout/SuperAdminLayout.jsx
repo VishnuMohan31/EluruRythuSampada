@@ -86,7 +86,7 @@ const SuperAdminLayout = () => {
           {/* Center Logo and Title */}
           <div className="header-branding">
             <div className="header-logo-icon">
-              <img src={Logo} alt="Eluru Rythu Sampada" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', marginRight: '10px' }} />
+              <img src={Logo} alt="Eluru Rythu Sampada" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', marginRight: '10px' }} />
             </div>
             <div className="header-title">
               <span className="header-title-main">Eluru Rythu Sampada</span>
