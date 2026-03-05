@@ -16,6 +16,7 @@ const ManageProducts = () => {
   const [categories, setCategories] = useState([])
   const [farmers, setSHGs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
   
   // Location dropdowns state
   const [mandals, setMandals] = useState([])
@@ -321,12 +322,16 @@ const ManageProducts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Prevent double submission
+    if (submitting) return
+
     // Validate at least one image
     if (formData.images.length === 0) {
       showToast('Please upload at least one product image', 'error')
       return
     }
 
+    setSubmitting(true)
     try {
       // Upload new images
       const imageUrls = []
@@ -392,6 +397,8 @@ const ManageProducts = () => {
     } catch (error) {
       logger.error('Save Product Failed', error.message)
       showToast('Failed to save product', 'error')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -940,11 +947,11 @@ const ManageProducts = () => {
               </div>
 
               <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                <Button type="button" variant="outline" onClick={closeModal}>
+                <Button type="button" variant="outline" onClick={closeModal} disabled={submitting}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary">
-                  {editingProduct ? 'Update Product' : 'Add Product'}
+                <Button type="submit" variant="primary" disabled={submitting}>
+                  {submitting ? 'Saving...' : (editingProduct ? 'Update Product' : 'Add Product')}
                 </Button>
               </div>
             </form>

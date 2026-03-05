@@ -12,6 +12,7 @@ const ManageFarmers = () => {
   const [statusFilter, setStatusFilter] = useState('')
   const [farmers, setFarmers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
   
   // Location dropdowns state
   const [mandals, setMandals] = useState([])
@@ -205,12 +206,16 @@ const ManageFarmers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Prevent double submission
+    if (submitting) return
+
     // Validate phone number has exactly 10 digits
     if (!validatePhoneNumber(formData.mobileNumber)) {
       showToast('Mobile number must be 10 digits', 'error')
       return
     }
 
+    setSubmitting(true)
     try {
       let farmerImageUrl = formData.photoPreview
 
@@ -262,6 +267,8 @@ const ManageFarmers = () => {
     } catch (error) {
       logger.error('Save Farmer Failed', error.message)
       showToast('Failed to save Farmer', 'error')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -723,11 +730,11 @@ const ManageFarmers = () => {
               </div>
 
               <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                <Button type="button" variant="outline" onClick={closeModal}>
+                <Button type="button" variant="outline" onClick={closeModal} disabled={submitting}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary">
-                  {editingFarmer ? 'Update Farmer' : 'Add Farmer'}
+                <Button type="submit" variant="primary" disabled={submitting}>
+                  {submitting ? 'Saving...' : (editingFarmer ? 'Update Farmer' : 'Add Farmer')}
                 </Button>
               </div>
             </form>
