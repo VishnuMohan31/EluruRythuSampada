@@ -13,7 +13,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ../EluruRythuSampada_Shared_data/postgres:/var/lib/postgresql/data
+      - ${SHARED_DATA_PATH}/postgres:/var/lib/postgresql/data
       - ./backend/database:/docker-entrypoint-initdb.d:ro
     networks:
       - farmers_network
@@ -94,8 +94,8 @@ services:
     
     volumes:
       - ./backend/app:/app/app:ro
-      - ../EluruRythuSampada_Shared_data/storage:/app/storage
-      - ../EluruRythuSampada_Shared_data/logs:/app/logs
+      - ${SHARED_DATA_PATH}/storage:/app/storage
+      - ${SHARED_DATA_PATH}/logs:/app/logs
     networks:
       - farmers_network
     depends_on:
