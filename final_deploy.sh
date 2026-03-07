@@ -37,8 +37,23 @@ BASE_DIR="/opt/EluruRythu"
 APP_DIR="$BASE_DIR/EluruRythuSampada"
 SHARED_DATA_DIR="$BASE_DIR/EluruRythuSampada_Shared_data"
 
-echo -e "${YELLOW}Step 1: Creating directories...${NC}"
-mkdir -p "$BASE_DIR"
+# Check if we're in the correct directory
+if [ ! -d "$APP_DIR" ]; then
+    echo -e "${RED}Error: Application directory not found!${NC}"
+    echo "Please run this script from: $APP_DIR"
+    echo ""
+    echo "Steps:"
+    echo "1. mkdir -p /opt/EluruRythu"
+    echo "2. cd /opt/EluruRythu"
+    echo "3. git clone https://github.com/VishnuMohan31/EluruRythuSampada.git"
+    echo "4. cd EluruRythuSampada"
+    echo "5. bash final_deploy.sh"
+    exit 1
+fi
+
+cd "$APP_DIR"
+
+echo -e "${YELLOW}Step 1: Creating shared data directories...${NC}"
 mkdir -p "$SHARED_DATA_DIR/postgres"
 mkdir -p "$SHARED_DATA_DIR/storage/farmers"
 mkdir -p "$SHARED_DATA_DIR/storage/products"
@@ -48,17 +63,7 @@ mkdir -p "$SHARED_DATA_DIR/backups"
 echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 2: Cloning repository...${NC}"
-cd "$BASE_DIR"
-if [ -d "$APP_DIR" ]; then
-    mv "$APP_DIR" "$APP_DIR.backup.$(date +%Y%m%d_%H%M%S)"
-fi
-git clone https://github.com/VishnuMohan31/EluruRythuSampada.git "$APP_DIR"
-cd "$APP_DIR"
-echo -e "${GREEN}✓ Done${NC}"
-echo ""
-
-echo -e "${YELLOW}Step 3: Creating .env...${NC}"
+echo -e "${YELLOW}Step 2: Creating .env...${NC}"
 cat > .env << EOF
 SHARED_DATA_PATH=$SHARED_DATA_DIR
 POSTGRES_DB=farmers_marketplace
@@ -83,7 +88,7 @@ EOF
 echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 4: Saving credentials...${NC}"
+echo -e "${YELLOW}Step 3: Saving credentials...${NC}"
 cat > "$BASE_DIR/CREDENTIALS.txt" << EOF
 ========================================
 EluruRythuSampada Credentials
@@ -97,7 +102,7 @@ chmod 600 "$BASE_DIR/CREDENTIALS.txt"
 echo -e "${GREEN}✓ Saved to: $BASE_DIR/CREDENTIALS.txt${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 5: Installing Docker...${NC}"
+echo -e "${YELLOW}Step 4: Installing Docker...${NC}"
 if ! command -v docker &> /dev/null; then
     curl -fsSL https://get.docker.com -o get-docker.sh
     sh get-docker.sh
@@ -110,17 +115,17 @@ fi
 echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 6: Starting containers...${NC}"
+echo -e "${YELLOW}Step 5: Starting containers...${NC}"
 docker-compose -f docker-compose.prod.yml up -d
 echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 7: Waiting 60 seconds...${NC}"
+echo -e "${YELLOW}Step 6: Waiting 60 seconds...${NC}"
 sleep 60
 docker-compose -f docker-compose.prod.yml ps
 echo ""
 
-echo -e "${YELLOW}Step 8: Installing Nginx...${NC}"
+echo -e "${YELLOW}Step 7: Installing Nginx...${NC}"
 if ! command -v nginx &> /dev/null; then
     apt-get update
     apt-get install -y nginx
@@ -128,7 +133,7 @@ fi
 echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 9: Configuring Nginx (HTTP only)...${NC}"
+echo -e "${YELLOW}Step 8: Configuring Nginx (HTTP only)...${NC}"
 cat > /etc/nginx/sites-available/$DOMAIN << 'NGINXCONF'
 server {
     listen 80;
@@ -187,7 +192,7 @@ nginx -t
 echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 10: Starting Nginx...${NC}"
+echo -e "${YELLOW}Step 9: Starting Nginx...${NC}"
 systemctl stop nginx 2>/dev/null || true
 sleep 5
 systemctl start nginx
