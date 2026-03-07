@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
 import { API_BASE_URL } from '@utils/api'
@@ -10,6 +10,7 @@ import TibePic3 from '../../Images/TibePic3.png'
 
 const HomePage = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [categories, setCategories] = useState([])
   const [recentProducts, setRecentProducts] = useState([])
   const [contactedProducts, setContactedProducts] = useState([])
@@ -82,6 +83,12 @@ const HomePage = () => {
   const getCategoryProductCount = (categoryId) => {
     // This will be calculated from products in real implementation
     return 0 // Placeholder
+  }
+
+  // Handle navigation with scroll to top
+  const handleNavigation = (path) => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+    navigate(path)
   }
 
   return (
@@ -194,9 +201,12 @@ const HomePage = () => {
               </div>
               
               <div className="section-footer">
-                <Link to="/products" className="btn btn-outline btn-large">
+                <button 
+                  onClick={() => handleNavigation('/products')} 
+                  className="btn btn-outline btn-large"
+                >
                   Explore More Products
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -226,9 +236,12 @@ const HomePage = () => {
               </div>
               
               <div className="section-footer">
-                <Link to="/products" className="btn btn-outline btn-large">
+                <button 
+                  onClick={() => handleNavigation('/products')} 
+                  className="btn btn-outline btn-large"
+                >
                   See All New Arrivals
-                </Link>
+                </button>
               </div>
             </>
           ) : (

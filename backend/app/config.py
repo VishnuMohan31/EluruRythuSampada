@@ -12,35 +12,35 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     
     # Application
-    APP_NAME: str = "Tribes India Marketplace"
-    APP_VERSION: str = "1.0.0"
-    DEBUG: bool = False
-    ENVIRONMENT: str = "production"
+    APP_NAME: str
+    APP_VERSION: str
+    DEBUG: bool
+    ENVIRONMENT: str
     
     # Server
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    HOST: str
+    PORT: int
     
     # Database
     DATABASE_URL: str
-    DB_ECHO: bool = False
+    DB_ECHO: bool
     
     # JWT
     SECRET_KEY: str
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 360  # 6 hours
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 30  # 30 days
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_DAYS: int
     
     # AWS S3
-    AWS_REGION: str = "ap-south-1"
+    AWS_REGION: str
     S3_BUCKET_IMAGES: str
     S3_BUCKET_BACKUPS: str
-    AWS_ACCESS_KEY_ID: str = ""
-    AWS_SECRET_ACCESS_KEY: str = ""
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
     
     # Email
     SMTP_HOST: str
-    SMTP_PORT: int = 587
+    SMTP_PORT: int
     SMTP_USER: str
     SMTP_PASSWORD: str
     SMTP_FROM_EMAIL: str
@@ -50,25 +50,25 @@ class Settings(BaseSettings):
     RECAPTCHA_SECRET_KEY: str
     
     # Rate Limiting
-    RATE_LIMIT_ENABLED: bool = True
-    CONTACT_VENDOR_RATE_LIMIT: int = 10
-    LOGIN_RATE_LIMIT: int = 5
+    RATE_LIMIT_ENABLED: bool
+    CONTACT_VENDOR_RATE_LIMIT: int
+    LOGIN_RATE_LIMIT: int
     
     # CORS
-    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "http://localhost:3004")
-    CORS_ALLOW_CREDENTIALS: bool = True
+    CORS_ORIGINS: str
+    CORS_ALLOW_CREDENTIALS: bool
     
     # File Upload
-    MAX_IMAGE_SIZE_MB: int = 5
-    ALLOWED_IMAGE_FORMATS: str = "jpg,jpeg,png,webp"
-    STORAGE_PATH: str = "storage"
+    MAX_IMAGE_SIZE_MB: int
+    ALLOWED_IMAGE_FORMATS: str
+    STORAGE_PATH: str
     
     # Logging
-    LOG_LEVEL: str = "INFO"
-    LOG_FILE: str = "logs/app.log"
+    LOG_LEVEL: str
+    LOG_FILE: str
     
     # Backup
-    BACKUP_RETENTION_COUNT: int = 5
+    BACKUP_RETENTION_COUNT: int
     
     @property
     def cors_origins_list(self) -> List[str]:

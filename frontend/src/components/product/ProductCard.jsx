@@ -1,9 +1,11 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { API_BASE_URL } from '@utils/api'
 import './ProductCard.css'
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate()
+
   // Handle image URL - use images array or fallback to old image_url
   const getImageUrl = () => {
     // Try new images array first (check for array and length)
@@ -23,8 +25,15 @@ const ProductCard = ({ product }) => {
 
   const imageUrl = getImageUrl()
 
+  // Handle click with scroll to top
+  const handleClick = (e) => {
+    e.preventDefault()
+    window.scrollTo({ top: 0, behavior: 'instant' })
+    navigate(`/products/${product.id}`)
+  }
+
   return (
-    <Link to={`/products/${product.id}`} className="product-card">
+    <Link to={`/products/${product.id}`} className="product-card" onClick={handleClick}>
       <div className="product-image-wrapper">
         {imageUrl ? (
           <img
