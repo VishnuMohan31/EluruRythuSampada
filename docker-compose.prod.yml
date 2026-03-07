@@ -84,6 +84,7 @@ services:
       # File Upload
       MAX_IMAGE_SIZE_MB: 5
       ALLOWED_IMAGE_FORMATS: jpg,jpeg,png,webp
+      STORAGE_PATH: storage
       
       # Logging
       LOG_LEVEL: INFO
