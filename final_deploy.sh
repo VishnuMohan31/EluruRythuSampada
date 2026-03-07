@@ -116,13 +116,13 @@ echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
 echo -e "${YELLOW}Step 5: Starting containers...${NC}"
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 echo -e "${GREEN}✓ Done${NC}"
 echo ""
 
 echo -e "${YELLOW}Step 6: Waiting 60 seconds...${NC}"
 sleep 60
-docker-compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 echo ""
 
 echo -e "${YELLOW}Step 7: Installing Nginx...${NC}"
