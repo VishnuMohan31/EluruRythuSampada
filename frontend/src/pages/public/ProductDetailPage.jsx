@@ -282,7 +282,7 @@ const ProductDetailPage = () => {
               fontSize: '1.125rem',
               marginTop: '0'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', minHeight: '120px' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ marginBottom: '0.75rem' }}>
                     <strong style={{ fontSize: '1.125rem' }}>Category:</strong> {product.category?.name || 'N/A'}
@@ -294,7 +294,7 @@ const ProductDetailPage = () => {
                 
                 {/* Farmer Photo - Right Side */}
                 {product.farmer && (
-                  <div className="farmer-photo-container">
+                  <div className="farmer-photo-container" style={{ alignSelf: 'flex-start' }}>
                     {product.farmer.farmer_image ? (
                       <img 
                         src={`${API_BASE_URL}${product.farmer.farmer_image}`}
