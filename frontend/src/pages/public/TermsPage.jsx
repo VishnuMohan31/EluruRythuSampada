@@ -97,8 +97,8 @@ const TermsPage = () => {
               For questions about these Terms & Conditions, please contact us at:
             </p>
             <p>
-              Email: support@rythusampada.com<br />
-              Phone: +91 1234567890
+              Email: elururythusampada@gmail.com<br />
+              Phone: +91 8331056671
             </p>
           </section>
         </div>

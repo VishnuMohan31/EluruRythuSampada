@@ -50,7 +50,7 @@
 
 .hero-title {
   font-family: var(--font-heading);
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: var(--spacing-lg);
@@ -61,6 +61,7 @@
 .hero-highlight {
   color: #f4a261;
   display: block;
+  font-size: 2.5rem;
 }
 
 .hero-description {

@@ -115,8 +115,8 @@ const PrivacyPage = () => {
               For privacy-related questions or requests, contact us at:
             </p>
             <p>
-              Email: privacy@rythusampada.com<br />
-              Phone: +91 1234567890
+              Email: elururythusampada@gmail.com<br />
+              Phone: +91 8331056671
             </p>
           </section>
         </div>

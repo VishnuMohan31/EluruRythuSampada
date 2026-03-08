@@ -55,7 +55,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="header-logo">
             <div className="logo-icon">
-              <img src={Logo} alt="Eluru Rythu Sampada" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', marginRight: '20px' }} />
+              <img src={Logo} alt="Eluru Rythu Sampada" className="logo-image" />
             </div>
             <div className="logo-text">
               <span className="logo-title">Eluru Rythu Sampada</span>

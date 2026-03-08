@@ -29,6 +29,8 @@ const ProductsPage = () => {
 
   // Fetch products and categories from API
   useEffect(() => {
+    // Scroll to top when page loads
+    window.scrollTo({ top: 0, behavior: 'instant' })
     fetchData()
   }, [])
 

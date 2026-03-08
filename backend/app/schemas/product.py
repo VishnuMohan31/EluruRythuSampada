@@ -24,6 +24,7 @@ class FarmerNested(BaseModel):
     district: Optional[str] = None
     mandal: str
     village: str
+    description: Optional[str] = None  # Farmer description
     farmer_image: Optional[str] = None  # Farmer photo
     
     class Config:

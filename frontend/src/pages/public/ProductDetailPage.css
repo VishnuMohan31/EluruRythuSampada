@@ -156,18 +156,21 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
 }
 
 .price-value {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-primary);
+  font-family: 'Inter', sans-serif !important;
 }
 
 .quantity-value {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text);
+  font-family: 'Inter', sans-serif !important;
 }
 
 .product-meta {
@@ -187,6 +190,82 @@
 .meta-item strong {
   color: var(--color-text);
   font-weight: 600;
+}
+
+/* Farmer Photo with Hover Tooltip */
+.farmer-photo-container {
+  position: relative;
+  text-align: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.farmer-photo {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all var(--transition-base);
+}
+
+.farmer-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 3px solid var(--color-primary);
+}
+
+.farmer-photo-container:hover .farmer-photo {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.farmer-description-tooltip {
+  position: absolute;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background-color: var(--color-text);
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  width: 280px;
+  max-width: 90vw;
+  box-shadow: var(--shadow-xl);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+  z-index: 100;
+  pointer-events: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.farmer-description-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: var(--color-text);
+}
+
+.farmer-photo-container:hover .farmer-description-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.farmer-name-label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  font-weight: 500;
 }
 
 .product-description {

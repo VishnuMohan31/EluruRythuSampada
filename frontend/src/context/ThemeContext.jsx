@@ -76,19 +76,6 @@ const themes = {
       textLight: '#166534',
       border: '#BBF7D0',
     }
-  },
-  'dark-dracula': {
-    name: 'Dark Theme',
-    colors: {
-      primary: '#BD93F9',
-      secondary: '#FF79C6',
-      accent: '#50FA7B',
-      background: '#282A36',
-      surface: '#44475A',
-      text: '#F8F8F2',
-      textLight: '#6272A4',
-      border: '#44475A',
-    }
   }
 }
 

@@ -230,7 +230,6 @@ const ManageFarmers = () => {
         logger.success('Photo Uploaded', farmerImageUrl)
       } else if (farmerImageUrl && farmerImageUrl.startsWith('http')) {
         // Strip API_BASE_URL from existing image URL to get relative path
-        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
         farmerImageUrl = farmerImageUrl.replace(API_BASE_URL, '')
       }
 
@@ -295,8 +294,9 @@ const ManageFarmers = () => {
   const handleEdit = (farmer) => {
     setEditingFarmer(farmer)
     const sameNumber = farmer.whatsappNumber === farmer.mobileNumber
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
-    setFormData({
+    const imagePreview = farmer.farmerImage ? `${API_BASE_URL}${farmer.farmerImage}` : null
+    
+    const newFormData = {
       type: 'Farmer',
       name: farmer.name || '',
       mobileNumber: farmer.mobileNumber || '',
@@ -307,8 +307,10 @@ const ManageFarmers = () => {
       status: farmer.status || 'Active',
       description: farmer.description || '',
       photo: null,
-      photoPreview: farmer.farmerImage ? `${API_BASE_URL}${farmer.farmerImage}` : null
-    })
+      photoPreview: imagePreview
+    }
+    
+    setFormData(newFormData)
     setShowModal(true)
   }
 

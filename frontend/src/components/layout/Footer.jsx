@@ -47,16 +47,12 @@ const Footer = () => {
           <div className="footer-section footer-contact-section">
             <h4 className="footer-heading">Contact</h4>
             <ul className="footer-contact">
-              <li>📧 info@swayameluru.com</li>
-              <li>📞 +91 1234567890</li>
-              <li>📍 India</li>
+              <li>📧 elururythusampada@gmail.com</li>
+              <li>📞 +91 8331056671</li>
+              <li>📍 Eluru District,</li>
+              <li style={{ paddingLeft: '1.5rem' }}>Andhra Pradesh,</li>
+              <li style={{ paddingLeft: '1.5rem' }}>India</li>
             </ul>
-            <div className="footer-social">
-              <a href="#" aria-label="Facebook">📘</a>
-              <a href="#" aria-label="Instagram">📷</a>
-              <a href="#" aria-label="Twitter">🐦</a>
-              <a href="#" aria-label="YouTube">📺</a>
-            </div>
           </div>
         </div>
 

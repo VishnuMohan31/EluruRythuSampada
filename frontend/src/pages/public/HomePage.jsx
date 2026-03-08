@@ -99,8 +99,8 @@ const HomePage = () => {
         <div className="container">
           <div className="hero-content">
             <h1 className="hero-title">
-              Empowering Farmers,
-              <span className="hero-highlight"> Serving Fresh</span>
+              Eluru Rythu Sampada,
+              <span className="hero-highlight"> Bridging farms to homes digitally</span>
             </h1>
             <p className="hero-description">
               Fresh, organic products directly from local farmers. Supporting 
@@ -108,14 +108,6 @@ const HomePage = () => {
               represents dedication, hard work, and traditional farming practices passed 
               down through generations.
             </p>
-            <div className="hero-actions">
-              <Link to="/products" className="btn btn-outline btn-large">
-                Explore Products
-              </Link>
-              <Link to="/about" className="btn btn-outline btn-large">
-                Learn More
-              </Link>
-            </div>
           </div>
         </div>
         <div className="hero-decoration"></div>
@@ -142,6 +134,7 @@ const HomePage = () => {
                   key={category.id}
                   to={`/products?category=${category.id}`}
                   className="category-card"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
                 >
                   <div className="category-image">
                     {category.sampleImage ? (

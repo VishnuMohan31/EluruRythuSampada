@@ -235,7 +235,8 @@ const ProductDetailPage = () => {
                       fontSize: '2rem', 
                       fontWeight: '700',
                       color: 'var(--color-primary)',
-                      lineHeight: '1'
+                      lineHeight: '1',
+                      fontFamily: 'Inter, sans-serif'
                     }}>
                       ₹{product.price}
                     </span>
@@ -264,7 +265,8 @@ const ProductDetailPage = () => {
                       fontSize: '2rem', 
                       fontWeight: '700',
                       color: 'var(--color-primary)',
-                      lineHeight: '1'
+                      lineHeight: '1',
+                      fontFamily: 'Inter, sans-serif'
                     }}>
                       {product.max_quantity}
                     </span>
@@ -291,29 +293,25 @@ const ProductDetailPage = () => {
                 </div>
                 
                 {/* Farmer Photo - Right Side */}
-                {product.farmer?.farmer_image && (
-                  <div style={{ 
-                    textAlign: 'center',
-                    flexShrink: 0
-                  }}>
-                    <img 
-                      src={`${API_BASE_URL}${product.farmer.farmer_image}`}
-                      alt={product.farmer.name}
-                      style={{ 
-                        width: '120px', 
-                        height: '120px', 
-                        objectFit: 'cover', 
-                        borderRadius: '50%',
-                        border: '3px solid var(--color-primary)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                      }}
-                    />
-                    <p style={{ 
-                      marginTop: '0.5rem', 
-                      fontSize: '0.875rem', 
-                      color: 'var(--color-text-light)',
-                      fontWeight: '500'
-                    }}>
+                {product.farmer && (
+                  <div className="farmer-photo-container">
+                    {product.farmer.farmer_image ? (
+                      <img 
+                        src={`${API_BASE_URL}${product.farmer.farmer_image}`}
+                        alt={product.farmer.name}
+                        className="farmer-photo"
+                      />
+                    ) : (
+                      <div className="farmer-photo farmer-photo-placeholder">
+                        <span style={{ fontSize: '3rem' }}>👨‍🌾</span>
+                      </div>
+                    )}
+                    {product.farmer.description && (
+                      <div className="farmer-description-tooltip">
+                        {product.farmer.description}
+                      </div>
+                    )}
+                    <p className="farmer-name-label">
                       {product.farmer.name}
                     </p>
                   </div>
@@ -482,14 +480,6 @@ const ProductDetailPage = () => {
                 <strong>Farmer Name:</strong> {product.farmer?.name || 'N/A'}
               </div>
               <div className="detail-item">
-                <strong>Mobile:</strong> <a href={`tel:${product.farmer?.mobile_number}`}>{product.farmer?.mobile_number || 'N/A'}</a>
-              </div>
-              {product.farmer?.whatsapp_number && (
-                <div className="detail-item">
-                  <strong>WhatsApp:</strong> <a href={`https://wa.me/91${product.farmer.whatsapp_number}`} target="_blank" rel="noopener noreferrer">{product.farmer.whatsapp_number}</a>
-                </div>
-              )}
-              <div className="detail-item">
                 <strong>Location:</strong> {product.farmer?.village}, {product.farmer?.mandal}
               </div>
             </div>
@@ -522,6 +512,35 @@ const ProductDetailPage = () => {
               >
                 <FaWhatsapp size={24} />
                 <span>Contact on WhatsApp</span>
+              </a>
+            )}
+            
+            {/* Call Farmer Button */}
+            {product.farmer?.mobile_number && (
+              <a 
+                href={`tel:${product.farmer.mobile_number}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  padding: '0.875rem 1.5rem',
+                  backgroundColor: '#0891B2',
+                  color: 'white',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  fontSize: '1rem',
+                  marginTop: '1rem',
+                  transition: 'background-color 0.2s',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0E7490'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#0891B2'}
+              >
+                <span style={{ fontSize: '1.5rem' }}>📞</span>
+                <span>Call Farmer</span>
               </a>
             )}
             
