@@ -102,12 +102,6 @@ const HomePage = () => {
               Eluru Rythu Sampada,
               <span className="hero-highlight"> Bridging farms to homes digitally</span>
             </h1>
-            <p className="hero-description">
-              Fresh, organic products directly from local farmers. Supporting 
-              sustainable agriculture and empowering farming communities. Each product 
-              represents dedication, hard work, and traditional farming practices passed 
-              down through generations.
-            </p>
           </div>
         </div>
         <div className="hero-decoration"></div>

@@ -198,6 +198,8 @@
   text-align: center;
   flex-shrink: 0;
   cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0;
 }
 
 .farmer-photo {
@@ -208,6 +210,7 @@
   border: 3px solid var(--color-primary);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: all var(--transition-base);
+  display: block;
 }
 
 .farmer-photo-placeholder {
@@ -216,6 +219,8 @@
   justify-content: center;
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border: 3px solid var(--color-primary);
+  width: 120px;
+  height: 120px;
 }
 
 .farmer-photo-container:hover .farmer-photo {
