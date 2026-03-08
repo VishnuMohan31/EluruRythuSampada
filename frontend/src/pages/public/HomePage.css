@@ -25,11 +25,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  opacity: 0.1;
-  background-image: 
-    repeating-linear-gradient(45deg, var(--color-primary) 0, var(--color-primary) 1px, transparent 0, transparent 50%),
-    repeating-linear-gradient(-45deg, var(--color-primary) 0, var(--color-primary) 1px, transparent 0, transparent 50%);
-  background-size: 20px 20px;
+  opacity: 0;
+  /* Diagonal pattern removed for better image clarity */
 }
 
 .hero-decoration {
