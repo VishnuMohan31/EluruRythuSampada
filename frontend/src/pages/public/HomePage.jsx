@@ -1,12 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
 import { API_BASE_URL } from '@utils/api'
 import './HomePage.css'
 import BannerImage from '../../Images/Banner.png'
+import Banner1 from '../../Images/Banner1.png'
+import Banner2 from '../../Images/Banner2.png'
+import Banner3 from '../../Images/Banner3.png'
 import TribalPic1 from '../../Images/TribalPic1.png'
 import TibePic3 from '../../Images/TibePic3.png'
+
+const HERO_BANNERS = [
+  { id: 0, src: BannerImage, alt: 'Eluru Rythu Sampada - Fresh farm produce' },
+  { id: 1, src: Banner1, alt: 'Farm to home - Local farmers' },
+  { id: 2, src: Banner2, alt: 'Bridging farms to homes digitally' },
+  { id: 3, src: Banner3, alt: 'Fresh fields and farm to home' }
+]
+
+const AUTO_PLAY_INTERVAL_MS = 5500
 
 const HomePage = () => {
   const { t } = useTranslation()
@@ -15,6 +27,18 @@ const HomePage = () => {
   const [recentProducts, setRecentProducts] = useState([])
   const [contactedProducts, setContactedProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [heroSlideIndex, setHeroSlideIndex] = useState(0)
+
+  const goToSlide = useCallback((index) => {
+    setHeroSlideIndex((index + HERO_BANNERS.length) % HERO_BANNERS.length)
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroSlideIndex((prev) => (prev + 1) % HERO_BANNERS.length)
+    }, AUTO_PLAY_INTERVAL_MS)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     fetchHomeData()
@@ -93,10 +117,23 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
-      {/* Hero Section */}
-      <section className="hero-section" style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${BannerImage})` }}>
-        <div className="hero-pattern"></div>
-        <div className="container">
+      {/* Hero Section - Auto-rotating banner carousel */}
+      <section className="hero-section">
+        <div className="hero-carousel" aria-label="Hero banner carousel">
+          <div className="hero-carousel-track">
+            {HERO_BANNERS.map((banner, index) => (
+              <div
+                key={banner.id}
+                className={`hero-carousel-slide ${index === heroSlideIndex ? 'hero-carousel-slide--active' : ''}`}
+                style={{ backgroundImage: `url(${banner.src})` }}
+                aria-hidden={index !== heroSlideIndex}
+              />
+            ))}
+          </div>
+          <div className="hero-carousel-overlay" aria-hidden="true" />
+        </div>
+        <div className="hero-pattern" aria-hidden="true" />
+        <div className="container hero-content-wrapper">
           <div className="hero-content">
             <h1 className="hero-title">
               Eluru Rythu Sampada,
@@ -104,7 +141,20 @@ const HomePage = () => {
             </h1>
           </div>
         </div>
-        <div className="hero-decoration"></div>
+        <div className="hero-carousel-indicators" role="tablist" aria-label="Banner slides">
+          {HERO_BANNERS.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              role="tab"
+              aria-selected={index === heroSlideIndex}
+              aria-label={`Go to slide ${index + 1}`}
+              className={`hero-carousel-dot ${index === heroSlideIndex ? 'hero-carousel-dot--active' : ''}`}
+              onClick={() => goToSlide(index)}
+            />
+          ))}
+        </div>
+        <div className="hero-decoration" aria-hidden="true" />
       </section>
 
       {/* Categories Section */}

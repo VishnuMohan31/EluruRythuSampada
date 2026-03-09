@@ -91,7 +91,7 @@ const SuperAdminLogin = () => {
           <div className="auth-header">
             <div className="auth-logo">
               <div className="logo-icon">
-                <img src={Logo} alt="Eluru Rythu Sampada" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+                <img src={Logo} alt="Eluru Rythu Sampada" className="auth-logo-img" />
               </div>
               <span className="logo-text">Eluru Rythu Sampada</span>
             </div>

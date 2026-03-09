@@ -5,19 +5,96 @@
   max-width: 100vw;
 }
 
-/* Hero Section */
+/* Hero Section - Carousel */
 .hero-section {
   position: relative;
   min-height: 70vh;
   display: flex;
   align-items: flex-end;
   padding-bottom: 4rem;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   overflow: hidden;
   width: 100%;
   max-width: 100%;
+}
+
+.hero-carousel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.hero-carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  filter: contrast(1.18) saturate(1.28);
+}
+
+.hero-carousel-slide--active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.hero-carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.45) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-content-wrapper {
+  position: relative;
+  z-index: 3;
+}
+
+.hero-carousel-indicators {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 4;
+}
+
+.hero-carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.hero-carousel-dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.hero-carousel-dot--active {
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(1.2);
 }
 
 .hero-pattern {
@@ -27,7 +104,7 @@
   right: 0;
   bottom: 0;
   opacity: 0;
-  /* Diagonal pattern removed for better image clarity */
+  z-index: 0;
 }
 
 .hero-decoration {
@@ -293,6 +370,15 @@
 @media (max-width: 768px) {
   .hero-section {
     padding: 3rem 0;
+  }
+
+  .hero-carousel-indicators {
+    bottom: 1.25rem;
+  }
+
+  .hero-carousel-dot {
+    width: 12px;
+    height: 12px;
   }
 
   .hero-title {
