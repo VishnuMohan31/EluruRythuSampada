@@ -9,12 +9,21 @@
   width: 100%;
 }
 
+/* Header: full width; clear left padding before logo so it doesn't touch the edge */
+.header .container {
+  max-width: 100%;
+  padding-left: 6rem;
+  padding-right: var(--spacing-xl);
+  box-sizing: border-box;
+}
+
 .header-content {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto auto auto auto;
   align-items: center;
   padding: var(--spacing-lg) 0;
-  gap: var(--spacing-lg);
+  column-gap: var(--spacing-lg);
+  gap: 0;
 }
 
 .header-logo {
@@ -31,7 +40,70 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xl);
-  justify-self: center;
+  justify-self: start;
+}
+
+/* CM & AP Emblem block - between nav and actions */
+.header-cm-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  column-gap: var(--spacing-md);
+  justify-self: start;
+  min-width: 0;
+}
+
+.header-cm-photo-wrap,
+.header-emblem-wrap {
+  flex-shrink: 0;
+}
+
+.header-cm-photo,
+.header-emblem {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.header-emblem {
+  object-fit: contain;
+  background: var(--color-surface);
+}
+
+.header-cm-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.header-cm-name,
+.header-cm-title {
+  display: block;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-cm-name {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.header-cm-title {
+  font-size: 0.8125rem;
+  color: var(--color-text-light);
+  font-weight: 400;
+  text-align: left;
 }
 
 .header-actions {
@@ -39,6 +111,7 @@
   align-items: center;
   gap: var(--spacing-md);
   justify-self: end;
+  margin-left: -3.00rem;
 }
 
 .header-logo:hover {
@@ -335,23 +408,66 @@
 }
 
 @media (max-width: 1024px) {
+  /* Equal left/right padding on mobile so the CM block row is perfectly centered */
+  .header .container {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
+
   .header-content {
     grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
     gap: var(--spacing-sm);
+    row-gap: var(--spacing-md);
   }
 
   .header-logo {
     order: 1;
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .header-nav {
     display: none;
   }
 
+  /* CM block: show in second row, perfectly centered (image | text | emblem) */
+  .header-cm-block {
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    width: 100%;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    border-top: 1px solid var(--color-border);
+    margin-top: 2px;
+    box-sizing: border-box;
+  }
+
+  .header-cm-block .header-cm-photo,
+  .header-cm-block .header-emblem {
+    width: 44px;
+    height: 44px;
+  }
+
+  .header-cm-block .header-cm-name {
+    font-size: 0.9375rem;
+  }
+
+  .header-cm-block .header-cm-title {
+    font-size: 0.75rem;
+  }
+
   .header-actions {
     order: 2;
+    grid-column: 2;
+    grid-row: 1;
     gap: 0.375rem;
     justify-self: end;
+    margin-left: 0;
   }
 
   .mobile-menu-toggle {
@@ -359,6 +475,8 @@
     align-items: center;
     justify-content: center;
     order: 3;
+    grid-column: 3;
+    grid-row: 1;
   }
 
   .mobile-nav {
@@ -449,12 +567,47 @@
   .hamburger::after {
     width: 22px;
   }
+
+  /* CM block: slightly smaller on medium mobile */
+  .header-cm-block .header-cm-photo,
+  .header-cm-block .header-emblem {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-cm-block .header-cm-name {
+    font-size: 0.875rem;
+  }
+
+  .header-cm-block .header-cm-title {
+    font-size: 0.6875rem;
+  }
 }
 
 @media (max-width: 480px) {
   .header-content {
     padding: 0.625rem 0;
     gap: 0.375rem;
+  }
+
+  /* CM block: compact on small mobile, equal spacing kept */
+  .header-cm-block {
+    padding: var(--spacing-xs) 0;
+    gap: var(--spacing-sm);
+  }
+
+  .header-cm-block .header-cm-photo,
+  .header-cm-block .header-emblem {
+    width: 36px;
+    height: 36px;
+  }
+
+  .header-cm-block .header-cm-name {
+    font-size: 0.8125rem;
+  }
+
+  .header-cm-block .header-cm-title {
+    font-size: 0.625rem;
   }
 
   .logo-title {

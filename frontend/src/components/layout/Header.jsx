@@ -7,6 +7,8 @@ import { useAuth } from '@context/AuthContext'
 import './Header.css'
 
 import Logo from '../../Images/Logo.jpeg'
+import CMImage from '../../Images/CM_Image.png.jpeg'
+import APEmblem from '../../Images/Emblem_of_Andhra_Pradesh.png'
 
 const Header = () => {
   const { t } = useTranslation()
@@ -73,6 +75,20 @@ const Header = () => {
               </NavLink>
             )}
           </nav>
+
+          {/* CM & AP Emblem block - between nav and actions */}
+          <div className="header-cm-block" aria-label="Hon'ble Chief Minister and Government of Andhra Pradesh">
+            <div className="header-cm-photo-wrap">
+              <img src={CMImage} alt="Hon'ble Chief Minister" className="header-cm-photo" />
+            </div>
+            <div className="header-cm-text">
+              <span className="header-cm-name">Sri Nara Chandrababu Naidu</span>
+              <span className="header-cm-title">Hon'ble Chief Minister of Andhra Pradesh</span>
+            </div>
+            <div className="header-emblem-wrap">
+              <img src={APEmblem} alt="Government of Andhra Pradesh" className="header-emblem" />
+            </div>
+          </div>
 
           {/* Actions */}
           <div className="header-actions">

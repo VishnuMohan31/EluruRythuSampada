@@ -78,7 +78,7 @@ async def get_recent_products(
 @router.get("/", response_model=List[ProductResponse])
 async def get_products(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = None,
     category_id: Optional[str] = None,
     farmer_id: Optional[str] = None,
     search: Optional[str] = None,
@@ -108,7 +108,14 @@ async def get_products(
     # Sort by: Recently updated first, then by name
     query = query.order_by(Product.updated_at.desc().nullslast(), Product.name.asc())
     
-    products = query.offset(skip).limit(limit).all()
+    # Apply skip
+    query = query.offset(skip)
+    
+    # Apply limit only if specified
+    if limit is not None:
+        query = query.limit(limit)
+    
+    products = query.all()
     return products
 
 
