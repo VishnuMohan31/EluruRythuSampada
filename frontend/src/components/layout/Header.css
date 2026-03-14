@@ -9,11 +9,11 @@
   width: 100%;
 }
 
-/* Header: full width; clear left padding before logo so it doesn't touch the edge */
+/* Header: logo/text left; enough right padding so Logout button stays visible */
 .header .container {
   max-width: 100%;
-  padding-left: 6rem;
-  padding-right: var(--spacing-xl);
+  padding-left: 2rem;
+  padding-right: 2rem;
   box-sizing: border-box;
 }
 
@@ -22,7 +22,7 @@
   grid-template-columns: auto auto auto auto;
   align-items: center;
   padding: var(--spacing-lg) 0;
-  column-gap: var(--spacing-lg);
+  column-gap: var(--spacing-md);
   gap: 0;
 }
 
@@ -42,6 +42,7 @@
   gap: var(--spacing-xl);
   justify-self: start;
 }
+
 
 /* CM & AP Emblem block - between nav and actions */
 .header-cm-block {
@@ -111,7 +112,7 @@
   align-items: center;
   gap: var(--spacing-md);
   justify-self: end;
-  margin-left: -3.00rem;
+  margin-left: 0;
 }
 
 .header-logo:hover {
@@ -165,6 +166,16 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xl);
+}
+
+/* After login: Dashboard link – tighter spacing so header stays balanced (desktop, must come after .header-nav) */
+@media (min-width: 1025px) {
+  .header.header--authenticated .header-content {
+    column-gap: var(--spacing-md);
+  }
+  .header.header--authenticated .header-nav {
+    gap: var(--spacing-md);
+  }
 }
 
 .nav-link {

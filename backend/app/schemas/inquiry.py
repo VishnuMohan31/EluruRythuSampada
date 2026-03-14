@@ -31,6 +31,13 @@ class InquiryResponse(BaseModel):
     farmer_id: str
     ip_address: str
     created_at: datetime
+    # Enriched fields
+    buyer_name: Optional[str] = None
+    buyer_phone: Optional[str] = None
+    buyer_email: Optional[str] = None
+    buyer_location: Optional[str] = None
+    product_name: Optional[str] = None
+    farmer_name: Optional[str] = None
 
     @field_serializer('created_at')
     def serialize_datetime(self, dt: Optional[datetime], _info) -> Optional[str]:

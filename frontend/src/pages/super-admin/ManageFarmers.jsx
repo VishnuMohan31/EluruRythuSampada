@@ -9,14 +9,19 @@ const ManageFarmers = () => {
   const [showModal, setShowModal] = useState(false)
   const [editingFarmer, setEditingFarmer] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [mandalFilter, setMandalFilter] = useState('')
+  const [villageFilter, setVillageFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const PAGE_SIZE = 50
   const [farmers, setFarmers] = useState([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   
-  // Location dropdowns state
+  // Location dropdowns state (shared between filter and modal)
   const [mandals, setMandals] = useState([])
-  const [villages, setVillages] = useState([])
+  const [villages, setVillages] = useState([])           // for modal form
+  const [filterVillages, setFilterVillages] = useState([]) // for filter dropdown
   const [loadingMandals, setLoadingMandals] = useState(false)
   const [loadingVillages, setLoadingVillages] = useState(false)
   
@@ -37,16 +42,17 @@ const ManageFarmers = () => {
   // Fetch Farmers from API
   useEffect(() => {
     fetchFarmers()
+    fetchMandals() // load mandals for filter on page load
   }, [])
 
-  // Fetch mandals when modal opens
+  // Fetch mandals when modal opens (already loaded, but ensures fresh data)
   useEffect(() => {
     if (showModal) {
       fetchMandals()
     }
   }, [showModal])
 
-  // Fetch villages when mandal changes
+  // Fetch villages for modal form when formData.mandal changes
   useEffect(() => {
     if (formData.mandal) {
       fetchVillages(formData.mandal)
@@ -55,6 +61,16 @@ const ManageFarmers = () => {
       setFormData(prev => ({ ...prev, village: '' }))
     }
   }, [formData.mandal])
+
+  // Fetch villages for filter when mandalFilter changes
+  useEffect(() => {
+    if (mandalFilter) {
+      fetchFilterVillages(mandalFilter)
+    } else {
+      setFilterVillages([])
+      setVillageFilter('')
+    }
+  }, [mandalFilter])
 
   const fetchMandals = async () => {
     try {
@@ -88,6 +104,14 @@ const ManageFarmers = () => {
     }
   }
 
+  const fetchFilterVillages = async (mandal) => {
+    try {
+      const data = await api.get(`/api/locations/villages?mandal=${encodeURIComponent(mandal)}`)
+      setFilterVillages(data.villages || [])
+    } catch (error) {
+      setFilterVillages([])
+    }
+  }
   const fetchFarmers = async () => {
     try {
       setLoading(true)
@@ -129,13 +153,26 @@ const ManageFarmers = () => {
       (farmer.village && farmer.village.toLowerCase().includes(search))
     const effectiveStatus = farmer.status || 'Active'
     const matchesStatus = !statusFilter || effectiveStatus === statusFilter
-    return matchesSearch && matchesStatus
+    const matchesMandal = !mandalFilter || farmer.mandal === mandalFilter
+    const matchesVillage = !villageFilter || farmer.village === villageFilter
+    return matchesSearch && matchesStatus && matchesMandal && matchesVillage
   })
 
   const clearFilters = () => {
     setSearchQuery('')
+    setMandalFilter('')
+    setVillageFilter('')
     setStatusFilter('')
+    setCurrentPage(1)
   }
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, mandalFilter, villageFilter, statusFilter])
+
+  const totalPages = Math.ceil(filteredFarmers.length / PAGE_SIZE)
+  const paginatedFarmers = filteredFarmers.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -365,7 +402,7 @@ const ManageFarmers = () => {
 
       {/* Filters Section */}
       <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '1rem', alignItems: 'end' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', gap: '1rem', alignItems: 'end' }}>
           {/* Search - Takes remaining space */}
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
@@ -383,6 +420,42 @@ const ManageFarmers = () => {
                 borderRadius: '8px',
                 fontSize: '0.875rem'
               }}
+            />
+          </div>
+
+          {/* Mandal Filter */}
+          <div style={{ minWidth: '160px' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+              Mandal
+            </label>
+            <CustomSelect
+              value={mandalFilter}
+              onChange={(e) => {
+                setMandalFilter(e.target.value)
+                setVillageFilter('')
+              }}
+              options={[
+                { value: '', label: loadingMandals ? 'Loading...' : 'All Mandals' },
+                ...mandals.map(m => ({ value: m, label: m }))
+              ]}
+              placeholder="All Mandals"
+            />
+          </div>
+
+          {/* Village Filter - locked until mandal selected */}
+          <div style={{ minWidth: '160px' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
+              Village
+            </label>
+            <CustomSelect
+              value={villageFilter}
+              onChange={(e) => setVillageFilter(e.target.value)}
+              disabled={!mandalFilter}
+              options={[
+                { value: '', label: !mandalFilter ? 'Select Mandal first' : 'All Villages' },
+                ...filterVillages.map(v => ({ value: v.village, label: v.village }))
+              ]}
+              placeholder="All Villages"
             />
           </div>
 
@@ -415,6 +488,20 @@ const ManageFarmers = () => {
       </div>
 
       <div className="dashboard-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.875rem', color: 'var(--color-text-light)' }}>
+          <span>
+            Showing {filteredFarmers.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredFarmers.length)} of {filteredFarmers.length} farmers
+          </span>
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>«</button>
+              <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>‹</button>
+              <span style={{ padding: '0 0.5rem', fontWeight: '500', color: 'var(--color-text)' }}>Page {currentPage} of {totalPages}</span>
+              <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>›</button>
+              <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>»</button>
+            </div>
+          )}
+        </div>
         <div className="dashboard-table-wrapper">
           <table className="data-table" style={{ minWidth: '1100px', width: '100%' }}>
             <thead>
@@ -430,8 +517,8 @@ const ManageFarmers = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredFarmers.length > 0 ? (
-                filteredFarmers.map(farmer => (
+              {paginatedFarmers.length > 0 ? (
+                paginatedFarmers.map(farmer => (
                   <tr key={farmer.id}>
                     <td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{farmer.id}</td>
                     <td>
@@ -516,6 +603,26 @@ const ManageFarmers = () => {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', fontSize: '0.875rem' }}>
+            <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>«</button>
+            <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>‹</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+              .reduce((acc, p, idx, arr) => {
+                if (idx > 0 && p - arr[idx - 1] > 1) acc.push('...')
+                acc.push(p)
+                return acc
+              }, [])
+              .map((p, i) => p === '...'
+                ? <span key={`ellipsis-${i}`} style={{ padding: '0 0.25rem' }}>…</span>
+                : <button key={p} onClick={() => setCurrentPage(p)} style={{ ...pageBtn(false), fontWeight: p === currentPage ? '700' : '400', backgroundColor: p === currentPage ? 'var(--color-primary)' : 'transparent', color: p === currentPage ? 'white' : 'var(--color-text)' }}>{p}</button>
+              )
+            }
+            <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>›</button>
+            <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>»</button>
+          </div>
+        )}
       </div>
 
       {/* Add/Edit Farmer Modal */}
@@ -746,5 +853,16 @@ const ManageFarmers = () => {
     </div>
   )
 }
+
+const pageBtn = (disabled) => ({
+  padding: '0.35rem 0.65rem',
+  border: '1px solid var(--color-border)',
+  borderRadius: '6px',
+  background: 'transparent',
+  cursor: disabled ? 'not-allowed' : 'pointer',
+  opacity: disabled ? 0.4 : 1,
+  fontSize: '0.875rem',
+  color: 'var(--color-text)'
+})
 
 export default ManageFarmers

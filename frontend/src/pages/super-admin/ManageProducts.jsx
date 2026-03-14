@@ -12,6 +12,8 @@ const ManageProducts = () => {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [shgFilter, setShgFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const PAGE_SIZE = 50
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [farmers, setSHGs] = useState([])
@@ -175,7 +177,16 @@ const ManageProducts = () => {
     setCategoryFilter('')
     setShgFilter('')
     setStatusFilter('')
+    setCurrentPage(1)
   }
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, categoryFilter, shgFilter, statusFilter])
+
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE)
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const handleEdit = (product) => {
     setEditingProduct(product)
@@ -515,6 +526,20 @@ const ManageProducts = () => {
       </div>
 
       <div className="dashboard-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.875rem', color: 'var(--color-text-light)' }}>
+          <span>
+            Showing {filteredProducts.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredProducts.length)} of {filteredProducts.length} products
+          </span>
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>«</button>
+              <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>‹</button>
+              <span style={{ padding: '0 0.5rem', fontWeight: '500', color: 'var(--color-text)' }}>Page {currentPage} of {totalPages}</span>
+              <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>›</button>
+              <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>»</button>
+            </div>
+          )}
+        </div>
         <div className="dashboard-table-wrapper">
           <table className="data-table" style={{ minWidth: '1400px', width: '100%' }}>
             <thead>
@@ -533,8 +558,8 @@ const ManageProducts = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map(product => (
+              {paginatedProducts.length > 0 ? (
+                paginatedProducts.map(product => (
                   <tr key={product.id}>
                     <td>{product.id}</td>
                     <td>
@@ -628,6 +653,26 @@ const ManageProducts = () => {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', fontSize: '0.875rem' }}>
+            <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>«</button>
+            <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1} style={pageBtn(currentPage === 1)}>‹</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+              .reduce((acc, p, idx, arr) => {
+                if (idx > 0 && p - arr[idx - 1] > 1) acc.push('...')
+                acc.push(p)
+                return acc
+              }, [])
+              .map((p, i) => p === '...'
+                ? <span key={`ellipsis-${i}`} style={{ padding: '0 0.25rem' }}>…</span>
+                : <button key={p} onClick={() => setCurrentPage(p)} style={{ ...pageBtn(false), fontWeight: p === currentPage ? '700' : '400', backgroundColor: p === currentPage ? 'var(--color-primary)' : 'transparent', color: p === currentPage ? 'white' : 'var(--color-text)' }}>{p}</button>
+              )
+            }
+            <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>›</button>
+            <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} style={pageBtn(currentPage === totalPages)}>»</button>
+          </div>
+        )}
       </div>
 
       {/* Add/Edit Product Modal */}
@@ -961,5 +1006,16 @@ const ManageProducts = () => {
     </div>
   )
 }
+
+const pageBtn = (disabled) => ({
+  padding: '0.35rem 0.65rem',
+  border: '1px solid var(--color-border)',
+  borderRadius: '6px',
+  background: 'transparent',
+  cursor: disabled ? 'not-allowed' : 'pointer',
+  opacity: disabled ? 0.4 : 1,
+  fontSize: '0.875rem',
+  color: 'var(--color-text)'
+})
 
 export default ManageProducts

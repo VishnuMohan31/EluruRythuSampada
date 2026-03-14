@@ -9,21 +9,46 @@ import uuid
 from ..core.deps import get_db, get_current_admin
 from ..models.inquiry import ContactLog, Buyer
 from ..models.product import Product
+from ..models.farmer import Farmer
 from ..schemas.inquiry import InquiryCreate, InquiryUpdate, InquiryResponse
 
 router = APIRouter()
 
 
+def _enrich_inquiry(log: ContactLog, db: Session) -> dict:
+    """Build enriched inquiry dict with buyer/product/farmer details"""
+    buyer = db.query(Buyer).filter(Buyer.id == log.buyer_id).first()
+    product = db.query(Product).filter(Product.id == log.product_id).first()
+    farmer = db.query(Farmer).filter(Farmer.id == log.farmer_id).first()
+    return {
+        "id": log.id,
+        "buyer_id": log.buyer_id,
+        "product_id": log.product_id,
+        "farmer_id": log.farmer_id,
+        "ip_address": log.ip_address,
+        "created_at": log.created_at,
+        "buyer_name": buyer.name if buyer else None,
+        "buyer_phone": buyer.phone if buyer else None,
+        "buyer_email": buyer.email if buyer else None,
+        "buyer_location": buyer.location if buyer else None,
+        "product_name": product.name if product else None,
+        "farmer_name": farmer.name if farmer else None,
+    }
+
+
 @router.get("/", response_model=List[InquiryResponse])
 async def get_inquiries(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
     """Get all contact logs (admin only)"""
-    contact_logs = db.query(ContactLog).offset(skip).limit(limit).all()
-    return contact_logs
+    query = db.query(ContactLog).order_by(ContactLog.created_at.desc()).offset(skip)
+    if limit is not None:
+        query = query.limit(limit)
+    contact_logs = query.all()
+    return [_enrich_inquiry(log, db) for log in contact_logs]
 
 
 @router.get("/{contact_id}", response_model=InquiryResponse)
@@ -36,7 +61,7 @@ async def get_inquiry(
     contact_log = db.query(ContactLog).filter(ContactLog.id == contact_id).first()
     if not contact_log:
         raise HTTPException(status_code=404, detail="Contact log not found")
-    return contact_log
+    return _enrich_inquiry(contact_log, db)
 
 
 @router.post("/", response_model=InquiryResponse)
@@ -92,7 +117,7 @@ async def create_inquiry(
     
     db.commit()
     db.refresh(contact_log)
-    return contact_log
+    return _enrich_inquiry(contact_log, db)
 
 
 @router.delete("/{contact_id}")

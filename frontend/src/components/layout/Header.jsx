@@ -51,7 +51,7 @@ const Header = () => {
   }
 
   return (
-    <header className="header">
+    <header className={`header ${isAuthenticated() ? 'header--authenticated' : ''}`}>
       <div className="container">
         <div className="header-content">
           {/* Logo */}
