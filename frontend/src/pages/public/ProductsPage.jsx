@@ -2,24 +2,26 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import ProductCard from '@components/product/ProductCard'
-import CustomSelect from '@components/common/CustomSelect'
-import productsHeaderBg from '@/Images/Products.png'
+import productsHero0 from '@/Images/Products.png'
+import productsHero1 from '@/Images/Products1.png'
+import productsHero2 from '@/Images/Products2.png'
 import './ProductsPage.css'
 
 import { API_BASE_URL } from '@utils/api'
 const PRODUCTS_PER_PAGE = 15
+
+/** Products1 (was 3rd) → Products2 → Products.png (was 1st) */
+const HERO_IMAGES = [productsHero1, productsHero2, productsHero0]
+const HERO_ROTATE_MS = 3000
 
 const ProductsPage = () => {
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
-  const [selectedDistrict, setSelectedDistrict] = useState('')
-  const [selectedMandal, setSelectedMandal] = useState('')
-  const [selectedVillage, setSelectedVillage] = useState('')
-  const [selectedFarmer, setSelectedSHG] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [heroIndex, setHeroIndex] = useState(0)
   
   // Data from API
   const [products, setProducts] = useState([])
@@ -62,11 +64,13 @@ const ProductsPage = () => {
     }
   }
 
-  // Get unique values for filters from real data
-  const uniqueDistricts = [...new Set(products.map(p => p.farmer?.district).filter(Boolean))].sort()
-  const uniqueMandals = [...new Set(products.map(p => p.farmer?.mandal).filter(Boolean))].sort()
-  const uniqueVillages = [...new Set(products.map(p => p.farmer?.village).filter(Boolean))].sort()
-  const uniqueFarmers = [...new Set(products.map(p => p.farmer?.name).filter(Boolean))].sort()
+  // Hero carousel: every 3s — Products1 → Products2 → Products.png; text stays fixed
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex((i) => (i + 1) % HERO_IMAGES.length)
+    }, HERO_ROTATE_MS)
+    return () => clearInterval(timer)
+  }, [])
 
   // Read category from URL on component mount
   useEffect(() => {
@@ -80,12 +84,7 @@ const ProductsPage = () => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = !selectedCategory || product.category?.id === selectedCategory
-    const matchesDistrict = !selectedDistrict || product.farmer?.district === selectedDistrict
-    const matchesMandal = !selectedMandal || product.farmer?.mandal === selectedMandal
-    const matchesVillage = !selectedVillage || product.farmer?.village === selectedVillage
-    const matchesFarmer = !selectedFarmer || product.farmer?.name === selectedFarmer
-    
-    return matchesSearch && matchesCategory && matchesDistrict && matchesMandal && matchesVillage && matchesFarmer
+    return matchesSearch && matchesCategory
   })
 
   // Pagination logic
@@ -97,15 +96,11 @@ const ProductsPage = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchQuery, selectedCategory, selectedDistrict, selectedMandal, selectedVillage, selectedFarmer])
+  }, [searchQuery, selectedCategory])
 
   const clearFilters = () => {
     setSearchQuery('')
     setSelectedCategory('')
-    setSelectedDistrict('')
-    setSelectedMandal('')
-    setSelectedVillage('')
-    setSelectedSHG('')
     setCurrentPage(1)
   }
 
@@ -146,24 +141,11 @@ const ProductsPage = () => {
   return (
     <div className="products-page">
       <div className="container">
-        {/* Page Header */}
-        <div 
-          className="page-header"
-          style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${productsHeaderBg})`
-          }}
-        >
-          <h1 className="page-title">Discover Farmer Products</h1>
-          <p className="page-description">
-            Browse our collection of {products.length} fresh farm products from local farmers
-          </p>
-        </div>
 
-        {/* Search and Filters Bar */}
+        {/* Search Bar - above the hero image */}
         <div className="search-section">
           <div className="search-filters-row">
-            {/* Search Bar - full width on mobile */}
-            <div className="search-bar">
+            <div className="search-bar" style={{ flex: 1 }}>
               <span className="search-icon">🔍</span>
               <input
                 type="text"
@@ -182,46 +164,6 @@ const ProductsPage = () => {
                 </button>
               )}
             </div>
-
-            {/* Filter dropdowns - visible in row on desktop, grid below search on mobile */}
-            <div className="filter-buttons-row">
-              <CustomSelect
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                options={[
-                  { value: '', label: 'All Districts' },
-                  ...uniqueDistricts.map(district => ({ value: district, label: district }))
-                ]}
-                placeholder="All Districts"
-              />
-              <CustomSelect
-                value={selectedMandal}
-                onChange={(e) => setSelectedMandal(e.target.value)}
-                options={[
-                  { value: '', label: 'All Mandals' },
-                  ...uniqueMandals.map(mandal => ({ value: mandal, label: mandal }))
-                ]}
-                placeholder="All Mandals"
-              />
-              <CustomSelect
-                value={selectedVillage}
-                onChange={(e) => setSelectedVillage(e.target.value)}
-                options={[
-                  { value: '', label: 'All Villages' },
-                  ...uniqueVillages.map(village => ({ value: village, label: village }))
-                ]}
-                placeholder="All Villages"
-              />
-              <CustomSelect
-                value={selectedFarmer}
-                onChange={(e) => setSelectedSHG(e.target.value)}
-                options={[
-                  { value: '', label: 'All Farmers' },
-                  ...uniqueFarmers.map(farmer => ({ value: farmer, label: farmer }))
-                ]}
-                placeholder="All Farmers"
-              />
-            </div>
           </div>
 
           <button
@@ -233,6 +175,42 @@ const ProductsPage = () => {
               <span className="filter-badge">1</span>
             )}
           </button>
+        </div>
+
+        {/* Page Header / Hero carousel (Products1 → Products2 → Products.png) */}
+        <div className="page-header">
+          {HERO_IMAGES.map((img, i) => (
+            <div
+              key={i}
+              className={`hero-slide ${i === heroIndex ? 'active' : ''}`}
+              style={{
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${img})`
+              }}
+              aria-hidden={i !== heroIndex}
+            />
+          ))}
+          <div className="hero-content">
+            <div className="hero-copy">
+              <div className="hero-text-stack">
+                <h1 className="page-title">Discover Farmer Products</h1>
+                <p className="page-description">
+                  Browse our collection of {products.length} fresh farm products from local farmers
+                </p>
+              </div>
+            </div>
+            <div className="hero-dots">
+              {HERO_IMAGES.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`hero-dot ${i === heroIndex ? 'active' : ''}`}
+                  onClick={() => setHeroIndex(i)}
+                  aria-label={`Hero image ${i + 1} of ${HERO_IMAGES.length}`}
+                  aria-current={i === heroIndex ? 'true' : undefined}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="products-layout">
@@ -249,7 +227,7 @@ const ProductsPage = () => {
             <div className="filters-header">
               <h3>Filters</h3>
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                {(selectedCategory || selectedDistrict || selectedMandal || selectedVillage || selectedFarmer) && (
+                {selectedCategory && (
                   <button className="clear-filters-btn" onClick={clearFilters}>
                     Clear All
                   </button>

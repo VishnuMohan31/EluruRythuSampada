@@ -54,9 +54,30 @@ const ProductDetailPage = () => {
 
   const fetchRelatedProducts = async (categoryId, currentProductId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/products/?category_id=${categoryId}&limit=4`)
-      const data = await response.json()
-      setRelatedProducts(data.filter(p => p.id !== currentProductId).slice(0, 3))
+      // Fetch products from same category
+      const sameCategoryRes = await fetch(`${API_BASE_URL}/api/products/?category_id=${categoryId}`)
+      const sameCategoryData = await sameCategoryRes.json()
+      
+      // Filter out current product
+      const sameCategoryProducts = sameCategoryData.filter(p => p.id !== currentProductId)
+      
+      // If we have 4+ products from same category, use first 4
+      if (sameCategoryProducts.length >= 4) {
+        setRelatedProducts(sameCategoryProducts.slice(0, 4))
+      } else {
+        // Need to fill remaining slots with products from other categories
+        const allProductsRes = await fetch(`${API_BASE_URL}/api/products/`)
+        const allProductsData = await allProductsRes.json()
+        
+        // Get products from other categories (excluding current product)
+        const otherProducts = allProductsData.filter(
+          p => p.id !== currentProductId && p.category_id !== categoryId
+        )
+        
+        // Combine: same category first, then others to fill up to 4
+        const combined = [...sameCategoryProducts, ...otherProducts].slice(0, 4)
+        setRelatedProducts(combined)
+      }
     } catch (error) {
       console.error('Failed to fetch related products:', error)
     }
@@ -149,14 +170,13 @@ const ProductDetailPage = () => {
   return (
     <div className="product-detail-page">
       <div className="container">
-        {/* Breadcrumb */}
-        <div className="breadcrumb">
-          <Link to="/">Home</Link>
-          <span className="breadcrumb-separator">›</span>
-          <Link to="/products">Products</Link>
-          <span className="breadcrumb-separator">›</span>
-          <span style={{ color: 'var(--color-primary)', fontWeight: '600' }}>{product.name}</span>
-        </div>
+        {/* Back Button */}
+        <button
+          className="back-btn"
+          onClick={() => window.history.back()}
+        >
+          ← Back
+        </button>
 
         {/* Product Detail */}
         <div className="product-detail">
@@ -208,7 +228,7 @@ const ProductDetailPage = () => {
             {(product.price || product.max_quantity) && (
               <div style={{ 
                 display: 'flex', 
-                gap: '4rem', 
+                gap: '1.5rem', 
                 margin: '2rem 0 1.25rem 0',
                 flexWrap: 'wrap'
               }}>
@@ -217,13 +237,15 @@ const ProductDetailPage = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '0.5rem',
-                    padding: '1rem 1.5rem',
+                    padding: '1rem',
                     backgroundColor: '#faf8f5',
                     borderLeft: '4px solid var(--color-primary)',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    flex: '1',
+                    minWidth: '120px'
                   }}>
                     <span style={{ 
-                      fontSize: '0.875rem', 
+                      fontSize: '0.75rem', 
                       color: 'var(--color-text-light)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
@@ -232,7 +254,7 @@ const ProductDetailPage = () => {
                       Price
                     </span>
                     <span style={{ 
-                      fontSize: '2rem', 
+                      fontSize: '1.75rem', 
                       fontWeight: '700',
                       color: 'var(--color-primary)',
                       lineHeight: '1',
@@ -247,13 +269,15 @@ const ProductDetailPage = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '0.5rem',
-                    padding: '1rem 1.5rem',
+                    padding: '1rem',
                     backgroundColor: '#faf8f5',
                     borderLeft: '4px solid var(--color-primary)',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    flex: '1',
+                    minWidth: '120px'
                   }}>
                     <span style={{ 
-                      fontSize: '0.875rem', 
+                      fontSize: '0.75rem', 
                       color: 'var(--color-text-light)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
@@ -262,7 +286,7 @@ const ProductDetailPage = () => {
                       Maximum Supply Quantity
                     </span>
                     <span style={{ 
-                      fontSize: '2rem', 
+                      fontSize: '1.75rem', 
                       fontWeight: '700',
                       color: 'var(--color-primary)',
                       lineHeight: '1',
@@ -282,7 +306,7 @@ const ProductDetailPage = () => {
               fontSize: '1.125rem',
               marginTop: '0'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', minHeight: '120px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ marginBottom: '0.75rem' }}>
                     <strong style={{ fontSize: '1.125rem' }}>Category:</strong> {product.category?.name || 'N/A'}
@@ -392,6 +416,26 @@ const ProductDetailPage = () => {
                 )
               })}
             </div>
+            
+            {/* View All Button */}
+            {product.category_id && (
+              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                <Link 
+                  to={`/products?category=${product.category_id}`}
+                  className="btn btn-outline"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.75rem 1.5rem',
+                    textDecoration: 'none'
+                  }}
+                >
+                  View All in {product.category?.name || 'Category'}
+                  <span>→</span>
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>

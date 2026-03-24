@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext'
-import { useTheme } from '@context/ThemeContext'
-import { useLanguage } from '@context/LanguageContext'
 import { showToast } from '@/utils/api'
 import { LayoutDashboard, Users, Package, Tag, BarChart3, ExternalLink, User, Shield } from 'lucide-react'
 import Logo from '../../Images/Logo.jpeg'
@@ -10,12 +8,8 @@ import './AdminLayout.css'
 
 const SuperAdminLayout = () => {
   const { user, logout } = useAuth()
-  const { themes, currentTheme, changeTheme } = useTheme()
-  const { languages, currentLanguage, changeLanguage } = useLanguage()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [themeMenuOpen, setThemeMenuOpen] = useState(false)
-  const [langMenuOpen, setLangMenuOpen] = useState(false)
 
   const handleLogout = () => {
     console.log('🚪 Super Admin logging out')
@@ -94,60 +88,6 @@ const SuperAdminLayout = () => {
           </div>
 
           <div className="header-actions">
-            {/* Language Switcher */}
-            <div className="dropdown">
-              <button
-                className="text-button"
-                onClick={() => setLangMenuOpen(!langMenuOpen)}
-                aria-label="Change language"
-              >
-                Language
-              </button>
-              {langMenuOpen && (
-                <div className="dropdown-menu">
-                  {languages.map(lang => (
-                    <button
-                      key={lang.code}
-                      className={`dropdown-item ${currentLanguage === lang.code ? 'active' : ''}`}
-                      onClick={() => {
-                        changeLanguage(lang.code)
-                        setLangMenuOpen(false)
-                      }}
-                    >
-                      {lang.nativeName}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Theme Switcher */}
-            <div className="dropdown">
-              <button
-                className="text-button"
-                onClick={() => setThemeMenuOpen(!themeMenuOpen)}
-                aria-label="Change theme"
-              >
-                Theme
-              </button>
-              {themeMenuOpen && (
-                <div className="dropdown-menu">
-                  {themes.map(theme => (
-                    <button
-                      key={theme.id}
-                      className={`dropdown-item ${currentTheme === theme.id ? 'active' : ''}`}
-                      onClick={() => {
-                        changeTheme(theme.id)
-                        setThemeMenuOpen(false)
-                      }}
-                    >
-                      {theme.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             <div className="user-menu">
               <div className="user-info">
                 <span className="user-avatar">{user?.full_name?.charAt(0) || 'S'}</span>

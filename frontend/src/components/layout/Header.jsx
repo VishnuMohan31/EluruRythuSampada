@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { useTheme } from '@context/ThemeContext'
-import { useLanguage } from '@context/LanguageContext'
 import { useAuth } from '@context/AuthContext'
 import './Header.css'
 
@@ -11,47 +8,18 @@ import CMImage from '../../Images/CM_Image.png.jpeg'
 import APEmblem from '../../Images/Emblem_of_Andhra_Pradesh.png'
 
 const Header = () => {
-  const { t } = useTranslation()
-  const { themes, currentTheme, changeTheme } = useTheme()
-  const { languages, currentLanguage, changeLanguage } = useLanguage()
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [themeMenuOpen, setThemeMenuOpen] = useState(false)
-  const [langMenuOpen, setLangMenuOpen] = useState(false)
-  
-  // Refs for dropdown menus
-  const themeDropdownRef = useRef(null)
-  const langDropdownRef = useRef(null)
-  
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
-        setThemeMenuOpen(false)
-      }
-      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
-        setLangMenuOpen(false)
-      }
-    }
-    
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+  const authenticated = isAuthenticated()
 
   const handleLogout = () => {
     logout()
     navigate('/')
   }
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   return (
-    <header className={`header ${isAuthenticated() ? 'header--authenticated' : ''}`}>
+    <header className="header">
       <div className="container">
         <div className="header-content">
           {/* Logo */}
@@ -64,19 +32,7 @@ const Header = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="header-nav desktop-nav">
-            <NavLink to="/" className="nav-link" end onClick={scrollToTop}>{t('home')}</NavLink>
-            <NavLink to="/products" className="nav-link" onClick={scrollToTop}>{t('products')}</NavLink>
-            <NavLink to="/about" className="nav-link" onClick={scrollToTop}>{t('about')}</NavLink>
-            {isAuthenticated() && (
-              <NavLink to={user?.role === 'admin' ? '/admin' : '/super-admin'} className="nav-link" onClick={scrollToTop}>
-                {t('dashboard')}
-              </NavLink>
-            )}
-          </nav>
-
-          {/* CM & AP Emblem block - between nav and actions */}
+          {/* CM & AP Emblem block */}
           <div className="header-cm-block" aria-label="Hon'ble Chief Minister and Government of Andhra Pradesh">
             <div className="header-cm-photo-wrap">
               <img src={CMImage} alt="Hon'ble Chief Minister" className="header-cm-photo" />
@@ -92,74 +48,23 @@ const Header = () => {
 
           {/* Actions */}
           <div className="header-actions">
-            {/* Language Switcher */}
-            <div className="dropdown" ref={langDropdownRef}>
-              <button
-                className="text-button"
-                onClick={() => setLangMenuOpen(!langMenuOpen)}
-                aria-label="Change language"
-              >
-                Language
-              </button>
-              {langMenuOpen && (
-                <div className="dropdown-menu">
-                  {languages.map(lang => (
-                    <button
-                      key={lang.code}
-                      className={`dropdown-item ${currentLanguage === lang.code ? 'active' : ''}`}
-                      onClick={() => {
-                        changeLanguage(lang.code)
-                        setLangMenuOpen(false)
-                      }}
-                    >
-                      {lang.nativeName}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Theme Switcher */}
-            <div className="dropdown" ref={themeDropdownRef}>
-              <button
-                className="text-button"
-                onClick={() => setThemeMenuOpen(!themeMenuOpen)}
-                aria-label="Change theme"
-              >
-                Theme
-              </button>
-              {themeMenuOpen && (
-                <div className="dropdown-menu">
-                  {themes.map(theme => (
-                    <button
-                      key={theme.id}
-                      className={`dropdown-item ${currentTheme === theme.id ? 'active' : ''}`}
-                      onClick={() => {
-                        changeTheme(theme.id)
-                        setThemeMenuOpen(false)
-                      }}
-                    >
-                      {theme.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* Auth Actions */}
-            {isAuthenticated() ? (
+            {authenticated ? (
               <div className="user-section">
+                <NavLink to={user?.role === 'admin' ? '/admin' : '/super-admin'} className="nav-link">
+                  Dashboard
+                </NavLink>
                 <div className="user-info">
                   <span className="user-avatar">{user?.full_name?.charAt(0) || 'U'}</span>
                   <span className="user-name">{user?.full_name}</span>
                 </div>
                 <button className="btn btn-outline btn-small" onClick={handleLogout}>
-                  {t('logout')}
+                  Logout
                 </button>
               </div>
             ) : (
               <Link to="/super-admin/login" className="btn btn-outline btn-medium">
-                {t('login')}
+                Login
               </Link>
             )}
 
@@ -178,27 +83,16 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
+        {/* Mobile Navigation - only show dashboard if authenticated */}
+        {mobileMenuOpen && authenticated && (
           <nav className="mobile-nav">
-            <Link to="/" className="mobile-nav-link" onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}>
-              {t('home')}
+            <Link
+              to={user?.role === 'admin' ? '/admin' : '/super-admin'}
+              className="mobile-nav-link"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Dashboard
             </Link>
-            <Link to="/products" className="mobile-nav-link" onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}>
-              {t('products')}
-            </Link>
-            <Link to="/about" className="mobile-nav-link" onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}>
-              {t('about')}
-            </Link>
-            {isAuthenticated() && (
-              <Link
-                to={user?.role === 'admin' ? '/admin' : '/super-admin'}
-                className="mobile-nav-link"
-                onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}
-              >
-                {t('dashboard')}
-              </Link>
-            )}
           </nav>
         )}
       </div>
