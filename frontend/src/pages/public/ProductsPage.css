@@ -13,6 +13,101 @@
   margin-bottom: var(--spacing-lg);
 }
 
+/* ---- Expandable Search Bar (Option 1) ---- */
+.search-bar-expandable {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border-radius: 22px;
+  border: 2px solid transparent;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.search-bar-expandable.open {
+  width: 100%;
+  border-color: var(--color-primary);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 3px var(--color-overlay);
+}
+
+.search-icon-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+  transition: color 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.search-icon-btn:hover {
+  color: var(--color-primary);
+  transform: scale(1.15);
+}
+
+.search-input-expandable {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  font-size: 1rem;
+  color: var(--color-text);
+  padding: 0 0.5rem !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease 0.1s;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.search-bar-expandable.open .search-input-expandable {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.search-close-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none !important;
+  border: none !important;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  border-radius: 50%;
+  transition: all 0.2s;
+  margin-right: 4px;
+}
+
+.search-close-btn:hover {
+  background-color: var(--color-overlay) !important;
+  color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .search-bar-expandable.open {
+    width: 100%;
+  }
+}
+
 /*
  * Hero: scoped under .products-page so HomePage.css .hero-content (global) cannot override
  * (that rule used position:relative + max-width:800px and collapsed this overlay to the left).
@@ -395,13 +490,19 @@
 }
 
 .products-header {
-  margin-bottom: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-bottom: 0;
 }
 
 .products-count {
   font-size: 0.875rem;
   color: var(--color-text-light);
   font-weight: 500;
+  margin-top: 0.375rem;
+  margin-bottom: 0.375rem;
 }
 
 .products-grid {

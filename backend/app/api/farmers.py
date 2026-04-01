@@ -21,9 +21,9 @@ router = APIRouter()
 @router.get("/", response_model=List[FarmerResponse])
 async def get_farmers(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = None,
     include_inactive: bool = False,
-    type: str = None,  # Filter by type: 'Farmer'
+    type: str = None,
     db: Session = Depends(get_db)
 ):
     """Get all Farmers"""
@@ -33,11 +33,14 @@ async def get_farmers(
     if type and type in ['Farmer']:
         query = query.filter(Farmer.type == type)
     
-    # Sort by: Recently updated first, then by name
     query = query.order_by(Farmer.updated_at.desc().nullslast(), Farmer.name.asc())
     
-    farmers = query.offset(skip).limit(limit).all()
-    return farmers
+    if limit is not None:
+        query = query.offset(skip).limit(limit)
+    else:
+        query = query.offset(skip)
+    
+    return query.all()
 
 
 @router.get("/{farmer_id}", response_model=FarmerResponse)

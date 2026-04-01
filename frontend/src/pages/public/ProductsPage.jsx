@@ -20,6 +20,8 @@ const ProductsPage = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchInputRef = React.useRef(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [heroIndex, setHeroIndex] = useState(0)
   
@@ -71,6 +73,24 @@ const ProductsPage = () => {
     }, HERO_ROTATE_MS)
     return () => clearInterval(timer)
   }, [])
+
+  // Auto-focus input when search expands; Escape to close
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [searchOpen])
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && searchOpen) {
+        setSearchOpen(false)
+        setSearchQuery('')
+      }
+    }
+    document.addEventListener('keydown', handleEsc)
+    return () => document.removeEventListener('keydown', handleEsc)
+  }, [searchOpen])
 
   // Read category from URL on component mount
   useEffect(() => {
@@ -141,41 +161,6 @@ const ProductsPage = () => {
   return (
     <div className="products-page">
       <div className="container">
-
-        {/* Search Bar - above the hero image */}
-        <div className="search-section">
-          <div className="search-filters-row">
-            <div className="search-bar" style={{ flex: 1 }}>
-              <span className="search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-              {searchQuery && (
-                <button
-                  className="search-clear"
-                  onClick={() => setSearchQuery('')}
-                  aria-label="Clear search"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          </div>
-
-          <button
-            className="filter-toggle-btn"
-            onClick={() => setFiltersOpen(!filtersOpen)}
-          >
-            🎛️ Filters
-            {selectedCategory && (
-              <span className="filter-badge">1</span>
-            )}
-          </button>
-        </div>
 
         {/* Page Header / Hero carousel (Products1 → Products2 → Products.png) */}
         <div className="page-header">
@@ -278,8 +263,35 @@ const ProductsPage = () => {
           <div className="products-content">
             <div className="products-header">
               <p className="products-count">
-                {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
+                Available Products - {filteredProducts.length}
               </p>
+              {/* Search icon - expands inline */}
+              <div className={`search-bar-expandable ${searchOpen ? 'open' : ''}`}>
+                <button
+                  className="search-icon-btn"
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Open search"
+                >
+                  🔍
+                </button>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input-expandable"
+                />
+                {searchOpen && (
+                  <button
+                    className="search-close-btn"
+                    onClick={() => { setSearchOpen(false); setSearchQuery('') }}
+                    aria-label="Close search"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
 
             {filteredProducts.length > 0 ? (

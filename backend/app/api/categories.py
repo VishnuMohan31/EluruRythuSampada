@@ -17,7 +17,7 @@ router = APIRouter()
 @router.get("/", response_model=List[CategoryResponse])
 async def get_categories(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = None,
     include_inactive: bool = False,
     db: Session = Depends(get_db)
 ):
@@ -25,12 +25,11 @@ async def get_categories(
     query = db.query(Category)
     if not include_inactive:
         query = query.filter(Category.is_active == True)
-    
-    # Sort by: Recently updated first, then by name
     query = query.order_by(Category.updated_at.desc().nullslast(), Category.name.asc())
-    
-    categories = query.offset(skip).limit(limit).all()
-    return categories
+    query = query.offset(skip)
+    if limit is not None:
+        query = query.limit(limit)
+    return query.all()
 
 
 @router.get("/{category_id}", response_model=CategoryResponse)

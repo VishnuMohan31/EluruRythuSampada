@@ -22,17 +22,7 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <div className="header-content">
-          {/* Logo */}
-          <Link to="/" className="header-logo">
-            <div className="logo-icon">
-              <img src={Logo} alt="Eluru Rythu Sampada" className="logo-image" />
-            </div>
-            <div className="logo-text">
-              <span className="logo-title">Eluru Rythu Sampada</span>
-            </div>
-          </Link>
-
-          {/* CM & AP Emblem block */}
+          {/* CM & AP Emblem block - now on the LEFT */}
           <div className="header-cm-block" aria-label="Hon'ble Chief Minister and Government of Andhra Pradesh">
             <div className="header-cm-photo-wrap">
               <img src={CMImage} alt="Hon'ble Chief Minister" className="header-cm-photo" />
@@ -45,6 +35,16 @@ const Header = () => {
               <img src={APEmblem} alt="Government of Andhra Pradesh" className="header-emblem" />
             </div>
           </div>
+
+          {/* Logo - now in CENTER */}
+          <Link to="/" className="header-logo">
+            <div className="logo-icon">
+              <img src={Logo} alt="Eluru Rythu Sampada" className="logo-image" />
+            </div>
+            <div className="logo-text">
+              <span className="logo-title">Eluru Rythu Sampada</span>
+            </div>
+          </Link>
 
           {/* Actions */}
           <div className="header-actions">

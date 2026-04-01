@@ -19,18 +19,18 @@ router = APIRouter()
 async def get_users(
     role: Optional[str] = None,
     skip: int = 0,
-    limit: int = 100,
+    limit: int = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_admin)
 ):
     """Get all users (admin only) - can filter by role"""
     query = db.query(User).filter(User.is_active == True)
-    
     if role:
         query = query.filter(User.role == role)
-    
-    users = query.offset(skip).limit(limit).all()
-    return users
+    query = query.offset(skip)
+    if limit is not None:
+        query = query.limit(limit)
+    return query.all()
 
 
 @router.get("/me", response_model=UserResponse)
